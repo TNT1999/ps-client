@@ -161,9 +161,9 @@ type IProps = {
 const Filter: React.FC<IProps> = ({ className }) => {
   const router = useRouter();
   const filter = useSelector((state: RootState) => state.home.filter);
-  useEffect(() => {
-    console.log(router);
-  }, [router, router.query]);
+  // useEffect(() => {
+  //   console.log(router);
+  // }, [router.query]);
 
   useEffect(() => {
     const query = customQueryString.stringify(filter);
@@ -173,7 +173,7 @@ const Filter: React.FC<IProps> = ({ className }) => {
       }
       router.push(`/dien-thoai?${query}`, undefined, { shallow: true });
     }
-  }, [filter, router]);
+  }, [filter]);
 
   return (
     <div className={classnames(className)}>

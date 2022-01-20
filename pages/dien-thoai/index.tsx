@@ -26,7 +26,7 @@ const fetcher = (url: string) =>
 const Home: NextPage<Props> = ({ products = [] }) => {
   // revalidateOnMount automatic revalidation when component is mounted
   // (by default revalidation occurs on mount when initialData is not set, use this flag to force behavior)
-  console.log(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/products`);
+  // console.log(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/products`);
   const { data, error } = useSWR(
     `${process.env.NEXT_PUBLIC_API_ENDPOINT}/products`,
     fetcher,
