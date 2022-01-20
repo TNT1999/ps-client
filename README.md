@@ -1,34 +1,49 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+### Commit messages
 
-## Getting Started
+Each commit must have a `type` and `subject` and optionally, a `scope` and a `body`. Format:
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
+```
+type(scope?): subject
+\n
+body?
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`type` is one of:
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+* feat: an end-user feature
+* style: UI style change of an existing feature
+* fix: a bug fix
+* refactor: code change that does not fix a bug or add a feature, eg. renaming a variable
+* perf: code change that improves performance of an existing feature
+* revert: reverts a previous commit
+* test: unit test or end-to-end test
+* chore: misc changes, e.g. build scripts, dev tools, research etc.
+* docs: changes to the documentation only
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+Examples:
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+```
+feat: add circle drawing
+style: change button border color
+fix: remove broken confirmation message
+refactor: share logic between 4d3d3d3 and flarhgunnstow
+perf: speed up rect drawing
+revert: revert 2b8c9a1
+test: verify WebSocket handshake
+chore: add Lerna start script
+docs: add coding guideline
+```
+### Structure
 
-## Learn More
+* `components`: React components (pages, containers, components, routes etc.)
+* `contexts`: React contexts and hooks
+* `styles`: styling
+* `utils`: various groups of utilities, e.g. dom, time, log etc.
+* `app`: Redux setup.
 
-To learn more about Next.js, take a look at the following resources:
+### UI Component
+https://nextui.org/
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### Style
+https://tailwindcss.com/
+* Only style with Tailwind classes
