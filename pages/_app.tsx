@@ -1,7 +1,7 @@
 import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import React from 'react';
-import Header from '../components/Header';
+import Header from '../components/header';
 import NextNprogress from 'nextjs-progressbar';
 import { Provider } from 'react-redux';
 import { initializeStore, Store, useStore } from '../app/store';

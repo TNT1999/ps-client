@@ -1,15 +1,22 @@
 import React, { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import { ChevronDownIcon, UserCircleIcon } from '@heroicons/react/solid';
+import { User } from '@nextui-org/react';
 
-const UserDropdown: React.FC<any> = (props: any) => {
+type Props = {
+  user: User;
+};
+type User = {
+  name: string;
+};
+const UserDropdown: React.FC<Props> = ({ user }) => {
   return (
     <Menu as="div" className="relative">
       <Menu.Button className="justify-center py-2 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
         <div className="flex items-center pl-2">
           <UserCircleIcon className="h-5 sm:h-6 text-gray-700 px-1" />
           <span className="max-w-name-user text-sm hidden truncate flex-auto md:block text-gray-800">
-            Trần Nguyên Tài
+            {user.name}
           </span>
           <ChevronDownIcon
             className="hidden md:block md:h-4 text-gray-500 pl-1"

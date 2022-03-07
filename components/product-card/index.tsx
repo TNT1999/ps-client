@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import Rating from '../common/Rating';
+import Rating from '../common/rating';
 import { formatMoney } from '../../utils';
 type ProductProps = {
   name: string;

@@ -1,9 +1,15 @@
 {
   "presets": ["next/babel"],
   "env": {
+    "development":{
+      "plugins": [
+        "inline-react-svg"
+      ]
+    },
     "production": {
       "plugins": [
-        "transform-remove-console"
+        "transform-remove-console",
+        "inline-react-svg"
         // ,"remove-unused-import"
       ]
     }

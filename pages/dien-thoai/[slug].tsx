@@ -7,7 +7,7 @@ import axios from 'axios';
 import { setSelectedProduct } from '../../app/slice/homeSlice';
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import Breadcrumb from '../../components/Breadcrumb';
+import Breadcrumb from '../../components/breadcrumb';
 
 type DetailProduct = {
   // _id: string

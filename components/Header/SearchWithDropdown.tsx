@@ -36,9 +36,7 @@ const ProductItem: React.FC<PreviewProduct> = ({
             <img src={thumbnail} className="w-auto h-full" alt="" />
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-medium py-2 text-gray-800">
-              {name}
-            </span>
+            <span className="text-sm font-medium py-2 text-white">{name}</span>
             <span className="font-medium text-red-600 text-base">
               {formatMoney(price)}
             </span>
@@ -138,7 +136,7 @@ const Search: React.FC<IProps> = ({ className }) => {
       />
       <button
         onClick={_handleSearch}
-        className="flex items-center justify-center w-auto min-w-search-button h-auto text-blue p-1 md:p-2 bg-blue-400 rounded rounded-l-none focus:outline-none shadow"
+        className="flex items-center justify-center w-auto min-w-search-button h-auto text-blue p-1 md:p-2 bg-blue-500 rounded rounded-l-none focus:outline-none shadow"
       >
         {isSearching ? (
           <svg

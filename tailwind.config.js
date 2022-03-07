@@ -10,6 +10,9 @@ module.exports = {
       boxShadow: {
         header: '0 2px 7px 0 rgb(0 0 0 / 5%);'
       },
+      backgroundColor: {
+        primary: 'rgb(26, 148, 255)'
+      },
       flex: {
         2: '2 2 0%',
         3: '3 3 0%',

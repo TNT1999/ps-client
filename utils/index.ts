@@ -18,12 +18,14 @@ const Price = ['<5tr', '5-10tr', '10-15tr', '15-20tr', '>20tr'];
 const Display = ['<5', '5-5.5', '5.5-6', '>6'];
 const order = ['brand', 'ram', 'storage', 'price', 'display'];
 
-function formatMoney(money: number) {
+export function formatMoney(money: number) {
   return money.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' ₫';
   // return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(money);
 }
-
-const customQueryString = {
+export function noop(): void {
+  return;
+}
+export const customQueryString = {
   parse: (query: string) => {
     const objectFilter: Record<string, unknown> = queryString.parse(query, {
       arrayFormat: 'comma'
@@ -41,7 +43,10 @@ const customQueryString = {
       sort: (a, b) => order.indexOf(a) - order.indexOf(b)
     })
 };
-const convertQueryNextToFilterArray = (filter: Record<string, unknown>) => {
+
+export const convertQueryNextToFilterArray = (
+  filter: Record<string, unknown>
+) => {
   for (const key of Object.keys(filter)) {
     if (!Array.isArray(filter[key])) {
       filter[key] = (filter[key] as any).split(',');
@@ -49,4 +54,3 @@ const convertQueryNextToFilterArray = (filter: Record<string, unknown>) => {
   }
   return filter;
 };
-export { customQueryString, convertQueryNextToFilterArray, formatMoney };
