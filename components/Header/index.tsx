@@ -4,10 +4,10 @@ import { SearchIcon, ShoppingCartIcon } from '@heroicons/react/solid';
 import UserDropdown from './UserDropdown';
 import SearchWithDropDown from './SearchWithDropdown';
 import AuthModal from '@components/common/auth/AuthModal';
-// import { LogoSVG } from 'public/assets/images/images';
 // import { Logo } from 'public/assets/images/images';
+import Logo from './Logo.png';
 // import { Logo } from '@assets/images';
-import Logo from '@assets/images/Logo.png';
+// import Logo from '@assets/svg/Logo.svg';
 // import LogoPng from '/assets/images/Logo.png';
 
 interface IProps {

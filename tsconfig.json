@@ -16,7 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@components/*": ["components/*"],
-      "@public/*":["public/assets/*"]
+      "@assets/*": ["public/assets/*"]
     }
   },
   "include": [
@@ -25,7 +25,7 @@
     "**/*.tsx",
     "next.config.js",
     "**/*.js",
-    ".eslintrc.js",
+    ".eslintrc.js"
   ],
   "exclude": ["node_modules", ".next", ".vercel", "out"]
 }
