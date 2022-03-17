@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useEffect, Fragment } from 'react';
-import { SearchIcon } from '@heroicons/react/solid';
 import { KeyboardEvent } from 'react';
 import debounce from 'lodash/debounce';
 import axios from 'axios';
@@ -7,6 +6,7 @@ import { Transition } from '@headlessui/react';
 import { formatMoney } from '../../utils';
 import Link from 'next/link';
 import router from 'next/router';
+import { SearchIcon } from '@assets/icons';
 
 type PreviewProduct = {
   name: string;
@@ -22,7 +22,7 @@ interface IProps {
   className?: string;
 }
 
-const ProductItem: React.FC<PreviewProduct> = ({
+const ProductItem: FunctionComponent<PreviewProduct> = ({
   name,
   slug,
   thumbnail,
@@ -46,7 +46,7 @@ const ProductItem: React.FC<PreviewProduct> = ({
     </Link>
   );
 };
-const DropdownPreview: React.FC<IPropsDropdown> = ({
+const DropdownPreview: FunctionComponent<IPropsDropdown> = ({
   products,
   showPreview
 }) => {
@@ -70,7 +70,7 @@ const DropdownPreview: React.FC<IPropsDropdown> = ({
   );
 };
 
-const Search: React.FC<IProps> = ({ className }) => {
+const Search: FunctionComponent<IProps> = ({ className }) => {
   const [keyword, setKeyword] = useState<string>('');
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [products, setProducts] = useState<Array<PreviewProduct>>([]);
@@ -160,7 +160,8 @@ const Search: React.FC<IProps> = ({ className }) => {
             ></path>
           </svg>
         ) : (
-          <SearchIcon className="h-3 md:h-4 text-white" />
+          // <SearchIcon className="h-3 md:h-4 text-white" />
+          <SearchIcon className="text-white" />
         )}
       </button>
 

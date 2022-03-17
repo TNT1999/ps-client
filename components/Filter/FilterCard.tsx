@@ -9,7 +9,7 @@ interface IProps {
   value: Array<string>;
   handleAction: ActionCreatorWithPayload<string | string[], string>;
 }
-const FilterCard: React.FC<IProps> = ({
+const FilterCard: FunctionComponent<IProps> = ({
   title,
   data,
   className,

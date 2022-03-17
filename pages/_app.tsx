@@ -1,6 +1,6 @@
 import '../styles/globals.css';
 import type { AppProps } from 'next/app';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../components/header';
 import NextNprogress from 'nextjs-progressbar';
 import { Provider } from 'react-redux';
@@ -8,11 +8,33 @@ import { initializeStore, Store, useStore } from '../app/store';
 import App from 'next/app';
 import { NextComponentType, NextPageContext } from 'next';
 import { Router } from 'next/router';
-import { AppTreeType } from 'next/dist/next-server/lib/utils';
 import { NextUIProvider } from '@nextui-org/react';
+import { AppTreeType } from 'next/dist/shared/lib/utils';
+import { getMe, login, setCurrentUser, userData } from 'app/slice';
+import axiosClient from 'utils/api';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const store = useStore(pageProps.initialReduxState);
+  const [isUserLoaded, setUserLoaded] = useState(false);
+
+  const getUserData = async () => {
+    const token = localStorage.getItem(process.env.TOKEN_KEY || 'access_token');
+    if (token == null) {
+      return setUserLoaded(true);
+    }
+    try {
+      const userData: Record<string, string> = await axiosClient.get('auth/me');
+      store.dispatch(setCurrentUser(userData));
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setUserLoaded(true);
+    }
+  };
+  useEffect(() => {
+    getUserData();
+    // store.dispatch(getMe());
+  }, []);
   return (
     <Provider store={store}>
       <NextUIProvider>
@@ -46,7 +68,7 @@ type AppContextWithStore = {
 
 MyApp.getInitialProps = async (appContext: AppContextWithStore) => {
   const reduxStore = initializeStore(undefined);
-
+  // console.log('in initialProps _app.js');
   appContext.ctx.store = reduxStore;
   // console.log('appContext', appContext)
 

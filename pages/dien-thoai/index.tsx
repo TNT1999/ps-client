@@ -1,12 +1,13 @@
 import Head from 'next/head';
-import Filter from '../../components/filter';
-import ProductCard from '../../components/product-card';
+import Filter from '@components/filter';
+import ProductCard from '@components/product-card';
 import axios from 'axios';
 import useSWR, { SWRResponse } from 'swr';
 import { NextPage, NextPageContext } from 'next';
 import { Store } from '../../app/store';
 import { setListHomeProduct, setFilter } from '../../app/slice/homeSlice';
-import { convertQueryNextToFilterArray } from '../../utils';
+import { Query2FilterArray } from '../../utils';
+import isEmpty from 'lodash/isEmpty';
 
 type Product = {
   name: string;
@@ -67,8 +68,8 @@ const Home: NextPage<Props> = ({ products = [] }) => {
 Home.getInitialProps = async (context: NextPageContext & { store: Store }) => {
   const filter = context.query;
 
-  if (JSON.stringify(filter) !== '{}') {
-    convertQueryNextToFilterArray(filter);
+  if (!isEmpty(filter)) {
+    Query2FilterArray(filter);
     context.store.dispatch(setFilter(filter));
   } else {
     context.store.dispatch(
@@ -88,7 +89,6 @@ Home.getInitialProps = async (context: NextPageContext & { store: Store }) => {
     // const reduxStore = initializeStore({})
     // const { dispatch } = reduxStore
     context.store.dispatch(setListHomeProduct(res.data.products));
-    // console.log('dp listhomePd', reduxStore.getState())
     return {
       products: res.data.products
     };

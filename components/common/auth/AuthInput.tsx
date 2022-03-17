@@ -1,3 +1,4 @@
+import { Props } from '@assets/icons';
 import classNames from 'classnames';
 import React, { FunctionComponent, ChangeEvent } from 'react';
 
@@ -7,6 +8,7 @@ const AuthInput: FunctionComponent<{
   message?: string;
   value: string;
   placeholder: string;
+  icon: FunctionComponent<Props>;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }> = ({
   type = 'text',
@@ -14,18 +16,20 @@ const AuthInput: FunctionComponent<{
   onChange,
   placeholder,
   message = '',
-  isError = false
+  isError = false,
+  icon
 }) => {
+  const Icon = icon;
   return (
-    <div>
-      {/* <Icon className="absolute mt-3 ml-3 stroke-current text-gray-900" /> */}
+    <div className="relative">
+      <Icon className="absolute mt-4.5 ml-4.5 stroke-current text-gray-900" />
       <input
         value={value}
         onChange={onChange}
         name="email"
         type={type}
         className={classNames(
-          'w-full pl-12 block border-2 h-12 placeholder-gray-600 text-gray-900 rounded-md focus:outline-none mt-4',
+          'w-full pl-10 block border h-11 placeholder-gray-600 text-gray-900 rounded focus:outline-none mt-5',
           {
             'border-gray-300 focus:border-primary': !isError,
             'border-danger-400': isError

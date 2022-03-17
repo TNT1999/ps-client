@@ -1,4 +1,3 @@
-// import { filter } from 'lodash'
 import queryString from 'query-string';
 
 const Brand = [
@@ -20,7 +19,6 @@ const order = ['brand', 'ram', 'storage', 'price', 'display'];
 
 export function formatMoney(money: number) {
   return money.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' ₫';
-  // return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(money);
 }
 export function noop(): void {
   return;
@@ -44,9 +42,7 @@ export const customQueryString = {
     })
 };
 
-export const convertQueryNextToFilterArray = (
-  filter: Record<string, unknown>
-) => {
+export const Query2FilterArray = (filter: Record<string, unknown>) => {
   for (const key of Object.keys(filter)) {
     if (!Array.isArray(filter[key])) {
       filter[key] = (filter[key] as any).split(',');

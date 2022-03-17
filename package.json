@@ -11,7 +11,8 @@
     "prepare": "husky install",
     "check:pret": "prettier --check .",
     "format": "prettier --write .",
-    "pre-commit": "lint-staged"
+    "pre-commit": "lint-staged",
+    "optimize-svg": "svgo -r -f public/assets"
   },
   "dependencies": {
     "@headlessui/react": "^1.2.0",
@@ -21,22 +22,24 @@
     "axios": "^0.21.1",
     "classnames": "^2.3.1",
     "lodash": "^4.17.21",
-    "next": "10.2.3",
+    "next": "11",
     "next-images": "^1.8.4",
     "nextjs-progressbar": "^0.0.11",
     "query-string": "^7.0.1",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "react-hook-form": "^7.8.8",
     "react-redux": "^7.2.4",
     "react-use": "^17.3.1",
     "redux-logger": "^3.0.6",
-    "swr": "^0.5.6"
+    "swr": "^0.5.6",
+    "use-async-effect": "^2.2.5"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.0.3",
     "@commitlint/config-conventional": "^16.0.0",
     "@next/eslint-plugin-next": "^12.0.8",
+    "@svgr/webpack": "^6.2.1",
     "@tailwindcss/custom-forms": "^0.2.1",
     "@types/lodash": "^4.14.170",
     "@types/nprogress": "^0.2.0",
@@ -47,7 +50,6 @@
     "@typescript-eslint/eslint-plugin": "^5.10.0",
     "@typescript-eslint/parser": "^5.10.0",
     "autoprefixer": "^10.2.6",
-    "babel-plugin-inline-react-svg": "^2.0.1",
     "babel-plugin-transform-remove-console": "^6.9.4",
     "eslint": "^7.30.0",
     "eslint-config-next": "^12.0.8",
@@ -56,6 +58,7 @@
     "lint-staged": "^12.2.1",
     "postcss": "^8.3.0",
     "prettier": "^2.3.2",
+    "svgo": "^2.8.0",
     "tailwindcss": "^2.1.4",
     "typescript": "4.3.2"
   },

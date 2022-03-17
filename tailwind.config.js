@@ -33,6 +33,12 @@ module.exports = {
       },
       minHeight: {
         72: '18rem'
+      },
+      borderColor: {
+        primary: 'rgb(26, 148, 255)'
+      },
+      margin: {
+        4.5: '0.875rem'
       }
     }
     // customForms: theme => ({

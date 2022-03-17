@@ -1,27 +1,30 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, FunctionComponent } from 'react';
 import { Menu, Transition } from '@headlessui/react';
-import { ChevronDownIcon, UserCircleIcon } from '@heroicons/react/solid';
-import { User } from '@nextui-org/react';
+import { UserCircleIcon } from '@heroicons/react/solid';
+import { ChevronDownIcon } from '@assets/icons';
+import { useAppDispatch } from 'app/store';
+import { logout } from 'app/slice';
 
-type Props = {
-  user: User;
-};
-type User = {
-  name: string;
-};
-const UserDropdown: React.FC<Props> = ({ user }) => {
+const UserDropdown: FunctionComponent<{
+  name: string | undefined;
+}> = ({ name }) => {
+  const dispatch = useAppDispatch();
+  const handleLogout = () => {
+    dispatch(logout());
+  };
   return (
     <Menu as="div" className="relative">
       <Menu.Button className="justify-center py-2 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
         <div className="flex items-center pl-2">
           <UserCircleIcon className="h-5 sm:h-6 text-gray-700 px-1" />
-          <span className="max-w-name-user text-sm hidden truncate flex-auto md:block text-gray-800">
-            {user.name}
-          </span>
-          <ChevronDownIcon
-            className="hidden md:block md:h-4 text-gray-500 pl-1"
-            aria-hidden="true"
-          />
+          {name && (
+            <>
+              <span className="max-w-name-user text-sm hidden truncate flex-auto md:block text-gray-800">
+                {name}
+              </span>
+              <ChevronDownIcon className="hidden md:block md:h-4 text-gray-600 ml-1" />{' '}
+            </>
+          )}
         </div>
       </Menu.Button>
       <Transition
@@ -65,6 +68,7 @@ const UserDropdown: React.FC<Props> = ({ user }) => {
                   className={`${
                     active && 'bg-blue-100'
                   } focus:outline-none group flex rounded items-center w-full px-2 py-2 text-sm`}
+                  onClick={handleLogout}
                 >
                   Đăng xuất
                 </button>

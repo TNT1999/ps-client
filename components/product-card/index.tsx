@@ -14,7 +14,7 @@ interface IProps {
   product: ProductProps;
 }
 
-const ProductCard: React.FC<IProps> = ({ product }) => {
+const ProductCard: FunctionComponent<IProps> = ({ product }) => {
   const { name, slug, thumbnail, price, reviewCount, ratingValue } = product;
   return (
     <div className="flex-1/5 pr-2 pb-2 min-h-72 rounded hover:shadow-xl duration-100">
