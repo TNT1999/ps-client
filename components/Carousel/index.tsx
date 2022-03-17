@@ -3,7 +3,7 @@ import React from 'react';
 type IProps = {
   listThumbnail: Array<string>;
 };
-const Carousel: React.FC<IProps> = ({ listThumbnail }) => {
+const Carousel: FunctionComponent<IProps> = ({ listThumbnail }) => {
   return <div></div>;
 };
 

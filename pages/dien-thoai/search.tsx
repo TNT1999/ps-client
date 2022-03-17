@@ -1,6 +1,6 @@
 import Head from 'next/head';
-import Filter from '../../components/Filter';
-import ProductCard from '../../components/ProductCard';
+import Filter from '@components/filter';
+import ProductCard from '@components/product-card';
 import axios from 'axios';
 import useSWR from 'swr';
 import { NextPage, NextPageContext } from 'next';

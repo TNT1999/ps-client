@@ -1,6 +1,6 @@
 import Head from 'next/head';
 
-const Order: React.FC<any> = (props: any) => {
+const Order: FunctionComponent<any> = (props: any) => {
   return (
     <div>
       <Head>

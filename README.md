@@ -10,15 +10,15 @@ body?
 
 `type` is one of:
 
-* feat: an end-user feature
-* style: UI style change of an existing feature
-* fix: a bug fix
-* refactor: code change that does not fix a bug or add a feature, eg. renaming a variable
-* perf: code change that improves performance of an existing feature
-* revert: reverts a previous commit
-* test: unit test or end-to-end test
-* chore: misc changes, e.g. build scripts, dev tools, research etc.
-* docs: changes to the documentation only
+- feat: an end-user feature
+- style: UI style change of an existing feature
+- fix: a bug fix
+- refactor: code change that does not fix a bug or add a feature, eg. renaming a variable
+- perf: code change that improves performance of an existing feature
+- revert: reverts a previous commit
+- test: unit test or end-to-end test
+- chore: misc changes, e.g. build scripts, dev tools, research etc.
+- docs: changes to the documentation only
 
 Examples:
 
@@ -33,17 +33,21 @@ test: verify WebSocket handshake
 chore: add Lerna start script
 docs: add coding guideline
 ```
+
 ### Structure
 
-* `components`: React components (pages, containers, components, routes etc.)
-* `contexts`: React contexts and hooks
-* `styles`: styling
-* `utils`: various groups of utilities, e.g. dom, time, log etc.
-* `app`: Redux setup.
+- `components`: React components (pages, containers, components, routes etc.)
+- `contexts`: React contexts and hooks
+- `styles`: styling
+- `utils`: various groups of utilities, e.g. dom, time, log etc.
+- `app`: Redux setup.
 
 ### UI Component
+
 https://nextui.org/
 
 ### Style
+
 https://tailwindcss.com/
-* Only style with Tailwind classes
+
+- Only style with Tailwind classes

@@ -4,7 +4,7 @@ type IProps = {
   ratingValue: number;
   reviewCount: number;
 };
-const Rating: React.FC<IProps> = ({ ratingValue, reviewCount }) => {
+const Rating: FunctionComponent<IProps> = ({ ratingValue, reviewCount }) => {
   return (
     <div className="flex items-center">
       {[...Array(5)].map((star, i) => {

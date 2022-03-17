@@ -4,7 +4,7 @@ type IProps = {
   productName: string;
   slug: string;
 };
-const Breadcrumb: React.FC<IProps> = ({ productName, slug }) => {
+const Breadcrumb: FunctionComponent<IProps> = ({ productName, slug }) => {
   return (
     <ul className="flex text-gray-600 text-xs lg:text-sm">
       <li className="inline-flex items-center">

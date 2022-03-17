@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useEffect, Fragment } from 'react';
-import { SearchIcon } from '@heroicons/react/solid';
 import { KeyboardEvent } from 'react';
 import debounce from 'lodash/debounce';
 import axios from 'axios';
@@ -7,6 +6,7 @@ import { Transition } from '@headlessui/react';
 import { formatMoney } from '../../utils';
 import Link from 'next/link';
 import router from 'next/router';
+import { SearchIcon } from '@assets/icons';
 
 type PreviewProduct = {
   name: string;
@@ -22,7 +22,7 @@ interface IProps {
   className?: string;
 }
 
-const ProductItem: React.FC<PreviewProduct> = ({
+const ProductItem: FunctionComponent<PreviewProduct> = ({
   name,
   slug,
   thumbnail,
@@ -36,9 +36,7 @@ const ProductItem: React.FC<PreviewProduct> = ({
             <img src={thumbnail} className="w-auto h-full" alt="" />
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-medium py-2 text-gray-800">
-              {name}
-            </span>
+            <span className="text-sm font-medium py-2 text-white">{name}</span>
             <span className="font-medium text-red-600 text-base">
               {formatMoney(price)}
             </span>
@@ -48,7 +46,7 @@ const ProductItem: React.FC<PreviewProduct> = ({
     </Link>
   );
 };
-const DropdownPreview: React.FC<IPropsDropdown> = ({
+const DropdownPreview: FunctionComponent<IPropsDropdown> = ({
   products,
   showPreview
 }) => {
@@ -72,7 +70,7 @@ const DropdownPreview: React.FC<IPropsDropdown> = ({
   );
 };
 
-const Search: React.FC<IProps> = ({ className }) => {
+const Search: FunctionComponent<IProps> = ({ className }) => {
   const [keyword, setKeyword] = useState<string>('');
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [products, setProducts] = useState<Array<PreviewProduct>>([]);
@@ -138,7 +136,7 @@ const Search: React.FC<IProps> = ({ className }) => {
       />
       <button
         onClick={_handleSearch}
-        className="flex items-center justify-center w-auto min-w-search-button h-auto text-blue p-1 md:p-2 bg-blue-400 rounded rounded-l-none focus:outline-none shadow"
+        className="flex items-center justify-center w-auto min-w-search-button h-auto text-blue p-1 md:p-2 bg-blue-500 rounded rounded-l-none focus:outline-none shadow"
       >
         {isSearching ? (
           <svg
@@ -162,7 +160,8 @@ const Search: React.FC<IProps> = ({ className }) => {
             ></path>
           </svg>
         ) : (
-          <SearchIcon className="h-3 md:h-4 text-white" />
+          // <SearchIcon className="h-3 md:h-4 text-white" />
+          <SearchIcon className="text-white" />
         )}
       </button>
 

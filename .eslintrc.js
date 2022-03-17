@@ -59,11 +59,4 @@ module.exports = {
     '@typescript-eslint/no-unsafe-assignment': 'off',
     '@typescript-eslint/no-unsafe-call': 'off'
   }
-  // "settings": {
-  //   "import/resolver": {
-  //     "node": {
-  //       "paths": ["./src"]
-  //     }
-  //   }
-  // }
 };
