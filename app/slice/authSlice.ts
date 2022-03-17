@@ -1,15 +1,35 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-const initialState = {
-  value: 0
+export type userData = {
+  token: string;
+  user: Record<string, string>;
+};
+
+export type AuthState = {
+  user: Record<string, string> | undefined;
+};
+const initialAuthState: AuthState = {
+  user: undefined
 };
 
 const authSlice = createSlice({
-  name: 'home',
-  initialState,
+  name: 'auth',
+  initialState: initialAuthState,
   reducers: {
-    fetchMe(state) {
-      state.value += 1;
+    login(state, action: PayloadAction<userData>) {
+      localStorage.setItem(
+        process.env.TOKEN_KEY || 'access_token',
+        action.payload.token
+      );
+      state.user = action.payload.user;
+    },
+    logout(state) {
+      localStorage.removeItem(process.env.TOKEN_KEY || 'access_token');
+      state.user = undefined;
+    },
+    setCurrentUser(state, action: PayloadAction<Record<string, string>>) {
+      console.log('getMe');
+      state.user = action.payload;
     }
     // decrement(state) {
     //   state.value--
@@ -20,5 +40,5 @@ const authSlice = createSlice({
   }
 });
 
-export const { fetchMe } = authSlice.actions;
+export const { login, logout, setCurrentUser } = authSlice.actions;
 export default authSlice.reducer;

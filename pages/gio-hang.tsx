@@ -1,6 +1,6 @@
 import Head from 'next/head';
 
-const Home: React.FC<any> = (props: any) => {
+const Home: FunctionComponent<any> = (props: any) => {
   return (
     <div>
       <Head>

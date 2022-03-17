@@ -7,7 +7,7 @@ import axios from 'axios';
 import { setSelectedProduct } from '../../app/slice/homeSlice';
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import Breadcrumb from '../../components/Breadcrumb';
+import Breadcrumb from '@components/breadcrumb';
 
 type DetailProduct = {
   // _id: string
@@ -54,7 +54,6 @@ const Phone: NextPage<IProps> = ({ product }) => {
 
 Phone.getInitialProps = async (context: NextPageContext & { store: Store }) => {
   const { slug } = context.query;
-  // console.log('context.store', context.store)
   try {
     const res = await axios.get(
       `${process.env.NEXT_PUBLIC_API_ENDPOINT}/product/${slug}`

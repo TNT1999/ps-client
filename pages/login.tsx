@@ -1,6 +1,7 @@
 import Head from 'next/head';
+import { FunctionComponent } from 'react';
 
-const Login: React.FC<any> = (props: any) => {
+const Login: FunctionComponent<any> = (props: any) => {
   return (
     <div>
       <Head>

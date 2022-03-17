@@ -10,6 +10,9 @@ module.exports = {
       boxShadow: {
         header: '0 2px 7px 0 rgb(0 0 0 / 5%);'
       },
+      backgroundColor: {
+        primary: 'rgb(26, 148, 255)'
+      },
       flex: {
         2: '2 2 0%',
         3: '3 3 0%',
@@ -30,6 +33,12 @@ module.exports = {
       },
       minHeight: {
         72: '18rem'
+      },
+      borderColor: {
+        primary: 'rgb(26, 148, 255)'
+      },
+      margin: {
+        4.5: '0.875rem'
       }
     }
     // customForms: theme => ({

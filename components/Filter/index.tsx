@@ -158,7 +158,7 @@ type IProps = {
   className?: string;
 };
 
-const Filter: React.FC<IProps> = ({ className }) => {
+const Filter: FunctionComponent<IProps> = ({ className }) => {
   const router = useRouter();
   const filter = useSelector((state: RootState) => state.home.filter);
   // useEffect(() => {

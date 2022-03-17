@@ -12,7 +12,13 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve"
+    "downlevelIteration": true,
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "@components/*": ["components/*"],
+      "@assets/*": ["public/assets/*"]
+    }
   },
   "include": [
     "next-env.d.ts",
@@ -22,5 +28,5 @@
     "**/*.js",
     ".eslintrc.js"
   ],
-  "exclude": ["node_modules", ".next", ".vercel", "out"]
+  "exclude": ["node_modules", ".next", "out"]
 }
