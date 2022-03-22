@@ -1,3 +1,4 @@
+import { userData } from '@app/slice';
 import LoadingOverlay from '@components/common/LoadingOverlay';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -13,7 +14,7 @@ const GoogleCallbackPage: FunctionComponent = () => {
     }
     try {
       const code = router.query.code;
-      const userData = await axiosClient.post('auth/google', {
+      const userData: userData = await axiosClient.post('auth/google', {
         code
       });
       window.opener.handleThirdPartyLogin(userData);

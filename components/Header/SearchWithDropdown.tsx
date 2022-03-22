@@ -1,4 +1,10 @@
-import React, { useState, useCallback, useEffect, Fragment } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  Fragment,
+  FunctionComponent
+} from 'react';
 import { KeyboardEvent } from 'react';
 import debounce from 'lodash/debounce';
 import axios from 'axios';

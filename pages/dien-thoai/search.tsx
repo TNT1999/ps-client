@@ -4,28 +4,21 @@ import ProductCard from '@components/product-card';
 import axios from 'axios';
 import useSWR from 'swr';
 import { NextPage, NextPageContext } from 'next';
+import { Product } from 'types';
 
-import { Store } from '../../app/store';
-import { setListHomeProduct, setFilter } from '../../app/slice/homeSlice';
-import { convertQueryNextToFilterArray } from '../../utils';
+// import { Store } from '../../app/store';
+// import { setListHomeProduct, setFilter } from '../../app/slice/homeSlice';
+// import { convertQueryNextToFilterArray } from '../../utils';
 
-type Product = {
-  name: string;
-  slug: string;
-  thumbnail: string;
-  price: any;
-  reviewCount: number;
-  ratingValue: number;
-};
-interface IProps {
+type Props = {
   products: Product[];
   // keyword:string
-}
+};
 
 const fetcher = (url: string) =>
   axios.get(url).then((res) => res.data.searchProducts);
 
-const SearchPage: NextPage<IProps> = ({ products = [] }) => {
+const SearchPage: NextPage<Props> = ({ products = [] }) => {
   // revalidateOnMount automatic revalidation when component is mounted
   // (by default revalidation occurs on mount when initialData is not set, use this flag to force behavior)
   const { data, error } = useSWR(

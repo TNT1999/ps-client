@@ -18,7 +18,7 @@
     "paths": {
       "@components/*": ["components/*"],
       "@assets/*": ["public/assets/*"],
-      "@app/*":["app/*"]
+      "@app/*": ["app/*"]
     }
   },
   "include": [

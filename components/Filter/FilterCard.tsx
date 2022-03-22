@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import { ActionCreatorWithPayload } from '@reduxjs/toolkit';
 import { useAppDispatch } from '../../app/store';
 
