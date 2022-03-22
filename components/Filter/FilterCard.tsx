@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { ActionCreatorWithPayload } from '@reduxjs/toolkit';
-import { useAppDispatch } from '../../app/store';
+import { useAppDispatch } from '@app/store';
 
 interface IProps {
   title: string;

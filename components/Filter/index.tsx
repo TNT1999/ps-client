@@ -2,15 +2,15 @@ import React, { FunctionComponent, useEffect } from 'react';
 import FilterCard from './FilterCard';
 import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../app/store';
+import { RootState } from '@app/store';
 import {
   setFilterBrand,
   setFilterDisplay,
   setFilterPrice,
   setFilterRam,
   setFilterStorage
-} from '../../app/slice/homeSlice';
-import { customQueryString } from '../../utils';
+} from '@app/slice/homeSlice';
+import { customQueryString } from '@utils/index';
 import classnames from 'classnames';
 const Brand = [
   {
