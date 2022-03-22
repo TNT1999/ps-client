@@ -1,11 +1,11 @@
 import { StarIcon } from '@assets/icons';
 import React, { FunctionComponent } from 'react';
 
-type IProps = {
+type Props = {
   ratingValue: number;
   reviewCount: number;
 };
-const Rating: FunctionComponent<IProps> = ({ ratingValue, reviewCount }) => {
+const Rating: FunctionComponent<Props> = ({ ratingValue, reviewCount }) => {
   return (
     <div className="flex items-center">
       <div className="flex">
