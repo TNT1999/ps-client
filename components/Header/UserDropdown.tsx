@@ -1,7 +1,6 @@
 import React, { Fragment, FunctionComponent } from 'react';
 import { Menu, Transition } from '@headlessui/react';
-import { UserCircleIcon } from '@heroicons/react/solid';
-import { ChevronDownIcon } from '@assets/icons';
+import { ChevronDownIcon, UserCircleIcon } from '@assets/icons';
 import { useAppDispatch } from 'app/store';
 import { logout } from 'app/slice';
 
@@ -16,7 +15,7 @@ const UserDropdown: FunctionComponent<{
     <Menu as="div" className="relative">
       <Menu.Button className="justify-center py-2 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
         <div className="flex items-center pl-2">
-          <UserCircleIcon className="h-5 sm:h-6 text-gray-700 px-1" />
+          <UserCircleIcon className="text-gray-700" />
           {name && (
             <>
               <span className="max-w-name-user text-sm hidden truncate flex-auto md:block text-gray-800">

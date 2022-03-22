@@ -33,7 +33,6 @@ function MyApp({ Component, pageProps }: AppProps) {
   };
   useEffect(() => {
     getUserData();
-    // store.dispatch(getMe());
   }, []);
   return (
     <Provider store={store}>

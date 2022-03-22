@@ -1,37 +1,22 @@
 import Head from 'next/head';
-import Image from 'next/image';
-import styles from '../../styles/Home.module.css';
-import { GetServerSideProps, NextPage, NextPageContext } from 'next';
-import { initializeStore, RootState, Store, useStore } from '../../app/store';
-import axios from 'axios';
-import { setSelectedProduct } from '../../app/slice/homeSlice';
-import { useSelector } from 'react-redux';
-import { useEffect } from 'react';
+import { NextPage, NextPageContext } from 'next';
+import { Store } from '@app/store';
+import { setSelectedProduct } from '@app/slice/homeSlice';
 import Breadcrumb from '@components/breadcrumb';
+import axiosClient from 'utils/api';
+import dynamic from 'next/dynamic';
+import ProductCarousel from '@components/carousel';
+import { DetailProduct } from 'types';
 
-type DetailProduct = {
-  // _id: string
-  cat: string;
-  brand: string;
-  slug: string;
-  name: string;
-  // lname: string,
-  thumbnail: string;
-  price: number;
-  ratingValue: number;
-  reviewCount: number;
-  hasVariants: boolean;
-  mainProduct: boolean;
-  isHot: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  linkVariants: string;
-};
-type IProps = {
+// const ProductCarousel = dynamic(() => import('@components/carousel'), {
+//   ssr: false
+// });
+
+type Props = {
   product: DetailProduct;
 };
 
-const Phone: NextPage<IProps> = ({ product }) => {
+const Phone: NextPage<Props> = ({ product }) => {
   const { name, slug } = product;
   return (
     <>
@@ -44,7 +29,24 @@ const Phone: NextPage<IProps> = ({ product }) => {
         <div className="max-w-screen-xl w-full">
           <div className="py-4 px-10 justify-center flex-col flex gap-x-4">
             <Breadcrumb productName={name} slug={slug} />
-            <div>ncsdcn</div>
+            <div>
+              <div className="detail_product_left w-96">
+                <div className="product-gallery">
+                  <ProductCarousel
+                    thumbnails={[
+                      'https://image.cellphones.com.vn/358x/media/catalog/product/i/p/iphone-12-pro-max_1__8.jpg',
+                      'https://image.cellphones.com.vn/358x/media/catalog/product/i/p/iphone-12-pro-max_4__8.jpg',
+                      'https://image.cellphones.com.vn/358x/media/catalog/product/i/p/iphone-12-pro-max_3__8.jpg',
+                      'https://image.cellphones.com.vn/358x/media/catalog/product/i/p/iphone-12-pro-max_2__8.jpg',
+                      'https://image.cellphones.com.vn/358x/media/catalog/product/_/0/_0000_iphone-12-pro-max-nonlogo-5_1_2.jpg',
+                      'https://image.cellphones.com.vn/358x/media/catalog/product/i/p/iphone-12-pro-max_3__8.jpg',
+                      'https://image.cellphones.com.vn/358x/media/catalog/product/i/p/iphone-12-pro-max_2__8.jpg',
+                      'https://image.cellphones.com.vn/358x/media/catalog/product/_/0/_0000_iphone-12-pro-max-nonlogo-5_1_2.jpg'
+                    ]}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </main>
@@ -55,16 +57,14 @@ const Phone: NextPage<IProps> = ({ product }) => {
 Phone.getInitialProps = async (context: NextPageContext & { store: Store }) => {
   const { slug } = context.query;
   try {
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_ENDPOINT}/product/${slug}`
-    );
-    context.store.dispatch(setSelectedProduct(res.data.product));
+    const product: any = await axiosClient.get(`product/${slug}`);
+    context.store.dispatch(setSelectedProduct(product));
     return {
-      product: res.data.product
+      product
     };
   } catch (err) {
     return {
-      product: []
+      product: undefined
     };
   }
 };

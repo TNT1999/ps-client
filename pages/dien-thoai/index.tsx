@@ -2,45 +2,36 @@ import Head from 'next/head';
 import Filter from '@components/filter';
 import ProductCard from '@components/product-card';
 import axios from 'axios';
-import useSWR, { SWRResponse } from 'swr';
+import useSWR from 'swr';
 import { NextPage, NextPageContext } from 'next';
 import { Store } from '../../app/store';
 import { setListHomeProduct, setFilter } from '../../app/slice/homeSlice';
 import { Query2FilterArray } from '../../utils';
 import isEmpty from 'lodash/isEmpty';
+import axiosClient from 'utils/api';
+import { Product } from 'types';
 
-type Product = {
-  name: string;
-  slug: string;
-  thumbnail: string;
-  price: any;
-  reviewCount: number;
-  ratingValue: number;
-};
 type Props = {
   products: Product[];
 };
 
-const fetcher = (url: string) =>
-  axios.get(url).then((res) => res.data.products);
+const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
 const Home: NextPage<Props> = ({ products = [] }) => {
   // revalidateOnMount automatic revalidation when component is mounted
   // (by default revalidation occurs on mount when initialData is not set, use this flag to force behavior)
   // console.log(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/products`);
   const { data, error } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/products`,
+    `${process.env.NEXT_PUBLIC_API_URL}/products`,
     fetcher,
-    { initialData: products, revalidateOnFocus: false }
+    {
+      initialData: products,
+      revalidateOnFocus: false,
+      revalidateOnMount: false
+    }
   );
   if (!data) return <div>Loading...</div>;
   if (error) return <div>there is an error!</div>;
-
-  // const [data,setdata] = useState([])
-  // console.log(data)
-  // useEffect(()=>{
-  //   fetcher(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/product`).then((data)=>setdata(data))
-  // },[])
 
   return (
     <>
@@ -52,8 +43,8 @@ const Home: NextPage<Props> = ({ products = [] }) => {
       <main className="flex justify-center overflow-auto h-main">
         <div className="max-w-screen-xl w-full">
           <div className="py-6 px-4 justify-center flex gap-x-4">
-            <Filter className="flex-4" />
-            <div className="flex-19 h-full w-full flex flex-wrap">
+            <Filter className="flex-4 max-w-[200px]" />
+            <div className="flex-19 h-full w-full flex flex-wrap gap-2">
               {data.map((product: Product, index: number) => {
                 return <ProductCard key={index} product={product} />;
               })}
@@ -83,14 +74,10 @@ Home.getInitialProps = async (context: NextPageContext & { store: Store }) => {
     );
   }
   try {
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_ENDPOINT}/products`
-    );
-    // const reduxStore = initializeStore({})
-    // const { dispatch } = reduxStore
-    context.store.dispatch(setListHomeProduct(res.data.products));
+    const products: any = await axiosClient.get('/products');
+    context.store.dispatch(setListHomeProduct(products));
     return {
-      products: res.data.products
+      products
     };
   } catch (err) {
     return {
