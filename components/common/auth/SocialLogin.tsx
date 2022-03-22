@@ -68,16 +68,6 @@ const SocialLogin: FunctionComponent<{
     params.append('client_id', FB_CLIENT_ID);
     params.append('redirect_uri', `${location.origin}/facebook_login`);
     params.append('state', token);
-    // let url = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&scope=user:email`;
-
-    // If site is 'test' or Heroku Review Apps, we use redirect_uri to override the callback URL
-    // This is because we want to use the same GitHub App for all environments (except localhost)
-    // and Heroku Review Apps have their URL dynamically generated
-    // if (!isLive() && GITHUB_REDIRECT_OVERRIDE) {
-    //   const subdomain = window.location.host.split('.')[0];
-    //   url += &redirect_uri=${GITHUB_REDIRECT_OVERRIDE}/${subdomain};
-    // }
-
     window.open(url, '', getPopupOptions());
   };
 

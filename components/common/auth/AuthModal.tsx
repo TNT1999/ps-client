@@ -2,14 +2,19 @@ import { KeyIcon, MailIcon } from '@assets/icons';
 import { Modal } from '@components/common/modal/Modal';
 import { noop } from 'lodash';
 import Link from 'next/link';
-import { FunctionComponent, SyntheticEvent, useEffect, useState } from 'react';
+import { FormEvent, FunctionComponent, useEffect, useState } from 'react';
 import Divider from '@components/common/divider';
 import AuthInput from './AuthInput';
 import AuthSubmitButton from './AuthSubmitButton';
 import PasswordInput from './PasswordInput';
 import SocialLogin from './SocialLogin';
-import { userData } from 'app/slice';
+import { login, setCurrentUser, userData } from 'app/slice';
+import { useRouter } from 'next/router';
+import { useAppDispatch } from 'app/store';
+import { isEmpty } from 'utils/string';
+import axiosClient from 'utils/api';
 
+export const EMPTY_FIELD_ERROR = 'Please fill out this field';
 declare global {
   interface Window {
     handleThirdPartyLogin: (userData: userData) => void;
@@ -22,24 +27,45 @@ const AuthModal: FunctionComponent<{ onClose: () => void }> = ({ onClose }) => {
   const [error, setError] = useState<string | string[]>('');
   const [warning, setWarning] = useState<string | string[]>('');
   const [emailError, setEmailError] = useState('');
-  const [passwordError, sePasswordError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const [isLoading, setLoading] = useState(false);
   const [pending, setPending] = useState(false);
-
+  const router = useRouter();
+  const dispatch = useAppDispatch();
   useEffect(() => setEmailError(''), [email]);
-  useEffect(() => sePasswordError(''), [password]);
+  useEffect(() => setPasswordError(''), [password]);
 
   const resetMessage = () => {
     setError('');
     setWarning('');
   };
-  const LoginWithEmail = (e: SyntheticEvent) => {
+  const LoginWithEmail = async (e: FormEvent) => {
     e.preventDefault();
+    resetMessage();
+    if (isEmpty(email)) {
+      setEmailError(EMPTY_FIELD_ERROR);
+    }
+    if (isEmpty(password)) {
+      setPasswordError(EMPTY_FIELD_ERROR);
+    }
+    if (isEmpty(email) || isEmpty(password)) {
+      return;
+    }
     setLoading(true);
-    setTimeout(() => {
+    try {
+      const user: userData = await axiosClient.post('/auth/login', {
+        email,
+        password
+      });
+      dispatch(login(user));
+    } catch (e) {
+      console.error(e);
+    } finally {
       setLoading(false);
-    }, 4000);
-    console.log(email, password);
+    }
+  };
+  const forgetPassword = () => {
+    router.push('/forgot-password', undefined, { shallow: true });
   };
   return (
     <Modal
@@ -91,9 +117,9 @@ const AuthModal: FunctionComponent<{ onClose: () => void }> = ({ onClose }) => {
             />
 
             <div className="mt-3 flex flex-col items-end justify-between">
-              <Link href="/forgot-password">
+              <div onClick={forgetPassword}>
                 <a className="text-info text-sm">Quên mật khẩu?</a>
-              </Link>
+              </div>
               <AuthSubmitButton
                 isLoading={isLoading}
                 width="100%"

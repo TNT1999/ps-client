@@ -19,7 +19,7 @@ type SelectedProduct = {
   product: Product;
 };
 type Search = {
-  keywork: string;
+  keyword: string;
   searchProducts: Array<string>;
 };
 interface HomeState {
@@ -42,7 +42,7 @@ const initialState = {
     product: null
   },
   search: {
-    keywork: null,
+    keyword: null,
     searchProducts: []
   }
 } as unknown as HomeState;

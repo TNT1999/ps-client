@@ -150,6 +150,7 @@
 // export default new Api();
 
 import axios from 'axios';
+import { isServer } from './misc';
 
 const axiosClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api',
@@ -161,6 +162,7 @@ const axiosClient = axios.create({
 });
 
 axiosClient.interceptors.request.use(function (config) {
+  if (isServer()) return config;
   const token = localStorage.getItem(process.env.TOKEN_KEY || 'access_token');
   config.headers.Authorization = token ? `Bearer ${token}` : '';
   return config;

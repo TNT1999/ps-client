@@ -9,3 +9,7 @@ export function isJSONResponse(res: Response): boolean {
   }
   return false;
 }
+
+export function isServer(): boolean {
+  return typeof window === 'undefined';
+}

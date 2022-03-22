@@ -17,7 +17,7 @@ const Price = ['<5tr', '5-10tr', '10-15tr', '15-20tr', '>20tr'];
 const Display = ['<5', '5-5.5', '5.5-6', '>6'];
 const order = ['brand', 'ram', 'storage', 'price', 'display'];
 
-export function formatMoney(money: number) {
+export function formatMoney(money: number | string) {
   return money.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' ₫';
 }
 export function noop(): void {

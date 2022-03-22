@@ -10,7 +10,10 @@ import Spinner from './icons/Spinner.svg';
 import Facebook from './icons/Facebook.svg';
 import Google from './icons/Google.svg';
 import ChevronDown from './icons/ChevronDown.svg';
+import ChevronRight from './icons/ChevronRight.svg';
 
+import Star from './icons/Star.svg';
+import UserCircle from './icons/UserCircle.svg';
 export type Props = SVGAttributes<any>;
 
 export const MailIcon: FunctionComponent<Props> = (props) => (
@@ -41,4 +44,16 @@ export const GoogleIcon: FunctionComponent<Props> = (props) => (
 
 export const ChevronDownIcon: FunctionComponent<Props> = (props) => (
   <ChevronDown {...props} />
+);
+
+export const ChevronRightIcon: FunctionComponent<Props> = (props) => (
+  <ChevronRight {...props} />
+);
+
+export const StarIcon: FunctionComponent<Props> = (props) => (
+  <Star {...props} />
+);
+
+export const UserCircleIcon: FunctionComponent<Props> = (props) => (
+  <UserCircle {...props} />
 );

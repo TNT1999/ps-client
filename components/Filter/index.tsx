@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 import FilterCard from './FilterCard';
 import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';

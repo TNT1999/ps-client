@@ -6,7 +6,7 @@ import { Transition } from '@headlessui/react';
 import { formatMoney } from '../../utils';
 import Link from 'next/link';
 import router from 'next/router';
-import { SearchIcon } from '@assets/icons';
+import { SearchIcon, SpinnerIcon } from '@assets/icons';
 
 type PreviewProduct = {
   name: string;
@@ -139,28 +139,8 @@ const Search: FunctionComponent<IProps> = ({ className }) => {
         className="flex items-center justify-center w-auto min-w-search-button h-auto text-blue p-1 md:p-2 bg-blue-500 rounded rounded-l-none focus:outline-none shadow"
       >
         {isSearching ? (
-          <svg
-            className="animate-spin h-5 w-5 text-white"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            ></circle>
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
-          </svg>
+          <SpinnerIcon className="animate-spin fill-current text-white" />
         ) : (
-          // <SearchIcon className="h-3 md:h-4 text-white" />
           <SearchIcon className="text-white" />
         )}
       </button>
