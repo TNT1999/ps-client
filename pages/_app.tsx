@@ -10,7 +10,7 @@ import { NextComponentType, NextPageContext } from 'next';
 import { Router } from 'next/router';
 import { NextUIProvider } from '@nextui-org/react';
 import { AppTreeType } from 'next/dist/shared/lib/utils';
-import { getMe, login, setCurrentUser, userData } from 'app/slice';
+import { login, setCurrentUser, userData } from 'app/slice';
 import axiosClient from 'utils/api';
 
 function MyApp({ Component, pageProps }: AppProps) {

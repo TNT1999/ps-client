@@ -68,7 +68,7 @@ const SocialLogin: FunctionComponent<{
     params.append('client_id', FB_CLIENT_ID);
     params.append('redirect_uri', `${location.origin}/facebook_login`);
     params.append('state', token);
-    window.open(url, '', getPopupOptions());
+    window.open(url.toString(), '', getPopupOptions());
   };
 
   return (

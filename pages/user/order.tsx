@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import { FunctionComponent } from 'react';
 
 const Order: FunctionComponent<any> = (props: any) => {
   return (

@@ -1,3 +1,4 @@
+import { userData } from '@app/slice';
 import LoadingOverlay from '@components/common/LoadingOverlay';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -13,7 +14,7 @@ const FacebookCallbackPage: FunctionComponent = () => {
     }
     try {
       const code = router.query.code;
-      const userData = await axiosClient.post('auth/facebook', {
+      const userData: userData = await axiosClient.post('auth/facebook', {
         code
       });
       window.opener.handleThirdPartyLogin(userData);
