@@ -1,10 +1,10 @@
 import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import React, { useEffect, useState } from 'react';
-import Header from '../components/header';
+import Header from '@components/header';
 import NextNprogress from 'nextjs-progressbar';
 import { Provider } from 'react-redux';
-import { initializeStore, Store, useStore } from '../app/store';
+import { initializeStore, Store, useStore } from '@app/store';
 import App from 'next/app';
 import { NextComponentType, NextPageContext } from 'next';
 import { Router } from 'next/router';

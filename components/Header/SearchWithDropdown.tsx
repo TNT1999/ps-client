@@ -9,7 +9,7 @@ import { KeyboardEvent } from 'react';
 import debounce from 'lodash/debounce';
 import axios from 'axios';
 import { Transition } from '@headlessui/react';
-import { formatMoney } from '../../utils';
+import { formatMoney } from '@utils/index';
 import Link from 'next/link';
 import router from 'next/router';
 import { SearchIcon, SpinnerIcon } from '@assets/icons';
