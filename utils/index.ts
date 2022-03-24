@@ -18,7 +18,10 @@ const Display = ['<5', '5-5.5', '5.5-6', '>6'];
 const order = ['brand', 'ram', 'storage', 'price', 'display'];
 
 export function formatMoney(money: number | string) {
-  return money.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' ₫';
+  if (typeof money === 'number') {
+    money = money.toString();
+  }
+  return money.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' ₫';
 }
 export function noop(): void {
   return;

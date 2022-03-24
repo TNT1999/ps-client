@@ -3,7 +3,7 @@ import { Modal } from '@components/common/modal/Modal';
 import { noop } from 'lodash';
 import Link from 'next/link';
 import { FormEvent, FunctionComponent, useEffect, useState } from 'react';
-import Divider from '@components/common/divider';
+import Divider from '@components/common/Divider';
 import AuthInput from './AuthInput';
 import AuthSubmitButton from './AuthSubmitButton';
 import PasswordInput from './PasswordInput';

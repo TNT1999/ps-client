@@ -27,7 +27,7 @@ const ProductCarousel: FunctionComponent<Props> = ({ thumbnails }) => {
         {thumbnails.map((thumbnail, index) => (
           <SwiperSlide
             key={index}
-            className="p-5 flex items-center border overflow-hidden bg-white rounded-xl border-gray-300"
+            className="p-5 flex items-center border overflow-hidden bg-white rounded-md border-gray-300"
           >
             <img
               src={thumbnail}

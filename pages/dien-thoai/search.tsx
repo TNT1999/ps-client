@@ -4,14 +4,14 @@ import ProductCard from '@components/product-card';
 import axios from 'axios';
 import useSWR from 'swr';
 import { NextPage, NextPageContext } from 'next';
-import { Product } from 'types';
+import { ProductType } from 'types';
 
 // import { Store } from '../../app/store';
 // import { setListHomeProduct, setFilter } from '../../app/slice/homeSlice';
 // import { convertQueryNextToFilterArray } from '../../utils';
 
 type Props = {
-  products: Product[];
+  products: ProductType[];
   // keyword:string
 };
 
@@ -38,10 +38,10 @@ const SearchPage: NextPage<Props> = ({ products = [] }) => {
       </Head>
       <main className="flex justify-center overflow-auto h-main">
         <div className="max-w-screen-xl w-full">
-          <div className="py-6 px-4 justify-center flex gap-x-4">
+          <div className="py-4 px-10 justify-center flex gap-x-4">
             {/* <Filter className='flex-4' /> */}
             <div className="flex-19 h-full w-full flex flex-wrap">
-              {data.map((product: Product, index: number) => {
+              {data.map((product: ProductType, index: number) => {
                 return <ProductCard key={index} product={product} />;
               })}
             </div>
