@@ -50,7 +50,9 @@ const Header: FunctionComponent<IProps> = ({ cartNumber = 0 }) => {
                 className="text-sm text-gray-700"
                 onClick={() => setAuthModalVisible(true)}
               >
-                Đăng nhập | Đăng ký
+                <span>Đăng nhập</span>
+                <span> | </span>
+                <span>Đăng ký</span>
               </button>
               {authModalVisible && (
                 <AuthModal onClose={() => setAuthModalVisible(false)} />

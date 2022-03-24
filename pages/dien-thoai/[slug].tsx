@@ -4,20 +4,20 @@ import { Store } from '@app/store';
 import { setSelectedProduct } from '@app/slice/homeSlice';
 import Breadcrumb from '@components/breadcrumb';
 import axiosClient from 'utils/api';
-import dynamic from 'next/dynamic';
 import ProductCarousel from '@components/carousel';
-import { DetailProduct } from 'types';
-
-// const ProductCarousel = dynamic(() => import('@components/carousel'), {
-//   ssr: false
-// });
+import { DetailProductType } from 'types';
+import DeviceInfo from '@components/product-detail/DeviceInfo';
+import Divider from '@components/common/Divider';
+import MainInfo from '@components/product-detail/MainInfo';
+import RatingAndCommentBox from '@components/product-detail/RatingAndCommentBox';
+import QuestionBox from '@components/product-detail/QuestionBox';
 
 type Props = {
-  product: DetailProduct;
+  product: DetailProductType;
 };
 
 const Phone: NextPage<Props> = ({ product }) => {
-  const { name, slug } = product;
+  const { name, slug, attrs } = product;
   return (
     <>
       <Head>
@@ -29,7 +29,8 @@ const Phone: NextPage<Props> = ({ product }) => {
         <div className="max-w-screen-xl w-full">
           <div className="py-4 px-10 justify-center flex-col flex gap-x-4">
             <Breadcrumb productName={name} slug={slug} />
-            <div>
+            <Divider className="mt-0 mb-4" />
+            <div className="flex">
               <div className="detail_product_left w-96">
                 <div className="product-gallery">
                   <ProductCarousel
@@ -46,6 +47,20 @@ const Phone: NextPage<Props> = ({ product }) => {
                   />
                 </div>
               </div>
+              <div className="flex flex-1 justify-between">
+                <div className="w-full py-2 px-8">
+                  <MainInfo product={product} />
+                </div>
+                <div>
+                  <DeviceInfo attrs={attrs} />
+                </div>
+              </div>
+            </div>
+            <div>
+              <RatingAndCommentBox />
+            </div>
+            <div>
+              <QuestionBox />
             </div>
           </div>
         </div>

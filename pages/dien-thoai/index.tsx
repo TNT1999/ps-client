@@ -9,10 +9,11 @@ import { setListHomeProduct, setFilter } from '@app/slice/homeSlice';
 import { Query2FilterArray } from '@utils/index';
 import isEmpty from 'lodash/isEmpty';
 import axiosClient from 'utils/api';
-import { Product } from 'types';
+import { ProductType } from 'types';
+import LoadingOverlay from '@components/common/LoadingOverlay';
 
 type Props = {
-  products: Product[];
+  products: ProductType[];
 };
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
@@ -30,7 +31,7 @@ const Home: NextPage<Props> = ({ products = [] }) => {
       revalidateOnMount: false
     }
   );
-  if (!data) return <div>Loading...</div>;
+  if (!data) return <LoadingOverlay />;
   if (error) return <div>there is an error!</div>;
 
   return (
@@ -42,10 +43,10 @@ const Home: NextPage<Props> = ({ products = [] }) => {
       </Head>
       <main className="flex justify-center overflow-auto h-main">
         <div className="max-w-screen-xl w-full">
-          <div className="py-6 px-4 justify-center flex gap-x-4">
+          <div className="py-4 px-10 justify-center flex gap-x-4">
             <Filter className="flex-4 max-w-[200px]" />
             <div className="flex-19 h-full w-full flex flex-wrap gap-2">
-              {data.map((product: Product, index: number) => {
+              {data.map((product: ProductType, index: number) => {
                 return <ProductCard key={index} product={product} />;
               })}
             </div>

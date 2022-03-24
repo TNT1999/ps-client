@@ -1,4 +1,4 @@
-export type Product = {
+export type ProductType = {
   id: string;
   name: string;
   lname: string;
@@ -10,8 +10,11 @@ export type Product = {
   isHot: boolean;
   isMainProduct: boolean;
 };
-
-export type DetailProduct = {
+export type DeviceInfoType = {
+  name: string;
+  value: string;
+};
+export type DetailProductType = {
   id: string;
   cat: string;
   brand: string;
@@ -28,4 +31,21 @@ export type DetailProduct = {
   createdAt: Date;
   updatedAt: Date;
   linkVariants: string;
+  attrs: DeviceInfoType[];
+  colorOptions: ColorOption[];
+};
+
+export type Variant = {
+  name: string;
+  price: string;
+  product: string;
+  slug: string;
+};
+
+export type ColorOption = {
+  name: string;
+  id: string;
+  price: string;
+  amount: string;
+  images: string[];
 };

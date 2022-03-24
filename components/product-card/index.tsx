@@ -1,11 +1,11 @@
 import React, { FunctionComponent } from 'react';
 import Link from 'next/link';
-import Rating from '@components/common/rating';
+import Rating from '@components/common/Rating';
 import { formatMoney } from '@utils/index';
-import { Product } from 'types';
+import { ProductType } from 'types';
 
 type Props = {
-  product: Product;
+  product: ProductType;
 };
 
 const ProductCard: FunctionComponent<Props> = ({ product }) => {

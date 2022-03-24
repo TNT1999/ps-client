@@ -11,9 +11,11 @@ import Facebook from './icons/Facebook.svg';
 import Google from './icons/Google.svg';
 import ChevronDown from './icons/ChevronDown.svg';
 import ChevronRight from './icons/ChevronRight.svg';
-
+import Clock from './icons/Clock.svg';
 import Star from './icons/Star.svg';
 import UserCircle from './icons/UserCircle.svg';
+import Send from './icons/Send.svg';
+import MessageSquare from './icons/MessageSquare.svg';
 export type Props = SVGAttributes<any>;
 
 export const MailIcon: FunctionComponent<Props> = (props) => (
@@ -56,4 +58,13 @@ export const StarIcon: FunctionComponent<Props> = (props) => (
 
 export const UserCircleIcon: FunctionComponent<Props> = (props) => (
   <UserCircle {...props} />
+);
+export const ClockIcon: FunctionComponent<Props> = (props) => (
+  <Clock {...props} />
+);
+export const SendIcon: FunctionComponent<Props> = (props) => (
+  <Send {...props} />
+);
+export const MessageSquareIcon: FunctionComponent<Props> = (props) => (
+  <MessageSquare {...props} />
 );
