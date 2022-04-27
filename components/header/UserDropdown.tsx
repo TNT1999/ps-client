@@ -1,6 +1,6 @@
 import React, { Fragment, FunctionComponent } from 'react';
 import { Menu, Transition } from '@headlessui/react';
-import { ChevronDownIcon, UserCircleIcon } from '@assets/icons';
+import { ChevronDownIcon, UserIcon } from '@assets/icons';
 import { useAppDispatch } from 'app/store';
 import { logout } from 'app/slice';
 
@@ -15,13 +15,13 @@ const UserDropdown: FunctionComponent<{
     <Menu as="div" className="relative">
       <Menu.Button className="justify-center py-2 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
         <div className="flex items-center pl-2">
-          <UserCircleIcon className="text-gray-700" />
+          <UserIcon className="text-white mr-1" />
           {name && (
             <>
-              <span className="max-w-name-user text-sm hidden truncate flex-auto md:block text-gray-800">
+              <span className="max-w-name-user text-sm hidden truncate flex-auto md:block text-white">
                 {name}
               </span>
-              <ChevronDownIcon className="hidden md:block md:h-4 text-gray-600 ml-1" />{' '}
+              <ChevronDownIcon className="hidden md:block md:h-4 text-white ml-1" />{' '}
             </>
           )}
         </div>

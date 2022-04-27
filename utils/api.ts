@@ -161,6 +161,10 @@ const axiosClient = axios.create({
   }
 });
 
+const saveToken = (a: string, r: string) => {
+  localStorage.setItem(process.env.TOKEN_KEY || 'access_token', a);
+  localStorage.setItem(process.env.REFRESH_KEY || 'refresh_token', r);
+};
 axiosClient.interceptors.request.use(function (config) {
   if (isServer()) return config;
   const token = localStorage.getItem(process.env.TOKEN_KEY || 'access_token');
@@ -175,8 +179,27 @@ axiosClient.interceptors.response.use(
     }
     return response;
   },
-  (error) => {
-    throw error;
+  async (error) => {
+    const originalConfig = error.config;
+    const status = error.response.status;
+    const message = error.response.data.error.message;
+    if (status === 401 && message === 'jwt expired' && !originalConfig._retry) {
+      originalConfig._retry = true;
+      try {
+        const { accessToken, refreshToken }: any = await axiosClient.post<any>(
+          'auth/refreshToken',
+          {
+            refreshToken: localStorage.getItem(
+              process.env.REFRESH_KEY || 'refresh_token'
+            )
+          }
+        );
+        saveToken(accessToken, refreshToken);
+        return axiosClient(error.response.config);
+      } catch (err) {
+        return Promise.reject(error);
+      }
+    }
   }
 );
 

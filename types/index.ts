@@ -8,6 +8,7 @@ export type ProductType = {
   reviewCount: number;
   ratingValue: number;
   isHot: boolean;
+  discount: number;
   isMainProduct: boolean;
 };
 export type DeviceInfoType = {
@@ -30,15 +31,23 @@ export type DetailProductType = {
   isHot: boolean;
   createdAt: Date;
   updatedAt: Date;
-  linkVariants: string;
+  discount: number;
+  variantsId: string;
+  variants: VariantType;
   attrs: DeviceInfoType[];
   colorOptions: ColorOption[];
+  comments: CommentType[];
+  reviews: ReviewType[];
 };
+export type VariantType = {
+  id: string;
+  variants: Variant[];
+};
+export type ReviewType = any;
 
 export type Variant = {
   name: string;
   price: string;
-  product: string;
   slug: string;
 };
 
@@ -49,3 +58,37 @@ export type ColorOption = {
   amount: string;
   images: string[];
 };
+
+export type CommentType = {
+  id: string;
+  productId: string;
+  userId: string;
+  author: {
+    id: string;
+    name: string;
+  };
+  content: object[];
+  createdAt: string;
+  updatedAt: string;
+  level: number;
+  replies: CommentType[];
+  rootCommentId: string;
+  replyToCommentId: string;
+  replyToUser?: string;
+};
+
+// export type CommentReplyType = {
+//   id: string;
+//   productId: string;
+//   userId: string;
+//   author: {
+//     id: string;
+//     name: string;
+//   };
+//   content: string;
+//   createdAt: string;
+//   updatedAt: string;
+//   level: number;
+
+//   rootCommentId?: string;
+// };

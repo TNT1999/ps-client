@@ -7,7 +7,7 @@ type IProps = {
 };
 const Breadcrumb: FunctionComponent<IProps> = ({ productName, slug }) => {
   return (
-    <ul className="flex text-gray-600 text-xs lg:text-sm">
+    <ul className="flex text-gray-600 text-xs lg:text-sm pb-4">
       <li className="inline-flex items-center m-0">
         <Link href="/dien-thoai">
           <a>Điện thoại</a>

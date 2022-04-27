@@ -18,7 +18,11 @@ function initStore(preloadedState?: RootState) {
   return configureStore({
     reducer,
     // devTools: process.env.NODE_ENV !== 'production',
-    // ...(process.env.NODE_ENV === 'production' ? {} : { middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger) }),
+    // ...(process.env.NODE_ENV === 'production'
+    //   ? {}
+    //   :
+
+    // middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger),
     preloadedState
   });
 }

@@ -31,7 +31,9 @@ const FilterCard: FunctionComponent<IProps> = ({
   // }
 
   return (
-    <div className={`border rounded mb-4 last:mb-0 ${className || ''}`}>
+    <div
+      className={`border rounded mb-4 last:mb-0 bg-white ${className || ''}`}
+    >
       <span className="text-gray-700 text-sm font-medium py-2 px-3 border-b w-full block">
         {title}
       </span>
