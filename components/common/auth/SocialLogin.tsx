@@ -60,14 +60,14 @@ const SocialLogin: FunctionComponent<{
 
   const loginWithFacebook = () => {
     resetMessage();
-    const token = nanoid(64);
+    // const token = nanoid(64);
     const facebookAuthBaseURL = 'https://www.facebook.com/v13.0/dialog/oauth';
     const url = new URL(facebookAuthBaseURL);
     const params = url.searchParams;
     const FB_CLIENT_ID = process.env.NEXT_PUBLIC_FB_CLIENT_ID || '';
     params.append('client_id', FB_CLIENT_ID);
     params.append('redirect_uri', `${location.origin}/facebook_login`);
-    params.append('state', token);
+    // params.append('state', token);
     window.open(url.toString(), '', getPopupOptions());
   };
 

@@ -1,12 +1,13 @@
 /* eslint-disable no-constant-condition */
 import { removeCart } from '@app/slice/cartSlice';
-import { RootState, useAppDispatch } from '@app/store';
+import { RootState, Store, useAppDispatch } from '@app/store';
 import { TrashIcon } from '@assets/icons';
 import Layout from '@components/common/Layout';
 import NumberInput from '@components/common/NumberInput';
 import NumberQuantity from '@components/common/NumberQuantity';
 import axiosClient from '@utils/api';
 import { formatMoney } from '@utils/index';
+import { NextPageContext } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { FunctionComponent, useEffect, useState } from 'react';
@@ -32,7 +33,7 @@ type Cart = {
   listProduct: CartType[];
 };
 type Props = {
-  cart: Cart;
+  cart: any;
 };
 const CartPage: FunctionComponent<Props> = () => {
   const cart: Cart = useSelector((state: RootState) => state.cart);
@@ -270,7 +271,7 @@ const CartPage: FunctionComponent<Props> = () => {
                         Tổng tiền
                       </span>
                       <div>
-                        {0 !== 1 ? (
+                        {false ? (
                           <div className="text-[15px] font-normal text-right text-red-600">
                             Vui lòng chọn sản phẩm
                           </div>
@@ -296,4 +297,18 @@ const CartPage: FunctionComponent<Props> = () => {
   );
 };
 
+CartPage.getInitialProps = async (
+  context: NextPageContext & { store: Store }
+) => {
+  // context.store.dispatch(setFilter(filter));
+  try {
+    const cart: any = await axiosClient.get('/cart');
+    // context.store.dispatch(setListHomeProduct(products));
+    return { cart };
+  } catch (err) {
+    return {
+      cart: []
+    };
+  }
+};
 export default CartPage;
