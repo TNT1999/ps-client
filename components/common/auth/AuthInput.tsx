@@ -1,4 +1,4 @@
-import { Props } from '@assets/icons';
+import { PropsSVG } from '@assets/icons';
 import classNames from 'classnames';
 import React, { FunctionComponent, ChangeEvent } from 'react';
 
@@ -8,7 +8,7 @@ const AuthInput: FunctionComponent<{
   message?: string;
   value: string;
   placeholder: string;
-  icon: FunctionComponent<Props>;
+  icon: FunctionComponent<PropsSVG>;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }> = ({
   type = 'text',

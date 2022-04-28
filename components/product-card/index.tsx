@@ -24,9 +24,7 @@ const ProductCard: FunctionComponent<Props> = ({ product }) => {
               <div className="flex flex-col">
                 <div className="font-medium text-red-600 text-base">
                   {discount ? (
-                    <span>
-                      {formatMoney(parseInt(price) * (100 - discount) * 0.01)}
-                    </span>
+                    <span>{formatMoney(price * (100 - discount) * 0.01)}</span>
                   ) : (
                     <span>{formatMoney(price)}</span>
                   )}

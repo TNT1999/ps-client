@@ -1,29 +1,30 @@
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
-import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
+import React, { FunctionComponent, SetStateAction, useState } from 'react';
 import { Swiper, SwiperSlide, useSwiper } from 'swiper/react';
 import { Navigation, Thumbs } from 'swiper';
 import { ChevronLeftIcon, ChevronRightIcon } from '@assets/icons';
 import { DetailProductType } from 'types';
+import { SwiperEvents, SwiperModule, SwiperOptions } from 'swiper/types';
 
 type Props = {
   swiperWrapperClass?: string;
   swiperSliderClass?: string;
   images: string[];
-  handleRef: (carousel) => void;
+  handleRef: (carousel: any) => void;
 };
 
 const ProductCarousel: FunctionComponent<Props> = ({ images, handleRef }) => {
-  const [activeThumb, setActiveThumb] = useState(null);
-  const [swiper, setSwiper] = useState(null);
+  const [activeThumb, setActiveThumb] = useState<any>(null);
+  const [swiper, setSwiper] = useState<any>(null);
   const navigationPrevRef = React.useRef(null);
   const navigationNextRef = React.useRef(null);
 
   return (
     <>
       <Swiper
-        onSwiper={(instance) => {
+        onSwiper={(instance: SetStateAction<any>) => {
           setSwiper(instance);
           handleRef(instance);
         }}
@@ -54,7 +55,7 @@ const ProductCarousel: FunctionComponent<Props> = ({ images, handleRef }) => {
         <div
           className="absolute left-1 right-auto top-1/2 cursor-pointer text-[#007aff] z-10 group-hover:block hidden duration-200"
           ref={navigationPrevRef}
-          onClick={() => swiper.slidePrev()}
+          onClick={() => swiper && swiper.slidePrev()}
         >
           <ChevronLeftIcon className="h-8" />
         </div>

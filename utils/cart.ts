@@ -1,11 +1,11 @@
-export function save2localStorage(product) {
+export function save2localStorage(product: any) {
   const lc = localStorage.getItem('cart');
   let localCart = [];
   if (lc) {
     localCart = JSON.parse(lc);
   }
   const indexProduct = localCart.findIndex(
-    (localProduct) =>
+    (localProduct: any) =>
       localProduct.id === product.id &&
       localProduct.option.id === product.option.id
   );

@@ -1,4 +1,4 @@
-import { EyeIcon, EyeOffIcon, Props } from '@assets/icons';
+import { EyeIcon, EyeOffIcon, PropsSVG } from '@assets/icons';
 import classNames from 'classnames';
 import { ChangeEvent, FunctionComponent, useState } from 'react';
 import { isEmpty } from 'utils/string';
@@ -7,7 +7,7 @@ const PasswordInput: FunctionComponent<{
   password: string;
   errorMessage: string;
   placeholder: string;
-  icon: FunctionComponent<Props>;
+  icon: FunctionComponent<PropsSVG>;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }> = ({ password, errorMessage, placeholder, icon, onChange }) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);

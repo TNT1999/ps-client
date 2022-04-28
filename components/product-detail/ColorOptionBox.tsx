@@ -44,7 +44,7 @@ const ColorOptionBox: FunctionComponent<Props> = ({
               </div>
               <div className="text-red-600 font-medium text-sm">
                 {discount
-                  ? formatMoney(parseInt(item.price) * (100 - discount) * 0.01)
+                  ? formatMoney(item.price * (100 - discount) * 0.01)
                   : formatMoney(item.price)}
               </div>
             </div>

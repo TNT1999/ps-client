@@ -1,4 +1,4 @@
-import { userData } from '@app/slice';
+import { UserData } from '@app/slice';
 import LoadingOverlay from '@components/common/LoadingOverlay';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -14,7 +14,7 @@ const FacebookCallbackPage: FunctionComponent = () => {
     }
     try {
       const code = router.query.code;
-      const userData: userData = await axiosClient.post('auth/facebook', {
+      const userData: UserData = await axiosClient.post('auth/facebook', {
         code
       });
       console.log(userData);

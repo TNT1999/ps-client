@@ -2,7 +2,21 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { save2localStorage } from '@utils/cart';
 import { isServer } from '@utils/misc';
 
-const initialState = {
+export type CartItem = {
+  discount: number;
+  id: string;
+  name: string;
+  option: {
+    id: string;
+    name: string;
+    amount: number;
+    price: number;
+    images: string[];
+  };
+  quantity: number;
+  slug: string;
+};
+const initialState: { listProduct: CartItem[] } = {
   listProduct: []
   // address_shipping: null,
   // paymentType: 'COD'
@@ -13,8 +27,9 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     restoreCartFromLocalStorage(state) {
-      const localCart = JSON.parse(localStorage.getItem('cart')) || [];
-      state.listProduct = localCart;
+      const localCart = localStorage.getItem('cart');
+      const cart = localCart ? JSON.parse(localCart) : [];
+      state.listProduct = cart;
     },
     add2Cart(state, action: PayloadAction<any>) {
       save2localStorage(action.payload);

@@ -10,7 +10,6 @@ import { Router } from 'next/router';
 import { NextUIProvider } from '@nextui-org/react';
 import { AppTreeType } from 'next/dist/shared/lib/utils';
 import { getMe } from 'app/slice';
-import TooltipHolder from '@components/common/TooltipHolder';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { restoreCartFromLocalStorage } from '@app/slice/cartSlice';
@@ -40,7 +39,6 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <Provider store={store}>
       {/* <NextUIProvider> */}
-      <TooltipHolder />
       <ToastContainer />
       <NextNprogress
         color="#3B82F6"

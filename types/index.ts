@@ -4,7 +4,7 @@ export type ProductType = {
   lname: string;
   slug: string;
   thumbnail: string;
-  price: string;
+  price: number;
   reviewCount: number;
   ratingValue: number;
   isHot: boolean;
@@ -47,15 +47,15 @@ export type ReviewType = any;
 
 export type Variant = {
   name: string;
-  price: string;
+  price: number;
   slug: string;
 };
 
 export type ColorOption = {
   name: string;
   id: string;
-  price: string;
-  amount: string;
+  price: number;
+  amount: number;
   images: string[];
 };
 

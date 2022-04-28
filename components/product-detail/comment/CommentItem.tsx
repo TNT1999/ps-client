@@ -18,7 +18,7 @@ type Props = {
   isReply: boolean;
   showInputReplyCommentId: string;
   setShowReply: (id: string) => () => void;
-  marginLeft: string;
+  marginLeft?: string;
 };
 const CommentItem: FunctionComponent<Props> = ({
   comment,
@@ -27,7 +27,7 @@ const CommentItem: FunctionComponent<Props> = ({
   marginLeft
 }) => {
   const offset = comment.level >= 1 ? '32px' : '0px';
-  const initialValue: Descendant[] = useMemo(
+  const initialValue = useMemo(
     () => [
       {
         type: 'p',
@@ -36,7 +36,7 @@ const CommentItem: FunctionComponent<Props> = ({
     ],
     []
   );
-  const [commentReply, setCommentReply] = useState<Descendant[]>(initialValue);
+  const [commentReply, setCommentReply] = useState<any>(initialValue);
   const currentUser: UserInfo = useSelector(
     (state: RootState) => state.auth.user
   );
