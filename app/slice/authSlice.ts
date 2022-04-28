@@ -1,44 +1,58 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import axiosClient from '@utils/api';
 
-export type userData = {
-  token: string;
-  user: Record<string, string>;
+export type UserInfo = {
+  id: string;
+  name: string;
+  email: string;
+  roles: string[];
+} | null;
+export type UserData = {
+  accessToken: string;
+  refreshToken: string;
+  user: UserInfo;
 };
 
 export type AuthState = {
-  user: Record<string, string> | undefined;
+  user: UserInfo;
 };
 const initialAuthState: AuthState = {
-  user: undefined
+  user: null
 };
 
+export const getMe = createAsyncThunk('auth/getMe', async () => {
+  const user: UserInfo = await axiosClient.get('auth/me');
+  return user;
+});
+
+// export const logOut = createAsyncThunk('auth/logOut', async () => {});
 const authSlice = createSlice({
   name: 'auth',
   initialState: initialAuthState,
   reducers: {
-    login(state, action: PayloadAction<userData>) {
+    login(state, action: PayloadAction<UserData>) {
       localStorage.setItem(
         process.env.TOKEN_KEY || 'access_token',
-        action.payload.token
+        action.payload.accessToken
+      );
+      localStorage.setItem(
+        process.env.REFRESH_KEY || 'refresh_token',
+        action.payload.refreshToken
       );
       state.user = action.payload.user;
     },
     logout(state) {
       localStorage.removeItem(process.env.TOKEN_KEY || 'access_token');
-      state.user = undefined;
-    },
-    setCurrentUser(state, action: PayloadAction<Record<string, string>>) {
-      console.log('getMe');
-      state.user = action.payload;
+      localStorage.removeItem(process.env.REFRESH_KEY || 'refresh_token');
+      state.user = null;
     }
-    // decrement(state) {
-    //   state.value--
-    // },
-    // incrementByAmount(state, action: PayloadAction<number>) {
-    //   state.value += action.payload
-    // },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(getMe.fulfilled, (state, action) => {
+      state.user = action.payload;
+    });
   }
 });
 
-export const { login, logout, setCurrentUser } = authSlice.actions;
+export const { login, logout } = authSlice.actions;
 export default authSlice.reducer;

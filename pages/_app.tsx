@@ -1,7 +1,6 @@
-import '../styles/globals.css';
+import '../styles/main.css';
 import type { AppProps } from 'next/app';
 import React, { useEffect, useState } from 'react';
-import Header from '@components/header';
 import NextNprogress from 'nextjs-progressbar';
 import { Provider } from 'react-redux';
 import { initializeStore, Store, useStore } from '@app/store';
@@ -10,8 +9,11 @@ import { NextComponentType, NextPageContext } from 'next';
 import { Router } from 'next/router';
 import { NextUIProvider } from '@nextui-org/react';
 import { AppTreeType } from 'next/dist/shared/lib/utils';
-import { login, setCurrentUser, userData } from 'app/slice';
-import axiosClient from 'utils/api';
+import { getMe } from 'app/slice';
+import TooltipHolder from '@components/common/TooltipHolder';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { restoreCartFromLocalStorage } from '@app/slice/cartSlice';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const store = useStore(pageProps.initialReduxState);
@@ -23,8 +25,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       return setUserLoaded(true);
     }
     try {
-      const userData: Record<string, string> = await axiosClient.get('auth/me');
-      store.dispatch(setCurrentUser(userData));
+      const currentUser = await store.dispatch(getMe()).unwrap();
     } catch (e) {
       console.error(e);
     } finally {
@@ -33,21 +34,23 @@ function MyApp({ Component, pageProps }: AppProps) {
   };
   useEffect(() => {
     getUserData();
+    store.dispatch(restoreCartFromLocalStorage());
+    // restore cart
   }, []);
   return (
     <Provider store={store}>
-      <NextUIProvider>
-        <NextNprogress
-          color="#3B82F6"
-          startPosition={0.3}
-          stopDelayMs={200}
-          height={2}
-          showOnShallow={false}
-        />
-        <Header />
-        <div className="pt-16"></div>
-        <Component {...pageProps} />
-      </NextUIProvider>
+      {/* <NextUIProvider> */}
+      <TooltipHolder />
+      <ToastContainer />
+      <NextNprogress
+        color="#3B82F6"
+        startPosition={0.3}
+        stopDelayMs={200}
+        height={2}
+        showOnShallow={false}
+      />
+      <Component {...pageProps} />
+      {/* </NextUIProvider> */}
     </Provider>
   );
 }

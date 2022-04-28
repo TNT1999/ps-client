@@ -1,31 +1,26 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { RootState } from '@app/store';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import axiosClient from '@utils/api';
+import isEmpty from 'lodash/isEmpty';
+import omit from 'lodash/omit';
+import { CommentType, DetailProductType, ProductType } from 'types';
 
-type Product = {
-  name: string;
-  slug: string;
-  thumbnail: string;
-  price: any;
-  reviewCount: number;
-  ratingValue: number;
-};
 type Filter = {
-  price: Array<string>;
-  brand: Array<string>;
-  ram: Array<string>;
-  storage: Array<string>;
-  display: Array<string>;
+  price: string[];
+  brand: string[];
+  ram: string[];
+  storage: string[];
+  display: string[];
 };
-type SelectedProduct = {
-  product: Product;
-};
+
 type Search = {
   keyword: string;
-  searchProducts: Array<string>;
+  searchProducts: string[];
 };
 interface HomeState {
-  product: Array<Product>;
+  product: ProductType[];
   filter: Filter;
-  selectedProduct: SelectedProduct;
+  selectedProduct: DetailProductType;
   search: Search;
 }
 
@@ -38,9 +33,7 @@ const initialState = {
     storage: [],
     display: []
   },
-  selectedProduct: {
-    product: null
-  },
+  selectedProduct: null,
   search: {
     keyword: null,
     searchProducts: []
@@ -51,11 +44,20 @@ type FilterStore = {
   brand: string;
   ram: string;
 };
+
+export const postComment = createAsyncThunk(
+  'product/postComment',
+  async (data: any) => {
+    const comment: CommentType = await axiosClient.post('/comment', data);
+    return comment;
+  }
+);
+
 const homeSlice = createSlice({
   name: 'home',
   initialState,
   reducers: {
-    setListHomeProduct(state, action: PayloadAction<Array<Product>>) {
+    setListHomeProduct(state, action: PayloadAction<ProductType[]>) {
       state.product = action.payload;
     },
     setFilter(state, action: PayloadAction<any>) {
@@ -67,7 +69,7 @@ const homeSlice = createSlice({
         }
       }
     },
-    setFilterBrand(state, action: PayloadAction<Array<string> | string>) {
+    setFilterBrand(state, action: PayloadAction<string[] | string>) {
       if (Array.isArray(action.payload)) {
         state.filter.brand = action.payload;
         return;
@@ -80,7 +82,7 @@ const homeSlice = createSlice({
       }
       state.filter.brand.push(action.payload);
     },
-    setFilterRam(state, action: PayloadAction<Array<string> | string>) {
+    setFilterRam(state, action: PayloadAction<string[] | string>) {
       if (Array.isArray(action.payload)) {
         state.filter.ram = action.payload;
         return;
@@ -93,7 +95,7 @@ const homeSlice = createSlice({
       }
       state.filter.ram.push(action.payload);
     },
-    setFilterStorage(state, action: PayloadAction<Array<string> | string>) {
+    setFilterStorage(state, action: PayloadAction<string[] | string>) {
       if (Array.isArray(action.payload)) {
         state.filter.storage = action.payload;
         return;
@@ -106,7 +108,7 @@ const homeSlice = createSlice({
       }
       state.filter.storage.push(action.payload);
     },
-    setFilterDisplay(state, action: PayloadAction<Array<string> | string>) {
+    setFilterDisplay(state, action: PayloadAction<string[] | string>) {
       if (Array.isArray(action.payload)) {
         state.filter.display = action.payload;
         return;
@@ -119,7 +121,7 @@ const homeSlice = createSlice({
       }
       state.filter.display.push(action.payload);
     },
-    setFilterPrice(state, action: PayloadAction<Array<string> | string>) {
+    setFilterPrice(state, action: PayloadAction<string[] | string>) {
       if (Array.isArray(action.payload)) {
         state.filter.price = action.payload;
         return;
@@ -133,12 +135,36 @@ const homeSlice = createSlice({
       state.filter.price.push(action.payload);
     },
 
-    setSelectedProduct(state, action: PayloadAction<any>) {
+    setSelectedProduct(state, action: PayloadAction<DetailProductType>) {
       state.selectedProduct = action.payload;
     },
     setSearch(state, action: PayloadAction<any>) {
       state.search = action.payload;
     }
+  },
+  extraReducers: (builder) => {
+    builder.addCase(postComment.fulfilled, (state, action) => {
+      const comment = action.payload;
+      const { replyToCommentId: isReply, rootCommentId } = comment;
+      if (!state.selectedProduct.comments) {
+        state.selectedProduct.comments = [];
+      }
+      if (isReply) {
+        // is reply
+        const commentIndex = state.selectedProduct.comments.findIndex(
+          (comment) => comment.id === rootCommentId
+        );
+        if (commentIndex === -1) {
+          return;
+        }
+        if (!state.selectedProduct.comments[commentIndex].replies) {
+          state.selectedProduct.comments[commentIndex].replies = [];
+        }
+        state.selectedProduct.comments[commentIndex].replies.push(comment);
+        return;
+      }
+      state.selectedProduct.comments.unshift(comment);
+    });
   }
 });
 

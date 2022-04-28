@@ -1,54 +1,83 @@
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
-import React, { FunctionComponent, useState } from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
+import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
+import { Swiper, SwiperSlide, useSwiper } from 'swiper/react';
 import { Navigation, Thumbs } from 'swiper';
+import { ChevronLeftIcon, ChevronRightIcon } from '@assets/icons';
+import { DetailProductType } from 'types';
 
 type Props = {
-  thumbnails: string[];
   swiperWrapperClass?: string;
   swiperSliderClass?: string;
+  images: string[];
+  handleRef: (carousel) => void;
 };
 
-const ProductCarousel: FunctionComponent<Props> = ({ thumbnails }) => {
+const ProductCarousel: FunctionComponent<Props> = ({ images, handleRef }) => {
   const [activeThumb, setActiveThumb] = useState(null);
+  const [swiper, setSwiper] = useState(null);
+  const navigationPrevRef = React.useRef(null);
+  const navigationNextRef = React.useRef(null);
+
   return (
     <>
       <Swiper
+        onSwiper={(instance) => {
+          setSwiper(instance);
+          handleRef(instance);
+        }}
+        // onSwiper={setSwiper}
         loop={true}
         spaceBetween={10}
-        navigation={true}
-        modules={[Navigation]}
+        navigation={{
+          prevEl: navigationPrevRef.current
+            ? navigationPrevRef.current
+            : undefined,
+          nextEl: navigationNextRef.current
+            ? navigationNextRef.current
+            : undefined
+        }}
+        modules={[Navigation, Thumbs]}
         grabCursor={true}
         thumbs={{ swiper: activeThumb }}
-        className="relative h-96 w-96 overflow-hidden mb-5 flex items-center justify-center"
+        className="relative h-96 w-96 overflow-hidden mb-5 flex items-center justify-center select-none group"
       >
-        {thumbnails.map((thumbnail, index) => (
+        {images.map((thumbnail, index) => (
           <SwiperSlide
             key={index}
-            className="p-5 flex items-center border overflow-hidden bg-white rounded-md border-gray-300"
+            className="p-5 flex items-center overflow-hidden bg-white rounded-md"
           >
-            <img
-              src={thumbnail}
-              alt=""
-              className="block w-full  object-cover"
-            />
+            <img src={thumbnail} alt="" className="block w-full object-cover" />
           </SwiperSlide>
         ))}
+        <div
+          className="absolute left-1 right-auto top-1/2 cursor-pointer text-[#007aff] z-10 group-hover:block hidden duration-200"
+          ref={navigationPrevRef}
+          onClick={() => swiper.slidePrev()}
+        >
+          <ChevronLeftIcon className="h-8" />
+        </div>
+        <div
+          className="absolute right-1 left-auto top-1/2 cursor-pointer text-[#007aff] z-10 group-hover:block hidden duration-200"
+          ref={navigationNextRef}
+          onClick={() => swiper.slideNext()}
+        >
+          <ChevronRightIcon className="h-8" />
+        </div>
       </Swiper>
       <Swiper
-        // onSwiper={setActiveThumb}
+        onSwiper={setActiveThumb}
         grabCursor={true}
         spaceBetween={10}
         slidesPerView={'auto'}
         modules={[Navigation, Thumbs]}
-        className="mb-3 h-16"
+        className="mb-3 h-16 thumbs-slider"
       >
-        {thumbnails.map((thumbnail, index) => (
+        {images.map((thumbnail, index) => (
           <SwiperSlide
             key={index}
-            className="hidden md:flex py-2 px-1 items-center border overflow-hidden bg-white rounded-md !w-14 border-gray-300"
+            className="hidden md:flex py-2 px-1 items-center overflow-hidden bg-white rounded-md !w-14 select-none"
           >
             <img src={thumbnail} alt="" className="block w-full object-cover" />
           </SwiperSlide>

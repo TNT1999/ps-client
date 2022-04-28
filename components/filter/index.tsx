@@ -12,6 +12,10 @@ import {
 } from '@app/slice/homeSlice';
 import { customQueryString } from '@utils/index';
 import classnames from 'classnames';
+import CollapseFilter from '@components/common/CollapseFilter';
+import pickBy from 'lodash/pickBy';
+import size from 'lodash/size';
+import isEmpty from 'lodash/isEmpty';
 const Brand = [
   {
     label: 'Apple',
@@ -41,10 +45,10 @@ const Brand = [
     label: 'Vivo',
     value: 'vivo'
   },
-  {
-    label: 'ASUS',
-    value: 'asus'
-  },
+  // {
+  //   label: 'ASUS',
+  //   value: 'asus'
+  // },
   {
     label: 'Realme',
     value: 'realme'
@@ -77,29 +81,29 @@ const RAM = [
   },
   {
     label: 'Trên 8 GB',
-    value: '>8'
+    value: 'gt8'
   }
 ];
 const Price = [
   {
     label: 'Dưới 5 triệu',
-    value: '<5tr'
+    value: 'lt5tr'
   },
   {
     label: '5 - 10 triệu',
-    value: '5-10tr'
+    value: 'gte5lt10tr'
   },
   {
     label: '10 - 15 triệu',
-    value: '10-15tr'
+    value: 'gte10lt15tr'
   },
   {
     label: '15 - 20 triệu',
-    value: '15-20tr'
+    value: 'gte15lt20tr'
   },
   {
     label: 'Trên 20 triệu',
-    value: '>20tr'
+    value: 'gt20tr'
   }
 ];
 const Storage = [
@@ -133,25 +137,25 @@ const Storage = [
   },
   {
     label: 'Trên 256 GB',
-    value: '>256'
+    value: 'gt256'
   }
 ];
 const Display = [
   {
     label: '< 5 inches',
-    value: '<5'
+    value: 'lt5'
   },
   {
     label: '5 - 5.5 inches',
-    value: '5-5.5'
+    value: 'gte5lt5.5'
   },
   {
     label: '5.5 - 6 inches',
-    value: '5.5-6'
+    value: 'gte5.5lt6'
   },
   {
     label: '> 6 inches',
-    value: '>6'
+    value: 'gt6'
   }
 ];
 type IProps = {
@@ -161,11 +165,16 @@ type IProps = {
 const Filter: FunctionComponent<IProps> = ({ className }) => {
   const router = useRouter();
   const filter = useSelector((state: RootState) => state.home.filter);
+
   // useEffect(() => {
   //   console.log(router);
   // }, [router.query]);
 
   useEffect(() => {
+    const removedEmptyFilter = pickBy(filter, size);
+    if (isEmpty(removedEmptyFilter)) {
+      router.replace('/dien-thoai', undefined, { shallow: true });
+    }
     const query = customQueryString.stringify(filter);
     if (query) {
       if (JSON.stringify(router.query) !== '{}') {
@@ -177,31 +186,31 @@ const Filter: FunctionComponent<IProps> = ({ className }) => {
 
   return (
     <div className={classnames(className)}>
-      <FilterCard
+      <CollapseFilter
+        title={'Thương hiệu'}
         data={Brand}
-        title={'Hãng sản xuất'}
         value={filter.brand}
         handleAction={setFilterBrand}
       />
-      <FilterCard
+      <CollapseFilter
+        title={'Ram'}
         data={RAM}
-        title={'Bộ nhớ RAM'}
         value={filter.ram}
         handleAction={setFilterRam}
       />
-      <FilterCard
+      <CollapseFilter
+        title={'Rom'}
         data={Storage}
-        title={'Bộ nhớ trong'}
         value={filter.storage}
         handleAction={setFilterStorage}
       />
-      <FilterCard
-        data={Price}
+      <CollapseFilter
         title={'Giá'}
+        data={Price}
         value={filter.price}
         handleAction={setFilterPrice}
       />
-      <FilterCard
+      <CollapseFilter
         data={Display}
         title={'Màn hình'}
         value={filter.display}

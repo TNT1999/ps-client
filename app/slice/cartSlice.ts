@@ -1,24 +1,40 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { save2localStorage } from '@utils/cart';
+import { isServer } from '@utils/misc';
 
 const initialState = {
-  value: 0
+  listProduct: []
+  // address_shipping: null,
+  // paymentType: 'COD'
 };
 
-const authSlice = createSlice({
-  name: 'home',
+const cartSlice = createSlice({
+  name: 'cart',
   initialState,
   reducers: {
-    fetchMe(state) {
-      state.value += 1;
+    restoreCartFromLocalStorage(state) {
+      const localCart = JSON.parse(localStorage.getItem('cart')) || [];
+      state.listProduct = localCart;
+    },
+    add2Cart(state, action: PayloadAction<any>) {
+      save2localStorage(action.payload);
+      const indexProduct = state.listProduct.findIndex(
+        (product) =>
+          product.id === action.payload.id &&
+          product.option.id === action.payload.option.id
+      );
+      if (indexProduct === -1) {
+        state.listProduct.push(action.payload);
+        return;
+      }
+      state.listProduct[indexProduct].quantity = action.payload.quantity;
+    },
+    removeCart(state) {
+      state.listProduct = [];
     }
-    // decrement(state) {
-    //   state.value--
-    // },
-    // incrementByAmount(state, action: PayloadAction<number>) {
-    //   state.value += action.payload
-    // },
   }
 });
 
-export const { fetchMe } = authSlice.actions;
-export default authSlice.reducer;
+export const { add2Cart, restoreCartFromLocalStorage, removeCart } =
+  cartSlice.actions;
+export default cartSlice.reducer;

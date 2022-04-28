@@ -17,6 +17,7 @@ const FacebookCallbackPage: FunctionComponent = () => {
       const userData: userData = await axiosClient.post('auth/facebook', {
         code
       });
+      console.log(userData);
       window.opener.handleThirdPartyLogin(userData);
     } catch (err) {
       window.opener.handleThirdPartyLoginError(err);

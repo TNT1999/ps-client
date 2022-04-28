@@ -8,7 +8,7 @@ import AuthInput from './AuthInput';
 import AuthSubmitButton from './AuthSubmitButton';
 import PasswordInput from './PasswordInput';
 import SocialLogin from './SocialLogin';
-import { login, setCurrentUser, userData } from 'app/slice';
+import { login, UserData } from 'app/slice';
 import { useRouter } from 'next/router';
 import { useAppDispatch } from 'app/store';
 import { isEmpty } from 'utils/string';
@@ -17,7 +17,7 @@ import axiosClient from 'utils/api';
 export const EMPTY_FIELD_ERROR = 'Please fill out this field';
 declare global {
   interface Window {
-    handleThirdPartyLogin: (userData: userData) => void;
+    handleThirdPartyLogin: (userData: UserData) => void;
     handleThirdPartyLoginError: (error: string) => void;
   }
 }
@@ -53,7 +53,7 @@ const AuthModal: FunctionComponent<{ onClose: () => void }> = ({ onClose }) => {
     }
     setLoading(true);
     try {
-      const user: userData = await axiosClient.post('/auth/login', {
+      const user: UserData = await axiosClient.post('/auth/login', {
         email,
         password
       });

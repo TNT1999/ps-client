@@ -7,18 +7,18 @@ type Props = {
   className?: string;
 };
 const Progress: FunctionComponent<Props> = ({ total, progress, className }) => {
-  const percent = Math.round((progress / total) * 100);
+  const percent = total === 0 ? 0 : Math.round((progress / total) * 100);
   return (
     <div
       className={classNames(
-        className,
-        'w-full h-[10px] p-[2px] overflow-hidden bg-gray-300 rounded-md'
+        'w-full bg-gray-200 rounded-md h-2.5 p-0.5 overflow-hidden',
+        className
       )}
     >
       <div
-        className="h-full rounded bg-red-500"
+        className="rounded-full bg-red-500"
         style={{ width: `${percent}%` }}
-      />
+      ></div>
     </div>
   );
 };

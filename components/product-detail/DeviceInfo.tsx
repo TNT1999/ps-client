@@ -8,28 +8,32 @@ type Props = {
 };
 const DeviceInfo: FunctionComponent<Props> = ({ attrs }) => {
   const [info, setInfo] = useState<DeviceInfoType[]>(
-    attrs ? attrs.slice(0, 10) : []
+    attrs ? attrs.slice(0, 8) : []
   );
   const loadMoreInfo = () => {
     setInfo(info.concat(attrs.slice(10)));
   };
   return (
-    <div className="w-[345px] border rounded-sm shadow">
-      <div className="font-bold text-base text-center py-3 px-6">
+    <div className="rounded border-px border-[#eeeeee]">
+      <div className="text-center py-3 px-6 text-xl font-normal">
         Thông số kỹ thuật
       </div>
-      <ul className="m-0 list-none">
+      <ul className="m-0 list-none rounded">
         {info.map((item, index) => (
           <li
             key={index}
-            className={classNames('m-0 p-3 flex items-center border-b', {
-              'bg-[#F2F2F2]': index % 2 == 0
-            })}
+            className={classNames(
+              'm-0 p-3 flex items-center border-b border-[#eeeeee]',
+              {
+                'bg-white': index % 2 == 0,
+                'bg-[#fafafa]': index % 2 != 0
+              }
+            )}
           >
-            <span className="text-sm max-w-[100px] min-w-[100px] pr-1 break-words mr-1">
+            <span className="text-13 max-w-[100px] min-w-[100px] pr-1 break-words mr-1">
               {item.name}
             </span>
-            <span className="text-sm font-semibold">{item.value}</span>
+            <span className="text-13">{item.value}</span>
           </li>
         ))}
         {info.length < attrs.length ? (
