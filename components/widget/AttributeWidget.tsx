@@ -36,7 +36,7 @@ const AttributeWidget: FunctionComponent<Props> = ({
   const deleteAttribute = (name: string) => {
     setItems(items);
   };
-  const onDrop = (e) => {
+  const onDrop = (e: any) => {
     console.log(e);
   };
   return (

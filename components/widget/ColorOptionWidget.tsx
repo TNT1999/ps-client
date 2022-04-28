@@ -1,6 +1,7 @@
 import { CloseIcon, PlusIcon } from '@assets/icons';
 import Button from '@components/common/Buton';
 import Field from '@components/common/Field';
+import { nanoid } from '@reduxjs/toolkit';
 import { motion } from 'framer-motion';
 import { FunctionComponent, useState } from 'react';
 import { ColorOption } from 'types';
@@ -21,10 +22,10 @@ type Props = {
 const ColorOptionWidget: FunctionComponent<Props> = ({ onClick }) => {
   const [colors, setColors] = useState<ColorOption[]>([
     {
-      id: '112',
+      id: nanoid(),
       name: 'ew',
-      price: '12',
-      amount: '1212',
+      price: 12,
+      amount: 1212,
       images: ['sadsd', 'asdd']
     }
   ]);
@@ -130,10 +131,10 @@ const ColorOptionWidget: FunctionComponent<Props> = ({ onClick }) => {
         className="w-full mt-4 bg-[#79829133] flex items-center justify-center"
         onClick={() =>
           addNewColor({
-            id: '112',
+            id: nanoid(),
             name: 'ew',
-            price: '12',
-            amount: '1212',
+            price: 12,
+            amount: 1212,
             images: ['sadsd', 'asdd']
           })
         }

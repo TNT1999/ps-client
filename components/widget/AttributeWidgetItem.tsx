@@ -6,7 +6,7 @@ import { FunctionComponent, useState } from 'react';
 type Props = any;
 const AttributeWidgetItem: FunctionComponent<Props> = ({ value, onChange }) => {
   const [isHovering, setIsHovering] = useState(false);
-  const onClick = (e) => console.log(e);
+  const onClick = (e: any) => console.log(e);
   const name = 'a';
   const handleNameChanged = (name: string) => {
     console.log(name);

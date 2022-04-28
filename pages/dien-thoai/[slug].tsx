@@ -26,7 +26,7 @@ const Phone: NextPage<Props> = ({ product }) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const [carouselRef, setCarouselRef] = useState(null);
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const [images, setImages] = useState([]);
+  const [images, setImages] = useState<string[]>([]);
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const handleRef = useCallback(
@@ -38,12 +38,15 @@ const Phone: NextPage<Props> = ({ product }) => {
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
-    const images = product.colorOptions.reduce((accumulator, current) => {
-      current.images.map((image) => {
-        accumulator.push(image);
-      });
-      return accumulator;
-    }, []);
+    const images = product.colorOptions.reduce(
+      (accumulator: string[], current) => {
+        current.images.map((image) => {
+          accumulator.push(image);
+        });
+        return accumulator;
+      },
+      []
+    );
     setImages(images);
   }, [product]);
 

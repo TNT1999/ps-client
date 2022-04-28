@@ -1,5 +1,5 @@
 /* eslint-disable no-constant-condition */
-import { removeCart } from '@app/slice/cartSlice';
+import { CartItem, removeCart } from '@app/slice/cartSlice';
 import { RootState, Store, useAppDispatch } from '@app/store';
 import { TrashIcon } from '@assets/icons';
 import Layout from '@components/common/Layout';
@@ -7,7 +7,7 @@ import NumberInput from '@components/common/NumberInput';
 import NumberQuantity from '@components/common/NumberQuantity';
 import axiosClient from '@utils/api';
 import { formatMoney } from '@utils/index';
-import { NextPageContext } from 'next';
+import { NextPage, NextPageContext } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { FunctionComponent, useEffect, useState } from 'react';
@@ -30,12 +30,12 @@ type CartType = {
   discount: number;
 };
 type Cart = {
-  listProduct: CartType[];
+  listProduct: CartItem[];
 };
 type Props = {
   cart: any;
 };
-const CartPage: FunctionComponent<Props> = () => {
+const CartPage: NextPage<Props> = () => {
   const cart: Cart = useSelector((state: RootState) => state.cart);
   const [total, setTotal] = useState(0);
   const router = useRouter();
@@ -79,10 +79,8 @@ const CartPage: FunctionComponent<Props> = () => {
   useEffect(() => {
     const totalPrice = cart.listProduct.reduce((accumulator, currentValue) => {
       const price = currentValue.discount
-        ? parseInt(currentValue.option.price) *
-          0.01 *
-          (100 - currentValue.discount)
-        : parseInt(currentValue.option.price);
+        ? currentValue.option.price * 0.01 * (100 - currentValue.discount)
+        : currentValue.option.price;
       return (accumulator += currentValue.quantity * price);
     }, 0);
     setTotal(totalPrice);
@@ -135,7 +133,7 @@ const CartPage: FunctionComponent<Props> = () => {
                     <div className="bg-white rounded mb-3">
                       <div className="px-4 py-2">
                         {cart.listProduct.map((product, index) => {
-                          const oldPrice = parseInt(product.option.price);
+                          const oldPrice = product.option.price;
                           const discountPrice =
                             oldPrice * (100 - product.discount) * 0.01;
                           return (
@@ -301,10 +299,11 @@ CartPage.getInitialProps = async (
   context: NextPageContext & { store: Store }
 ) => {
   // context.store.dispatch(setFilter(filter));
+  console.log(context.store);
   try {
     const cart: any = await axiosClient.get('/cart');
     // context.store.dispatch(setListHomeProduct(products));
-    return { cart };
+    return { cart: cart || [] };
   } catch (err) {
     return {
       cart: []

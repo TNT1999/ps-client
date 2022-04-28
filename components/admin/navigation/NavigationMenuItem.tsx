@@ -21,8 +21,6 @@ const NavigationMenuItem: FunctionComponent<Props> = ({
         className
       )}
       onClick={onClick}
-      data-tooltip={tooltip || label}
-      data-rh-at={'right'}
     >
       <a
         className={classNames(

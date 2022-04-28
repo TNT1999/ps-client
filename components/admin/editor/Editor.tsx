@@ -1,11 +1,9 @@
-import EditableText from '@components/common/EditableText';
-import NumberInput from '@components/common/NumberInput';
-import AttributeWidget from '@components/widget/AttributeWidget';
-import BooleanWidget from '@components/widget/BooleanWidget';
-import ColorOptionWidget from '@components/widget/ColorOPtionWidget';
-import NumberWidget from '@components/widget/NumberWidget';
-import TextWidget from '@components/widget/TextWidget';
 import { FunctionComponent, useState } from 'react';
+import TextWidget from '@components/widget/TextWidget';
+import BooleanWidget from '@components/widget/BooleanWidget';
+import AttributeWidget from '@components/widget/AttributeWidget';
+import NumberWidget from '@components/widget/NumberWidget';
+import ColorOptionWidget from '@components/widget/ColorOptionWidget';
 type Props = any;
 const Editor: FunctionComponent<Props> = () => {
   const [value, setValue] = useState('initial value');

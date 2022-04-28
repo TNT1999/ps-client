@@ -5,8 +5,8 @@ import isNaN from 'lodash/isNaN';
 import { FunctionComponent } from 'react';
 type Props = {
   type?: 'sm' | 'md';
-  value: string;
-  onChange: (value: string | number) => void;
+  value: number;
+  onChange: (value: number) => void;
   maxValue?: number;
 };
 const NumberQuantity: FunctionComponent<Props> = ({
@@ -24,7 +24,7 @@ const NumberQuantity: FunctionComponent<Props> = ({
       <button
         onClick={() => {
           if (!isNaN(value) && value > 1) {
-            const newValue = parseInt(value) - 1;
+            const newValue = value - 1;
             console.log(newValue);
             onChange(newValue);
           }
@@ -83,7 +83,7 @@ const NumberQuantity: FunctionComponent<Props> = ({
         <PlusIcon
           onClick={() => {
             if (!isNaN(value)) {
-              const newValue = parseInt(value) + 1;
+              const newValue = value + 1;
               console.log(newValue);
               onChange(newValue);
             }

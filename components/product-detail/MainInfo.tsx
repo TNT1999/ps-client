@@ -106,7 +106,7 @@ const MainInfo: FunctionComponent<Props> = ({
           <>
             <span className="text-3xl font-medium text-[#ff424e] mb-3">
               {formatMoney(
-                parseInt(finalSelectProduct.selectedOption.price) *
+                finalSelectProduct.selectedOption.price *
                   (100 - discount) *
                   0.01
               )}
@@ -141,7 +141,7 @@ const MainInfo: FunctionComponent<Props> = ({
           containerClassName="w-auto"
         /> */}
         <NumberQuantity
-          value={finalSelectProduct.quantity.toString()}
+          value={finalSelectProduct.quantity}
           onChange={(e) => handleQuantity(e)}
           maxValue={finalSelectProduct.selectedOption.amount}
         />
