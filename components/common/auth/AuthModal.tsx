@@ -13,7 +13,6 @@ import { useRouter } from 'next/router';
 import { useAppDispatch } from 'app/store';
 import { isEmpty } from 'utils/string';
 import axiosClient from 'utils/api';
-
 export const EMPTY_FIELD_ERROR = 'Please fill out this field';
 declare global {
   interface Window {

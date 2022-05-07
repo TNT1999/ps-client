@@ -4,7 +4,7 @@ import { Add2CartIcon } from '@assets/icons';
 import NumberInput from '@components/common/NumberInput';
 import NumberQuantity from '@components/common/NumberQuantity';
 import Rating from '@components/common/Rating';
-import { formatMoney } from '@utils/index';
+import { formatMoney, noop } from '@utils/index';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { DetailProductType, Variant } from 'types';
@@ -43,20 +43,38 @@ const MainInfo: FunctionComponent<Props> = ({
     selectedOption: colorOptions[0]
   });
 
-  const handleAdd2Cart = () => {
-    dispatch(
-      add2Cart({
-        id: finalSelectProduct.id,
-        name: finalSelectProduct.name,
-        slug: finalSelectProduct.slug,
-        quantity: finalSelectProduct.quantity,
-        option: finalSelectProduct.selectedOption,
-        discount
-      })
-    );
-    toast.success('Thêm vào giỏ hàng thành công', {
-      autoClose: 1000
-    });
+  const handleAdd2Cart = async () => {
+    // dispatch(
+    //   add2Cart({
+    //     id: finalSelectProduct.id,
+    //     name: finalSelectProduct.name,
+    //     slug: finalSelectProduct.slug,
+    //     quantity: finalSelectProduct.quantity,
+    //     option: finalSelectProduct.selectedOption,
+    //     discount
+    //   })
+    // );
+
+    try {
+      const cart = await dispatch(
+        add2Cart({
+          productId: finalSelectProduct.id,
+          quantity: finalSelectProduct.quantity,
+          optionId: finalSelectProduct.selectedOption.id
+        })
+      ).unwrap();
+      console.log(cart);
+      toast.success('Thêm vào giỏ hàng thành công', {
+        autoClose: 1000
+      });
+    } catch (e) {
+      toast.error('Thêm vào giỏ hàng thất bại', {
+        autoClose: 1000
+      });
+    }
+    // finally {
+    //   setComment(initialValue);
+    // }
   };
   const handleColorOption = useCallback(
     (item) => {

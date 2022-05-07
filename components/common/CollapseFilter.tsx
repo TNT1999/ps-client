@@ -67,7 +67,11 @@ const CollapseFilter: FunctionComponent<Props> = ({
       >
         <div className="space-y-2">
           {data.map((brand, index) => (
-            <div className="flex items-center select-none" key={index}>
+            <div
+              className="flex items-center select-none"
+              key={index}
+              // onClick={() => dispatch(handleAction(brand.value))}
+            >
               <input
                 id={`${title}-${brand.value}`}
                 name="color[]"
@@ -79,7 +83,7 @@ const CollapseFilter: FunctionComponent<Props> = ({
               />
               <label
                 htmlFor={`${title}-${brand.value}`}
-                className="ml-3 min-w-0 flex-1 text-gray-600 text-13"
+                className="ml-3 min-w-0 text-gray-600 text-13"
               >
                 {' '}
                 {brand.label}{' '}
