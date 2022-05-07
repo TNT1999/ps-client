@@ -151,7 +151,7 @@
 
 import axios from 'axios';
 import { isServer } from './misc';
-import nookies from 'nookies';
+import nookies, { parseCookies } from 'nookies';
 const axiosClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api',
   timeout: 300000,
@@ -167,7 +167,10 @@ const saveToken = (a: string, r: string) => {
 };
 axiosClient.interceptors.request.use(function (config) {
   if (isServer()) return config;
-  const token = localStorage.getItem(process.env.TOKEN_KEY || 'access_token');
+  const cookies = parseCookies();
+  const TOKENS = cookies['TOKENS'] || '{}';
+  const TOKENS_VALUE = JSON.parse(TOKENS);
+  const token = TOKENS_VALUE.accessToken;
   config.headers.Authorization = token ? `Bearer ${token}` : '';
   return config;
 });

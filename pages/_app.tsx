@@ -7,7 +7,6 @@ import { initializeStore, Store, useStore } from '@app/store';
 import App from 'next/app';
 import { NextComponentType, NextPageContext } from 'next';
 import { Router } from 'next/router';
-import { NextUIProvider } from '@nextui-org/react';
 import { AppTreeType } from 'next/dist/shared/lib/utils';
 import { getMe } from 'app/slice';
 import { ToastContainer } from 'react-toastify';
@@ -16,14 +15,19 @@ import {
   getCountCart,
   restoreCartFromLocalStorage
 } from '@app/slice/cartSlice';
+import { parseCookies } from 'nookies';
+import isNil from 'lodash/isNil';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const store = useStore(pageProps.initialReduxState);
   const [isUserLoaded, setUserLoaded] = useState(false);
 
   const getUserData = async () => {
-    const token = localStorage.getItem(process.env.TOKEN_KEY || 'access_token');
-    if (token == null) {
+    const cookies = parseCookies();
+    const TOKENS = cookies['TOKENS'] || '{}';
+    const TOKENS_VALUE = JSON.parse(TOKENS);
+    const token = TOKENS_VALUE.accessToken;
+    if (isNil(token)) {
       return setUserLoaded(true);
     }
     try {
@@ -35,8 +39,11 @@ function MyApp({ Component, pageProps }: AppProps) {
     }
   };
   const getCart = async () => {
-    const token = localStorage.getItem(process.env.TOKEN_KEY || 'access_token');
-    if (token == null) {
+    const cookies = parseCookies();
+    const TOKENS = cookies['TOKENS'] || '{}';
+    const TOKENS_VALUE = JSON.parse(TOKENS);
+    const token = TOKENS_VALUE.accessToken;
+    if (isNil(token)) {
       return;
     }
     try {
