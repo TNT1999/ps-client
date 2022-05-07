@@ -49,7 +49,10 @@ export const Modal: FunctionComponent<
   return mounted
     ? createPortal(
         <div
-          className={`fixed z-30 top-0 left-0 h-screen w-screen flex justify-center items-center bg-primary bg-opacity-5 select-none ${className}`}
+          className={classNames(
+            'fixed z-30 top-0 left-0 h-screen w-screen flex justify-center items-center bg-primary bg-opacity-5 select-none',
+            className
+          )}
           style={{ backdropFilter: 'blur(1px)' }}
           onClick={(event) => {
             event.stopPropagation();

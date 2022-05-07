@@ -47,9 +47,13 @@ type FilterStore = {
 
 export const postComment = createAsyncThunk(
   'product/postComment',
-  async (data: any) => {
-    const comment: CommentType = await axiosClient.post('/comment', data);
-    return comment;
+  async (data: any, { rejectWithValue }) => {
+    try {
+      const comment: CommentType = await axiosClient.post('/comment', data);
+      return comment;
+    } catch (err) {
+      return rejectWithValue(err);
+    }
   }
 );
 

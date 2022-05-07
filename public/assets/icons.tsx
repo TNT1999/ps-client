@@ -37,6 +37,9 @@ import DragIndicator from './icons/DragIndicator.svg';
 import Plus from './icons/Plus.svg';
 import Minus from './icons/Minus.svg';
 import SelectIndicator from './icons/SelectIndicator.svg';
+import AlertTriangle from './icons/AlertTriangle.svg';
+import CheckCircle from './icons/CheckCircle.svg';
+import XCircle from './icons/XCircle.svg';
 export type PropsSVG = SVGAttributes<any>;
 
 export const MailIcon: FunctionComponent<PropsSVG> = (props) => (
@@ -149,4 +152,14 @@ export const MinusIcon: FunctionComponent<PropsSVG> = (props) => (
 );
 export const SelectIndicatorIcon: FunctionComponent<PropsSVG> = (props) => (
   <SelectIndicator {...props} />
+);
+
+export const AlertTriangleIcon: FunctionComponent<PropsSVG> = (props) => (
+  <AlertTriangle {...props} />
+);
+export const CheckCircleIcon: FunctionComponent<PropsSVG> = (props) => (
+  <CheckCircle {...props} />
+);
+export const XCircleIcon: FunctionComponent<PropsSVG> = (props) => (
+  <XCircle {...props} />
 );

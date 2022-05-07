@@ -151,7 +151,7 @@
 
 import axios from 'axios';
 import { isServer } from './misc';
-
+import nookies from 'nookies';
 const axiosClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api',
   timeout: 300000,
@@ -200,6 +200,7 @@ axiosClient.interceptors.response.use(
         return Promise.reject(error);
       }
     }
+    return Promise.reject(error);
   }
 );
 

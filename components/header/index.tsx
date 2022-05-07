@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import UserDropdown from './UserDropdown';
 import SearchWithDropDown from './SearchWithDropdown';
@@ -6,12 +6,14 @@ import AuthModal from '@components/common/auth/AuthModal';
 import { CartIcon } from '@assets/icons';
 import { useSelector } from 'react-redux';
 import { RootState } from 'app/store';
+import { isEmpty } from 'lodash';
 
 type Props = any;
 const Header: FunctionComponent<Props> = () => {
   const user = useSelector((state: RootState) => state.auth.user);
-  const cart = useSelector((state: RootState) => state.cart.listProduct);
+  const cart = useSelector((state: RootState) => state.cart);
   const [authModalVisible, setAuthModalVisible] = useState(false);
+
   return (
     <header className="w-full h-14 md:h-16 py-3 px-4 sm:px-8 shadow-header fixed inset-x-0 top-0 bg-bluePrimary">
       <nav className="flex h-full justify-between max-w-screen-xl m-auto px-4">
@@ -63,7 +65,7 @@ const Header: FunctionComponent<Props> = () => {
                 absolute min-w-badge top-0 right-0 h-5 rounded-xl origin-top-right
                 text-[#242424] transform scale-100	translate-x-1/2	-translate-y-1/2 bg-[#fdd835]"
             >
-              {cart.length}
+              {cart.count}
             </span>
           </div>
         </div>

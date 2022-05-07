@@ -2,11 +2,9 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
 import React, { FunctionComponent, SetStateAction, useState } from 'react';
-import { Swiper, SwiperSlide, useSwiper } from 'swiper/react';
+import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Thumbs } from 'swiper';
 import { ChevronLeftIcon, ChevronRightIcon } from '@assets/icons';
-import { DetailProductType } from 'types';
-import { SwiperEvents, SwiperModule, SwiperOptions } from 'swiper/types';
 
 type Props = {
   swiperWrapperClass?: string;

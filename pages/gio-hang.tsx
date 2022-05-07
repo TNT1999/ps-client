@@ -1,45 +1,47 @@
 /* eslint-disable no-constant-condition */
-import { CartItem, removeCart } from '@app/slice/cartSlice';
+import {
+  CartItemType,
+  removeCart,
+  setCart,
+  updateSelectedCartItem
+} from '@app/slice/cartSlice';
 import { RootState, Store, useAppDispatch } from '@app/store';
 import { TrashIcon } from '@assets/icons';
 import Layout from '@components/common/Layout';
-import NumberInput from '@components/common/NumberInput';
-import NumberQuantity from '@components/common/NumberQuantity';
 import axiosClient from '@utils/api';
 import { formatMoney } from '@utils/index';
 import { NextPage, NextPageContext } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { FunctionComponent, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import { useAsyncEffect } from 'use-async-effect';
+import { parseCookies, setCookie } from 'nookies';
+import isEmpty from 'lodash/isEmpty';
+import Link from 'next/link';
+import ConfirmDeleteModal from '@components/common/cart/ConfirmDeleteModal';
+import CartItem from '@components/common/cart/CartItem';
+import { useSelector } from 'react-redux';
 
-type OptionType = {
-  id: string;
-  name: string;
-  amount: string;
-  price: string;
-  images: string[];
-};
-type CartType = {
-  id: string;
-  name: string;
-  quantity: number;
-  slug: string;
-  option: OptionType;
-  discount: number;
-};
 type Cart = {
-  listProduct: CartItem[];
+  items: CartItemType[];
 };
 type Props = {
-  cart: any;
+  cart: {
+    items: CartItemType[];
+  };
 };
 const CartPage: NextPage<Props> = () => {
   const cart: Cart = useSelector((state: RootState) => state.cart);
   const [total, setTotal] = useState(0);
   const router = useRouter();
   const dispatch = useAppDispatch();
+
+  const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
+
+  const [selectedAllCartItem, setSelectedAllCartItem] = useState(
+    cart.items.every((item) => item.selected === true)
+  );
   // const [checkoutCart, setCheckoutCart] = useState<any>(cart);
 
   // const handleChangeProductToCheckoutCart = (id: string, checked: boolean) => {
@@ -55,34 +57,50 @@ const CartPage: NextPage<Props> = () => {
   //   );
   //   setCheckoutCart([...newCheckoutCart]);
   // };
+  useEffect(() => {
+    const selectedAllCartItem = cart.items.every(
+      (item) => item.selected === true
+    );
+    setSelectedAllCartItem(selectedAllCartItem);
+  }, [cart.items]);
 
   const checkout = async () => {
     const payment_url: string = await axiosClient.post(
       'vnp/create_payment_url',
       {
         amount: total,
-        products: cart.listProduct
+        products: cart.items
       }
     );
     window.location.href = payment_url;
   };
 
-  useEffect(() => {
-    const responseCode = router.query.vnp_ResponseCode;
-    if (responseCode == '00') {
-      toast.success('Thanh toán thành công');
-      localStorage.removeItem('cart');
-      dispatch(removeCart());
+  const handleUpdateSelectedAllCartItem = async (selected: boolean) => {
+    try {
+      await dispatch(
+        updateSelectedCartItem({
+          selected
+        })
+      ).unwrap();
+      // toast.success('Cập nhật sản phẩm thành công', {
+      //   autoClose: 1000
+      // });
+    } catch (err) {
+      toast.error('Cập nhật sản phẩm thất bại', {
+        autoClose: 1000
+      });
     }
-  }, [router.query]);
+  };
 
   useEffect(() => {
-    const totalPrice = cart.listProduct.reduce((accumulator, currentValue) => {
-      const price = currentValue.discount
-        ? currentValue.option.price * 0.01 * (100 - currentValue.discount)
-        : currentValue.option.price;
-      return (accumulator += currentValue.quantity * price);
-    }, 0);
+    const totalPrice = cart.items
+      .filter((item) => item.selected === true)
+      .reduce((accumulator, currentValue) => {
+        const price = currentValue.discount
+          ? currentValue.option.price * 0.01 * (100 - currentValue.discount)
+          : currentValue.option.price;
+        return (accumulator += currentValue.quantity * price);
+      }, 0);
     setTotal(totalPrice);
   }, [cart]);
   return (
@@ -100,194 +118,147 @@ const CartPage: NextPage<Props> = () => {
             </h4>
           </div>
           <div className="flex flex-nowrap justify-between basis-full">
-            <div className="flex-1 basis-[910px]">
-              <div>
-                <div className="bg-white py-2 px-4 rounded text-13 mb-3 text-[#242424] font-normal sticky flex items-center  after:contents after:h-3 after:w-full after:inset-x-0 after:-bottom-3 after:absolute">
-                  <span className="flex w-[398px] items-center">
-                    <input
-                      id="all-product"
-                      name="color[]"
-                      value="white"
-                      type="checkbox"
-                      className="h-4 w-4 border-gray-300 rounded-lg text-indigo-600 focus:ring-indigo-500"
-                      // onChange={(value) => console.log(value.target.checked)}
-                      checked
-                    />
-                    <label
-                      htmlFor="all-product"
-                      className="ml-3 min-w-0 flex-1 text-gray-600 text-sm"
-                    >
-                      {' '}
-                      {`Tất cả (${cart.listProduct.length} sản phẩm)`}{' '}
-                    </label>
-                  </span>
-                  <span className="inline-block w-[190px]">Đơn giá</span>
-                  <span className="inline-block w-[130px]">Số lượng</span>
-                  <span className="inline-block w-[130px]">Thành tiền</span>
-                  <span className="w-[35px] flex justify-end cursor-pointer">
-                    <TrashIcon className="h-[16px] w-[16px] text-gray-400 hover:text-gray-500 cursor-pointer" />
-                  </span>
-                </div>
+            {!isEmpty(cart.items) ? (
+              <div className="flex-1 basis-[910px]">
                 <div>
-                  <div className="h-auto overflow-auto">
-                    <div className="bg-white rounded mb-3">
-                      <div className="px-4 py-2">
-                        {cart.listProduct.map((product, index) => {
-                          const oldPrice = product.option.price;
-                          const discountPrice =
-                            oldPrice * (100 - product.discount) * 0.01;
-                          return (
-                            <div key={product.id + product.option.id}>
-                              <div className="mb-8">
-                                <div className="flex items-center -mx-4">
-                                  <div className="w-[398px] px-4">
-                                    <div className="flex items-center">
-                                      <div>
-                                        <input
-                                          id="all-product"
-                                          value="white"
-                                          type="checkbox"
-                                          className="h-4 w-4 border-gray-300 mr-3 rounded-lg text-indigo-600 focus:ring-indigo-500"
-                                          // onChange={(e) =>
-                                          //   handleChangeProductToCheckoutCart(
-                                          //     product.id,
-                                          //     e.target.checked
-                                          //   )
-                                          // }
-                                          checked
-                                        />
-                                      </div>
-                                      <a
-                                        target="_blank"
-                                        href={`dien-thoai/${product.slug}`}
-                                        rel="noreferrer"
-                                        className="hover:text-[#0b74e5]"
-                                      >
-                                        <img
-                                          src={product.option.images[0]}
-                                          className="h-20 w-20 object-contain"
-                                          alt=""
-                                        />
-                                      </a>
-                                      <div className="pl-3 w-[calc(100%-30px)]">
-                                        <a
-                                          className="text-13 text-[#242424] overflow-hidden text-ellipsis-2-lines leading-5 mb-1 hover:text-[#0b74e5]"
-                                          target="_blank"
-                                          href={`dien-thoai/${product.slug}`}
-                                          rel="noreferrer"
-                                        >
-                                          {`${product.name} - ${product.option.name}`}
-                                        </a>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="w-[190px] px-4 flex flex-col">
-                                    <span className="mr-1 inline-block font-medium text-13">
-                                      {formatMoney(
-                                        product.discount
-                                          ? discountPrice
-                                          : oldPrice
-                                      )}
-                                    </span>
-                                    {product.discount && (
-                                      <del className="inline-block text-11 text-[#999999]">
-                                        {formatMoney(oldPrice)}
-                                      </del>
-                                    )}
-                                  </div>
-                                  <div className="w-[130px] px-4">
-                                    <NumberQuantity
-                                      value={product.quantity}
-                                      onChange={function (
-                                        value: string | number
-                                      ): void {
-                                        throw new Error(
-                                          'Function not implemented.'
-                                        );
-                                      }}
-                                    />
-                                  </div>
-                                  <div className="w-[130px] px-4">
-                                    <span className="block font-medium text-13 text-red-600">
-                                      {formatMoney(
-                                        product.discount
-                                          ? discountPrice * product.quantity
-                                          : oldPrice * product.quantity
-                                      )}
-                                    </span>
-                                  </div>
-                                  <div className="w-[50px] text-right">
-                                    <span className="cursor-pointer inline-block">
-                                      <TrashIcon className="h-[16px] w-[16px] text-gray-400 hover:text-gray-500 cursor-pointer" />
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex-1 basis-[calc(100%-930px)] ml-5">
-              <div>
-                <div>
-                  <div className="bg-white rounded p-4 mb-3">
-                    <h4 className="font-light text-[#333333]">Khuyến mãi</h4>
-                    <div className="flex flex-nowrap justify-between space-x-3 mt-4 h-10">
+                  <div className="bg-white py-2 px-4 rounded text-13 mb-3 text-[#242424] font-normal sticky flex items-center  after:contents after:h-3 after:w-full after:inset-x-0 after:-bottom-3 after:absolute">
+                    <span className="flex w-[398px] items-center">
                       <input
-                        className="flex-1 py-3 px-2 border outline-none rounded w-auto block placeholder:text-13 text-gray-500"
-                        placeholder="Nhập mã..."
+                        id="all-product"
+                        name="color[]"
+                        value="white"
+                        type="checkbox"
+                        className="h-4 w-4 border-gray-300 rounded-lg text-indigo-600 focus:ring-indigo-500"
+                        onChange={(e) =>
+                          handleUpdateSelectedAllCartItem(e.target.checked)
+                        }
+                        checked={selectedAllCartItem}
                       />
-                      <button className="bg-blue-400 text-white text-center block cursor-pointer rounded p-2 hover:bg-blue-500">
-                        Áp dụng
-                      </button>
-                    </div>
+                      <label
+                        htmlFor="all-product"
+                        className="ml-3 min-w-0 flex-1 text-gray-600 text-sm"
+                      >
+                        {' '}
+                        {`Tất cả (${cart.items.length} sản phẩm)`}{' '}
+                      </label>
+                    </span>
+                    <span className="inline-block w-[190px]">Đơn giá</span>
+                    <span className="inline-block w-[130px]">Số lượng</span>
+                    <span className="inline-block w-[130px]">Thành tiền</span>
+                    <span
+                      className="w-[35px] flex justify-end cursor-pointer"
+                      onClick={() => setConfirmDeleteVisible(true)}
+                    >
+                      <TrashIcon className="h-[16px] w-[16px] text-gray-400 hover:text-gray-500 cursor-pointer" />
+                      {confirmDeleteVisible && (
+                        <ConfirmDeleteModal
+                          onClose={() => setConfirmDeleteVisible(false)}
+                          isDeleteSelected={true}
+                          productId={''}
+                          optionId={''}
+                        />
+                      )}
+                    </span>
                   </div>
-                </div>
-                <div>
-                  <div className="bg-white rounded pb-2">
-                    <ul className=" list-none px-5 py-4 border-b-px border-[#f4f4f4]">
-                      <li className="flex flex-nowrap mb-2.5 justify-between">
-                        <div className="font-light text-[#333333]">
-                          Tạm tính
+                  <div>
+                    <div className="h-auto overflow-auto">
+                      <div className="bg-white rounded mb-3">
+                        <div className="px-4 py-2">
+                          {cart.items.map((item, index) => {
+                            return (
+                              <CartItem
+                                key={`${item.productId}-${item.option.id}`}
+                                item={item}
+                              />
+                            );
+                          })}
                         </div>
-                        <div>{formatMoney(total)}</div>
-                      </li>
-                      <li className="flex flex-nowrap mb-2.5 justify-between">
-                        <div className=" font-light text-[#333333]">
-                          Giảm giá
-                        </div>
-                        <div>0đ</div>
-                      </li>
-                    </ul>
-                    <div className="py-4 px-5 flex flex-nowrap justify-between">
-                      <span className="font-light text-[#333333]">
-                        Tổng tiền
-                      </span>
-                      <div>
-                        {false ? (
-                          <div className="text-[15px] font-normal text-right text-red-600">
-                            Vui lòng chọn sản phẩm
-                          </div>
-                        ) : (
-                          <div className="text-[22px] font-normal text-right text-red-600">
-                            {formatMoney(total)}
-                          </div>
-                        )}
                       </div>
                     </div>
                   </div>
                 </div>
-                <button
-                  className="bg-red-500 text-white text-center w-full block cursor-pointer rounded mt-4 py-3 px-2 border-none hover:opacity-80"
-                  onClick={checkout}
-                >{`Mua hàng (${cart.listProduct.length})`}</button>
               </div>
-            </div>
+            ) : (
+              <div className="flex-1">
+                <div className="mb-24">
+                  <div className="bg-white rounded text-center w-full py-10 px-5">
+                    <img
+                      src="https://salt.tikicdn.com/desktop/img/mascot@2x.png"
+                      alt=""
+                      className="w-[190px] inline-block"
+                    />
+                    <p className="mt-4 mb-8">
+                      Không có sản phẩm nào trong giỏ hàng của bạn.
+                    </p>
+                    <Link href="/dien-thoai">
+                      <a className="bg-[#fdd835] text-[#4a4a4a] font-medium inline-block rounded py-3 px-14">
+                        Tiếp tục mua sắm
+                      </a>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )}
+            {!isEmpty(cart.items) && (
+              <div className="flex-1 basis-[calc(100%-930px)] ml-5">
+                <div>
+                  <div>
+                    <div className="bg-white rounded p-4 mb-3">
+                      <h4 className="font-light text-[#333333]">Khuyến mãi</h4>
+                      <div className="flex flex-nowrap justify-between space-x-3 mt-4 h-10">
+                        <input
+                          className="flex-1 py-3 px-2 border outline-none rounded w-auto block placeholder:text-13 text-gray-500"
+                          placeholder="Nhập mã..."
+                        />
+                        <button className="bg-blue-400 text-white text-center block cursor-pointer rounded p-2 hover:bg-blue-500">
+                          Áp dụng
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="bg-white rounded pb-2">
+                      <ul className=" list-none px-5 py-4 border-b-px border-[#f4f4f4]">
+                        <li className="flex flex-nowrap mb-2.5 justify-between">
+                          <div className="font-light text-[#333333]">
+                            Tạm tính
+                          </div>
+                          <div>{formatMoney(total)}</div>
+                        </li>
+                        <li className="flex flex-nowrap mb-2.5 justify-between">
+                          <div className=" font-light text-[#333333]">
+                            Giảm giá
+                          </div>
+                          <div>0đ</div>
+                        </li>
+                      </ul>
+                      <div className="py-4 px-5 flex flex-nowrap justify-between">
+                        <span className="font-light text-[#333333]">
+                          Tổng tiền
+                        </span>
+                        <div>
+                          {false ? (
+                            <div className="text-[15px] font-normal text-right text-red-600">
+                              Vui lòng chọn sản phẩm
+                            </div>
+                          ) : (
+                            <div className="text-[22px] font-normal text-right text-red-600">
+                              {formatMoney(total)}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    className="bg-red-500 text-white text-center w-full block cursor-pointer rounded mt-4 py-3 px-2 border-none hover:opacity-80"
+                    onClick={checkout}
+                  >{`Mua hàng (${
+                    cart.items.filter((item) => item.selected === true).length
+                  })`}</button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </main>
@@ -298,15 +269,24 @@ const CartPage: NextPage<Props> = () => {
 CartPage.getInitialProps = async (
   context: NextPageContext & { store: Store }
 ) => {
-  // context.store.dispatch(setFilter(filter));
-  console.log(context.store);
+  const cookies = parseCookies(context);
+  const TOKENS = cookies['TOKENS'] || '{}';
+  const TOKENS_VALUE = JSON.parse(TOKENS);
   try {
-    const cart: any = await axiosClient.get('/cart');
-    // context.store.dispatch(setListHomeProduct(products));
-    return { cart: cart || [] };
+    const cart: Cart = await axiosClient.get('/cart', {
+      headers: {
+        Authorization: TOKENS_VALUE.accessToken
+          ? `Bearer ${TOKENS_VALUE.accessToken}`
+          : ''
+      }
+    });
+    context.store.dispatch(setCart(cart.items));
+    return { cart: cart };
   } catch (err) {
     return {
-      cart: []
+      cart: {
+        items: []
+      }
     };
   }
 };

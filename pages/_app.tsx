@@ -12,7 +12,10 @@ import { AppTreeType } from 'next/dist/shared/lib/utils';
 import { getMe } from 'app/slice';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { restoreCartFromLocalStorage } from '@app/slice/cartSlice';
+import {
+  getCountCart,
+  restoreCartFromLocalStorage
+} from '@app/slice/cartSlice';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const store = useStore(pageProps.initialReduxState);
@@ -31,9 +34,21 @@ function MyApp({ Component, pageProps }: AppProps) {
       setUserLoaded(true);
     }
   };
+  const getCart = async () => {
+    const token = localStorage.getItem(process.env.TOKEN_KEY || 'access_token');
+    if (token == null) {
+      return;
+    }
+    try {
+      const cartInfo = await store.dispatch(getCountCart()).unwrap();
+    } catch (e) {
+      console.error(e);
+    }
+  };
   useEffect(() => {
     getUserData();
-    store.dispatch(restoreCartFromLocalStorage());
+    getCart();
+    // store.dispatch(restoreCartFromLocalStorage());
     // restore cart
   }, []);
   return (
@@ -41,7 +56,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       {/* <NextUIProvider> */}
       <ToastContainer />
       <NextNprogress
-        color="#3B82F6"
+        color="#0270d1"
         startPosition={0.3}
         stopDelayMs={200}
         height={2}
