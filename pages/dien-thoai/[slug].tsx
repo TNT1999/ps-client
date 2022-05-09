@@ -60,7 +60,12 @@ const Phone: NextPage<Props> = ({ product }) => {
       <main className="flex justify-center overflow-auto h-main bg-main">
         <div className="max-w-screen-xl w-full">
           <div className="p-4 justify-center flex-col flex gap-x-4 bg-white">
-            <Breadcrumb productName={name} slug={slug} />
+            <Breadcrumb
+              breadcrumbs={[
+                { value: 'Điện thoại', href: '/dien-thoai' },
+                { value: name, href: slug }
+              ]}
+            />
             <Divider className="mt-0 mb-4" />
             <div className="flex rounded">
               <div className="flex-1 flex flex-col">

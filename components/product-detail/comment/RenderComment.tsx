@@ -17,18 +17,20 @@ export const EditorComment = createPlateUIEditor({
 });
 
 type Props = {
-  nodes: object[];
+  value: string;
 };
-const RenderComment: FunctionComponent<Props> = ({ nodes }) => {
+const RenderComment: FunctionComponent<Props> = ({ value }) => {
   return (
     <div
-      className="m-0 text-base text-gray-900"
-      dangerouslySetInnerHTML={{
-        __html: serializeHtml(EditorComment, {
-          nodes
-        })
-      }}
-    />
+      className="m-0 text-base text-gray-900  whitespace-pre-wrap"
+      // dangerouslySetInnerHTML={{
+      //   __html: serializeHtml(EditorComment, {
+      //     nodes
+      //   })
+      // }}
+    >
+      {value}
+    </div>
   );
 };
 

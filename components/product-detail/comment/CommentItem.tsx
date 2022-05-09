@@ -1,11 +1,11 @@
 import { UserInfo } from '@app/slice';
 import { postComment } from '@app/slice/homeSlice';
 import { RootState, useAppDispatch } from '@app/store';
-import { ClockIcon, MessageSquareIcon } from '@assets/icons';
+import { ClockIcon, MessageSquareIcon, SendIcon } from '@assets/icons';
 import UserAvatar from '@components/common/Avatar';
 import dayjs from '@utils/dayjs';
 import { useRouter } from 'next/router';
-import { FunctionComponent, useMemo, useState } from 'react';
+import { ChangeEvent, FunctionComponent, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { CommentType } from 'types';
 import CommentInput from './CommentInput';
@@ -27,16 +27,7 @@ const CommentItem: FunctionComponent<Props> = ({
   marginLeft
 }) => {
   const offset = comment.level >= 1 ? '32px' : '0px';
-  const initialValue = useMemo(
-    () => [
-      {
-        type: 'p',
-        children: [{ text: 'this is initial text' }]
-      }
-    ],
-    []
-  );
-  const [commentReply, setCommentReply] = useState<any>(initialValue);
+  const [commentReply, setCommentReply] = useState<string>('');
   const currentUser: UserInfo = useSelector(
     (state: RootState) => state.auth.user
   );
@@ -59,20 +50,20 @@ const CommentItem: FunctionComponent<Props> = ({
       content: commentReply,
       author: {
         id: currentUser.id,
-        name: currentUser.name || 'Anonymous'
+        name: currentUser.name || 'Untitled'
       },
       slug: selectedProduct.slug,
       replyToCommentId: comment.id,
       level: comment.level + 1,
       rootCommentId: comment.rootCommentId || comment.id,
-      replyToUser: currentUser.name || 'Anonymous'
+      replyToUser: currentUser.name || 'Untitled'
     };
     try {
       await dispatch(postComment(data)).unwrap();
     } catch (e) {
       noop();
     } finally {
-      setCommentReply(initialValue);
+      setCommentReply('');
       setShowReply('')();
     }
   };
@@ -93,7 +84,9 @@ const CommentItem: FunctionComponent<Props> = ({
               &nbsp;{dayjs(comment.createdAt).fromNow()}
             </p>
           </div>
-          <RenderComment nodes={comment.content} />
+          <div className="text-13 font-normal text-gray-900 whitespace-pre-wrap">
+            {comment.content}
+          </div>
           <button
             className="flex items-center justify-center rounded-md self-end text-red-500 ml-3"
             onClick={setShowReply(comment.id)}
@@ -105,12 +98,29 @@ const CommentItem: FunctionComponent<Props> = ({
       </div>
       {showInputReplyCommentId === comment.id && (
         <div className="flex justify-end">
-          <CommentInput
+          {/* <CommentInput
             width={`calc(100% - ${offset}`}
             value={commentReply}
-            onChange={(e) => setCommentReply(e)}
+            onChange={(e: any) => setCommentReply(e)}
             onSend={handleReplyComment}
-          />
+          /> */}
+          <div className="w-full flex px-3 py-3">
+            {/* <CommentEditor value={value} onChange={onChange} /> */}
+            <textarea
+              value={commentReply}
+              onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+                setCommentReply(e.target.value)
+              }
+              placeholder="Xin mời để lại câu hỏi, CellphoneS sẽ trả lời ngay trong 1h, các câu hỏi sau 22h - 8h sẽ được trả lời vào sáng hôm sau."
+            />
+            <button
+              className="flex items-center justify-center bg-red-600 rounded-md text-white h-8 w-16 ml-3"
+              onClick={handleReplyComment}
+            >
+              <SendIcon />
+              &nbsp;Gửi
+            </button>
+          </div>
         </div>
       )}
       {comment.replies &&

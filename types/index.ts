@@ -67,7 +67,7 @@ export type CommentType = {
     id: string;
     name: string;
   };
-  content: object[];
+  content: string;
   createdAt: string;
   updatedAt: string;
   level: number;

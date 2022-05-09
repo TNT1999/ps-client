@@ -89,7 +89,6 @@ const Home: NextPage<Props> = ({ products = [] }) => {
 
 Home.getInitialProps = async (context: NextPageContext & { store: Store }) => {
   const filter = context.query;
-  console.log('change filter');
   if (!isEmpty(filter)) {
     Query2FilterArray(filter);
     context.store.dispatch(setFilter(filter));

@@ -7,6 +7,7 @@ import classNames from 'classnames';
 import { NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 type Props = any;
 const AccountPage: NextPage<Props> = () => {
@@ -23,13 +24,13 @@ const AccountPage: NextPage<Props> = () => {
             <Breadcrumb
               breadcrumbs={[
                 { value: 'Trang chủ', href: '/dien-thoai' },
-                { value: 'Đơn hàng của tôi', href: '/order' }
+                { value: 'Địa chỉ của tôi', href: '/address' }
               ]}
             />
             <Divider className="mt-0 mb-4" />
           </div>
           <div className="flex">
-            <SideBar active="order" />
+            <SideBar active="address" />
             <div className="flex-1">
               <div>Thông tin tài khoản</div>
               <div className="bg-white"></div>
