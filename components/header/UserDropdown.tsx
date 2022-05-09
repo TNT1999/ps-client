@@ -3,6 +3,7 @@ import { Menu, Transition } from '@headlessui/react';
 import { ChevronDownIcon, UserIcon } from '@assets/icons';
 import { useAppDispatch } from 'app/store';
 import { logout } from 'app/slice';
+import { useRouter } from 'next/router';
 
 const UserDropdown: FunctionComponent<{
   name: string | undefined;
@@ -11,6 +12,7 @@ const UserDropdown: FunctionComponent<{
   const handleLogout = () => {
     dispatch(logout());
   };
+  const router = useRouter();
   return (
     <Menu as="div" className="relative">
       <Menu.Button className="justify-center py-2 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
@@ -43,6 +45,7 @@ const UserDropdown: FunctionComponent<{
                   className={`${
                     active && 'bg-blue-100'
                   } focus:outline-none group flex rounded items-center w-full px-2 py-2 text-sm`}
+                  onClick={() => router.push('/account')}
                 >
                   Thông tin tài khoản
                 </button>
