@@ -5,8 +5,8 @@
   "scripts": {
     "next": "next dev -p 8080",
     "dev": "run-p next watch:css",
-    "build": "next build",
-    "start": "yarn run build:css && next start -p 8080",
+    "build": "yarn run build:css && next build",
+    "start": "next start -p 8080",
     "lint": "eslint . --ext=js,jsx,ts,tsx --ignore-path .gitignore --ignore-pattern node_modules/",
     "lint:fix": "eslint . --ext=js,jsx,ts,tsx --fix --ignore-path .gitignore --ignore-pattern node_modules/",
     "prepare": "husky install",

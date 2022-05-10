@@ -1,12 +1,12 @@
 import { UserInfo } from '@app/slice';
 import { postComment } from '@app/slice/homeSlice';
 import { RootState, useAppDispatch } from '@app/store';
-import { ChevronDownIcon } from '@assets/icons';
+import { ChevronDownIcon, SendIcon } from '@assets/icons';
 import Comment from '@components/product-detail/comment/Comment';
 import CommentInput from '@components/product-detail/comment/CommentInput';
 import { noop } from 'lodash';
 import { useRouter } from 'next/router';
-import { FunctionComponent, useMemo, useState } from 'react';
+import { ChangeEvent, FunctionComponent, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Descendant } from 'slate';
 
@@ -28,7 +28,7 @@ const QuestionBox: FunctionComponent<Props> = (props) => {
     []
   );
   const dispatch = useAppDispatch();
-  const [comment, setComment] = useState<Descendant[]>(initialValue);
+  const [comment, setComment] = useState<string>('');
   const router = useRouter();
   const handlePostComment = async () => {
     if (!comment) {
@@ -45,7 +45,7 @@ const QuestionBox: FunctionComponent<Props> = (props) => {
       userId: currentUser.id,
       author: {
         id: currentUser.id,
-        name: currentUser.name || 'Anonymous'
+        name: currentUser.name || 'Untitled'
       },
       slug: selectedProduct.slug,
       level: 0,
@@ -58,18 +58,36 @@ const QuestionBox: FunctionComponent<Props> = (props) => {
     } catch (e) {
       noop();
     } finally {
-      setComment(initialValue);
+      setComment('');
     }
   };
 
   return (
     <div className="rounded-md">
       <p className="text-xl font-normal m-0 p-[10px]">Hỏi và đáp</p>
-      <CommentInput
+      {/* <CommentInput
         value={comment}
         onChange={(newValue) => setComment(newValue)}
         onSend={handlePostComment}
-      />
+      /> */}
+      <div className="w-full flex px-3 py-3">
+        {/* <CommentEditor value={value} onChange={onChange} /> */}
+        <textarea
+          value={comment}
+          onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+            setComment(e.target.value)
+          }
+          className="w-full"
+          placeholder="Xin mời để lại câu hỏi, CellphoneS sẽ trả lời ngay trong 1h, các câu hỏi sau 22h - 8h sẽ được trả lời vào sáng hôm sau."
+        />
+        <button
+          className="flex items-center justify-center bg-red-600 rounded-md text-white h-8 w-16 ml-3"
+          onClick={handlePostComment}
+        >
+          <SendIcon />
+          &nbsp;Gửi
+        </button>
+      </div>
       <div className="bg-gray-50 text-gray-600 p-3">
         <Comment />
         {/* <button className="flex w-80 mb-4 mt-1 self-center justify-center items-center text-sm text-center py-2 px-6 outline-none shadow-md rounded-md">

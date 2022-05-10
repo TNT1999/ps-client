@@ -45,7 +45,7 @@ const UserDropdown: FunctionComponent<{
                   className={`${
                     active && 'bg-blue-100'
                   } focus:outline-none group flex rounded items-center w-full px-2 py-2 text-sm`}
-                  onClick={() => router.push('/account')}
+                  onClick={() => router.push('/user/profile')}
                 >
                   Thông tin tài khoản
                 </button>
@@ -57,6 +57,7 @@ const UserDropdown: FunctionComponent<{
                   className={`${
                     active && 'bg-blue-100'
                   } focus:outline-none group flex rounded items-center w-full px-2 py-2 text-sm`}
+                  onClick={() => router.push('/user/order')}
                 >
                   Đơn hàng của tôi
                 </button>
