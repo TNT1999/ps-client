@@ -11,7 +11,7 @@ const SideBar: FunctionComponent<Props> = ({ active }) => {
     <div className="w-64 mr-4">
       <ul className="list-none m-0 p-0 text-13">
         <li>
-          <Link href={'profile'}>
+          <Link href={'/profile'}>
             <a
               className={classNames(
                 ' flex items-center py-3 px-5 text-[#4a4a4a] hover:opacity-95 hover:bg-[#ebebf0] hover:text-black rounded',
@@ -27,7 +27,7 @@ const SideBar: FunctionComponent<Props> = ({ active }) => {
         </li>
 
         <li>
-          <Link href={'notification'}>
+          <Link href={'/notification'}>
             <a
               className={classNames(
                 ' flex items-center py-3 px-5 text-[#4a4a4a] hover:opacity-95 hover:bg-[#ebebf0] hover:text-black rounded',
@@ -43,7 +43,7 @@ const SideBar: FunctionComponent<Props> = ({ active }) => {
         </li>
 
         <li>
-          <Link href={'order'}>
+          <Link href={'/order'}>
             <a
               className={classNames(
                 ' flex items-center py-3 px-5 text-[#4a4a4a] hover:opacity-95 hover:bg-[#ebebf0] hover:text-black rounded',
@@ -59,7 +59,7 @@ const SideBar: FunctionComponent<Props> = ({ active }) => {
         </li>
 
         <li>
-          <Link href={'address'}>
+          <Link href={'/address'}>
             <a
               className={classNames(
                 ' flex items-center py-3 px-5 text-[#4a4a4a] hover:opacity-95 hover:bg-[#ebebf0] hover:text-black rounded',

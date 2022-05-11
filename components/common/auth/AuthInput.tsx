@@ -8,7 +8,7 @@ const AuthInput: FunctionComponent<{
   message?: string;
   value: string;
   placeholder: string;
-  icon: FunctionComponent<PropsSVG>;
+  icon?: FunctionComponent<PropsSVG>;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }> = ({
   type = 'text',
@@ -22,17 +22,21 @@ const AuthInput: FunctionComponent<{
   const Icon = icon;
   return (
     <div className="relative">
-      <Icon className="absolute mt-4.5 ml-4.5 stroke-current text-gray-900" />
+      {Icon && (
+        <Icon className="absolute mt-4.5 ml-4.5 stroke-current text-gray-900" />
+      )}
       <input
         value={value}
         onChange={onChange}
         name="email"
         type={type}
         className={classNames(
-          'w-full pl-10 block border h-11 placeholder-gray-600 text-gray-900 rounded focus:outline-none mt-5',
+          'w-full block border h-11 placeholder-gray-600 text-gray-900 rounded focus:outline-none mt-5',
           {
             'border-gray-300 focus:border-primary': !isError,
-            'border-danger-400': isError
+            'border-danger-400': isError,
+            'pl-10 pr-4': icon,
+            'px-4': !icon
           }
         )}
         placeholder={placeholder}
