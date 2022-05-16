@@ -18,7 +18,7 @@ const Button: FunctionComponent<Props> = ({
   return (
     <button
       className={cx(
-        'cursor-pointer text-center border-0 outline-0 duration-200 whitespace-nowrap font-semibold py-0 bg-[#00C2B2]',
+        'cursor-pointer text-center border-0 outline-0 duration-200 whitespace-nowrap font-semibold bg-[#00C2B2]',
         className,
         {
           'text-xs px-2 leading-6 rounded': size === 'sm',

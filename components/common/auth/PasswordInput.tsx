@@ -8,8 +8,9 @@ const PasswordInput: FunctionComponent<{
   errorMessage: string;
   placeholder: string;
   icon: FunctionComponent<PropsSVG>;
+  name: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
-}> = ({ password, errorMessage, placeholder, icon, onChange }) => {
+}> = ({ password, errorMessage, placeholder, icon, onChange, name }) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const Icon = icon;
   return (
@@ -28,6 +29,7 @@ const PasswordInput: FunctionComponent<{
           type={showPassword ? 'text' : 'password'}
           value={password}
           onChange={onChange}
+          name={name}
         />
         {showPassword ? (
           <div

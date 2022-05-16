@@ -74,8 +74,7 @@ const CollapseFilter: FunctionComponent<Props> = ({
             >
               <input
                 id={`${title}-${brand.value}`}
-                name="color[]"
-                value="white"
+                name="category"
                 type="checkbox"
                 className="h-3.25 w-3.25 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500"
                 checked={value.includes(brand.value) ? true : false}

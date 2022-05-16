@@ -99,6 +99,7 @@ const AuthModal: FunctionComponent<{ onClose: () => void }> = ({ onClose }) => {
             /> */}
 
             <AuthInput
+              name={'email'}
               isError={emailError !== ''}
               message={emailError}
               value={email}
@@ -108,6 +109,7 @@ const AuthModal: FunctionComponent<{ onClose: () => void }> = ({ onClose }) => {
             />
 
             <PasswordInput
+              name={'password'}
               errorMessage={passwordError}
               password={password}
               placeholder="Password"

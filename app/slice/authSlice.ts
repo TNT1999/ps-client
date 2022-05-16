@@ -60,7 +60,9 @@ const authSlice = createSlice({
     logout(state) {
       // localStorage.removeItem(process.env.TOKEN_KEY || 'access_token');
       // localStorage.removeItem(process.env.REFRESH_KEY || 'refresh_token');
-      nookies.destroy(null, 'TOKENS');
+      nookies.destroy(null, 'TOKENS', {
+        path: '/'
+      });
       state.user = null;
       window.location.reload();
     }

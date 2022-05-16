@@ -1,6 +1,6 @@
 import '../styles/main.css';
 import type { AppProps } from 'next/app';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import NextNprogress from 'nextjs-progressbar';
 import { Provider } from 'react-redux';
 import { initializeStore, Store, useStore } from '@app/store';
@@ -11,13 +11,10 @@ import { AppTreeType } from 'next/dist/shared/lib/utils';
 import { getMe } from 'app/slice';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {
-  getCountCart,
-  restoreCartFromLocalStorage
-} from '@app/slice/cartSlice';
+import { getCountCart } from '@app/slice/cartSlice';
 import { parseCookies } from 'nookies';
 import isNil from 'lodash/isNil';
-
+import useAsyncEffect from 'use-async-effect';
 function MyApp({ Component, pageProps }: AppProps) {
   const store = useStore(pageProps.initialReduxState);
   const [isUserLoaded, setUserLoaded] = useState(false);
@@ -31,30 +28,18 @@ function MyApp({ Component, pageProps }: AppProps) {
       return setUserLoaded(true);
     }
     try {
-      const currentUser = await store.dispatch(getMe()).unwrap();
+      await Promise.all([
+        store.dispatch(getMe()).unwrap(),
+        store.dispatch(getCountCart()).unwrap()
+      ]);
     } catch (e) {
       console.error(e);
     } finally {
       setUserLoaded(true);
     }
   };
-  const getCart = async () => {
-    const cookies = parseCookies();
-    const TOKENS = cookies['TOKENS'] || '{}';
-    const TOKENS_VALUE = JSON.parse(TOKENS);
-    const token = TOKENS_VALUE.accessToken;
-    if (isNil(token)) {
-      return;
-    }
-    try {
-      const cartInfo = await store.dispatch(getCountCart()).unwrap();
-    } catch (e) {
-      console.error(e);
-    }
-  };
-  useEffect(() => {
+  useAsyncEffect(() => {
     getUserData();
-    getCart();
     // store.dispatch(restoreCartFromLocalStorage());
     // restore cart
   }, []);
