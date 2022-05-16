@@ -1,5 +1,5 @@
 import { PlusIcon } from '@assets/icons';
-import Button from '@components/common/Buton';
+import Button from '@components/common/Button';
 import EditableText from '@components/common/EditableText';
 import Field from '@components/common/Field';
 import { isNotEmpty } from '@utils/string';
