@@ -1,21 +1,53 @@
+import {
+  Edit2Icon,
+  LockIcon,
+  MailIcon,
+  PhoneIcon,
+  FacebookIcon,
+  GoogleIcon
+} from '@assets/icons';
 import Breadcrumb from '@components/breadcrumb';
 import { default as Input } from '@components/common/auth/AuthInput';
 import Divider from '@components/common/Divider';
 import Layout from '@components/common/Layout';
+import Tooltip from '@components/common/Tooltip';
 import SideBar from '@components/common/user/SideBar';
 import { Store } from '@reduxjs/toolkit';
+import Tippy from '@tippyjs/react';
 import axiosClient from '@utils/api';
-import { noop } from 'lodash';
+import { isNil, noop } from 'lodash';
 import { NextPage, NextPageContext } from 'next';
 import Head from 'next/head';
 import { parseCookies } from 'nookies';
-import { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 
+type UserProfile = {
+  name: string;
+  phone: string;
+  email: string;
+  emailVerified: boolean;
+  isActive: boolean;
+  gender: string;
+};
 type Props = {
-  user: any;
+  user: UserProfile | null;
 };
 const AccountPage: NextPage<Props> = ({ user }) => {
   const [userProfile, setUserProfile] = useState(user);
+  const [isEdit, setIsEdit] = useState(false);
+
+  if (isNil(userProfile)) {
+    return <div>Error</div>;
+  }
+
+  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setUserProfile({
+      ...userProfile,
+      [e.target.name]: value
+    });
+  };
+
   return (
     <Layout>
       <Head>
@@ -24,7 +56,7 @@ const AccountPage: NextPage<Props> = ({ user }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex justify-center overflow-auto h-main bg-main">
-        <div className="max-w-screen-xl w-full">
+        <div className="max-w-screen-xl w-full px-4">
           <div className="p-4 justify-center flex-col flex gap-x-4">
             <Breadcrumb
               breadcrumbs={[
@@ -37,17 +69,175 @@ const AccountPage: NextPage<Props> = ({ user }) => {
           <div className="flex">
             <SideBar active="profile" />
             <div className="flex-1">
-              <div>Thông tin tài khoản</div>
+              <div className="text-2xl font-light mt-1 mb-4 flex justify-between">
+                <span>Thông tin tài khoản</span>
+                <Tippy
+                  arrow={true}
+                  content={<Tooltip text={'Chỉnh sửa'} />}
+                  delay={100}
+                >
+                  <span>
+                    <Edit2Icon
+                      className="cursor-pointer w-5 h-5"
+                      onClick={() => setIsEdit(true)}
+                    />
+                  </span>
+                </Tippy>
+              </div>
               <div className="bg-white flex flex-nowrap rounded-lg justify-between">
                 <div className="w-[560px] p-4 pr-6">
-                  <Input
-                    value={userProfile.name}
-                    placeholder={'Họ tên'}
-                    onChange={noop}
-                  />
+                  <span className="text-16 font-normal text-[#64646d]">
+                    Thông tin cá nhân
+                  </span>
+                  <div className="mt-4">
+                    <div className="flex mb-9">
+                      <div className="flex items-center flex-1">
+                        <label className="text-base mr-4 text-[#333333] min-w-[110px] w-[110px]">
+                          Họ & Tên
+                        </label>
+                        <div className="flex-1">
+                          <Input
+                            disabled={!isEdit}
+                            name="name"
+                            value={userProfile.name}
+                            placeholder={'Họ tên'}
+                            onChange={onChange}
+                            inputClassName="!h-10 !mt-0"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex mb-9">
+                      <div className="flex items-center flex-1">
+                        <label className="text-base mr-4 text-[#333333] min-w-[110px] w-[110px]">
+                          Giới tính
+                        </label>
+                        <div className="flex-1 flex">
+                          <label className="flex items-center mr-4">
+                            <input
+                              type="radio"
+                              name="gender"
+                              value="male"
+                              onChange={onChange}
+                              className="h-5 w-5 border-gray-300 focus:ring-blue-300"
+                            />
+                            <span className="text-13 ml-2 block">Nam</span>
+                          </label>
+
+                          <label className="flex items-center mr-4">
+                            <input
+                              type="radio"
+                              name="gender"
+                              value="female"
+                              onChange={onChange}
+                              className="h-5 w-5 border-gray-300 focus:ring-blue-300"
+                            />
+                            <span className="text-13 ml-2 block">Nữ</span>
+                          </label>
+
+                          <label className="flex items-center mr-4">
+                            <input
+                              type="radio"
+                              name="gender"
+                              value="other"
+                              onChange={onChange}
+                              className="h-5 w-5 border-gray-300 focus:ring-blue-300"
+                            />
+                            <span className="text-13 ml-2 block">Khác</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+
                 <div className="my-4 border-l-px border-[#ebebf0]"></div>
-                <div className="w-[calc(100%-560px)] p-4 pl-6 flex flex-col"></div>
+                <div className="w-[calc(100%-560px)] p-4 pl-6 flex flex-col">
+                  <span className="text-16 font-normal text-[#64646d]">
+                    Số điện thoại và Email
+                  </span>
+                  <div className="mb-4">
+                    <div className="flex flex-col mt-5">
+                      <div className="flex flex-col flex-1">
+                        <label className="flex items-center text-base mr-4 text-[#333333]">
+                          <PhoneIcon className="w-5 h-5 text-[#a6a6b0] mr-4" />
+                          <span>Số điện thoại</span>
+                        </label>
+                        <div className="flex-1 py-5">
+                          <Input
+                            disabled={!isEdit}
+                            name="phone"
+                            value={userProfile.phone}
+                            onChange={onChange}
+                            inputClassName="!h-10 !mt-0"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex flex-col mt-4">
+                      <div className="flex flex-1 flex-col">
+                        <label className="flex items-center text-base mr-4 text-[#333333]">
+                          <MailIcon className="w-5 h-5 text-[#a6a6b0] mr-4" />
+                          <span>Email</span>
+                        </label>
+                        <div className="flex-1 py-5">
+                          <Input
+                            disabled={!isEdit}
+                            name="email"
+                            value={userProfile.email}
+                            onChange={onChange}
+                            inputClassName="!h-10 !mt-0"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <span className="text-16 font-normal text-[#64646d]">
+                    Bảo mật
+                  </span>
+                  <div className="mb-4">
+                    <div className="flex flex-col mt-4">
+                      <div className="flex flex-1 justify-between items-center py-5">
+                        <label className="flex items-center text-base mr-4 text-[#333333]">
+                          <LockIcon className="w-5 h-5 text-[#a6a6b0] mr-4" />
+                          <span>Đổi mật khẩu</span>
+                        </label>
+                        <button className="h-8 rounded px-3 text-[#0b74e5] cursor-pointer border-px border-[#0b74e5] bg-white">
+                          Cập nhật
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <span className="text-16 font-normal text-[#64646d]">
+                    Liên kết mạng xã hội
+                  </span>
+
+                  <div className="mb-4">
+                    <div className="flex flex-col mt-4">
+                      <div className="flex flex-1 justify-between items-center py-5">
+                        <label className="flex items-center text-base mr-4 text-[#333333]">
+                          <FacebookIcon className="w-5 h-5 text-[#a6a6b0] mr-4" />
+                          <span>Facebook</span>
+                        </label>
+                        <button className="h-8 rounded px-3 text-[#0b74e5] cursor-pointer border-px border-[#0b74e5] bg-white">
+                          Liên kết
+                        </button>
+                      </div>
+
+                      <div className="flex flex-1 justify-between items-center py-5">
+                        <label className="flex items-center text-base mr-4 text-[#333333]">
+                          <GoogleIcon className="w-5 h-5 text-[#a6a6b0] mr-4" />
+                          <span>Google</span>
+                        </label>
+                        <button className="h-8 rounded px-3 text-[#0b74e5] cursor-pointer border-px border-[#0b74e5] bg-white">
+                          Liên kết
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -64,7 +254,7 @@ AccountPage.getInitialProps = async (
   const TOKENS = cookies['TOKENS'] || '{}';
   const TOKENS_VALUE = JSON.parse(TOKENS);
   try {
-    const userProfile = await axiosClient.get('/auth/profile', {
+    const userProfile: UserProfile = await axiosClient.get('/auth/profile', {
       headers: {
         Authorization: TOKENS_VALUE.accessToken
           ? `Bearer ${TOKENS_VALUE.accessToken}`

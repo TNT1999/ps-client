@@ -1,22 +1,28 @@
-import { BellIcon, MapPinIcon, OrderIcon, UserIcon } from '@assets/icons';
+import {
+  BellIcon,
+  MapPinIcon,
+  OrderIcon,
+  ReviewIcon,
+  UserIcon
+} from '@assets/icons';
 import classNames from 'classnames';
 import Link from 'next/link';
 import { FunctionComponent } from 'react';
 
 type Props = {
-  active: 'profile' | 'order' | 'address' | 'notification';
+  active?: 'profile' | 'order' | 'address' | 'notification' | 'review';
 };
 const SideBar: FunctionComponent<Props> = ({ active }) => {
   return (
     <div className="w-64 mr-4">
       <ul className="list-none m-0 p-0 text-13">
         <li>
-          <Link href={'/profile'}>
+          <Link href={'/user/profile'}>
             <a
               className={classNames(
                 ' flex items-center py-3 px-5 text-[#4a4a4a] hover:opacity-95 hover:bg-[#ebebf0] hover:text-black rounded',
                 {
-                  'bg-[#ebebf0] text-black': active === 'profile'
+                  'bg-[#ebebf0] !text-black': active === 'profile'
                 }
               )}
             >
@@ -27,12 +33,12 @@ const SideBar: FunctionComponent<Props> = ({ active }) => {
         </li>
 
         <li>
-          <Link href={'/notification'}>
+          <Link href={'/user/notification'}>
             <a
               className={classNames(
                 ' flex items-center py-3 px-5 text-[#4a4a4a] hover:opacity-95 hover:bg-[#ebebf0] hover:text-black rounded',
                 {
-                  'bg-[#ebebf0] text-black': active === 'notification'
+                  'bg-[#ebebf0] !text-black': active === 'notification'
                 }
               )}
             >
@@ -43,12 +49,12 @@ const SideBar: FunctionComponent<Props> = ({ active }) => {
         </li>
 
         <li>
-          <Link href={'/order'}>
+          <Link href={'/user/order'}>
             <a
               className={classNames(
                 ' flex items-center py-3 px-5 text-[#4a4a4a] hover:opacity-95 hover:bg-[#ebebf0] hover:text-black rounded',
                 {
-                  'bg-[#ebebf0] text-black': active === 'order'
+                  'bg-[#ebebf0] !text-black': active === 'order'
                 }
               )}
             >
@@ -59,17 +65,32 @@ const SideBar: FunctionComponent<Props> = ({ active }) => {
         </li>
 
         <li>
-          <Link href={'/address'}>
+          <Link href={'/user/address'}>
             <a
               className={classNames(
                 ' flex items-center py-3 px-5 text-[#4a4a4a] hover:opacity-95 hover:bg-[#ebebf0] hover:text-black rounded',
                 {
-                  'bg-[#ebebf0] text-black': active === 'address'
+                  'bg-[#ebebf0] !text-black': active === 'address'
                 }
               )}
             >
               <MapPinIcon className="text-current w-6 h-6 mr-6" />
               <span>Địa chỉ</span>
+            </a>
+          </Link>
+        </li>
+        <li>
+          <Link href={'/user/review'}>
+            <a
+              className={classNames(
+                ' flex items-center py-3 px-5 text-[#4a4a4a] hover:opacity-95 hover:bg-[#ebebf0] hover:text-black rounded',
+                {
+                  'bg-[#ebebf0] !text-black': active === 'review'
+                }
+              )}
+            >
+              <ReviewIcon className="text-current w-6 h-6 mr-6" />
+              <span>Nhận xét của tôi</span>
             </a>
           </Link>
         </li>

@@ -42,6 +42,10 @@ import CheckCircle from './icons/CheckCircle.svg';
 import XCircle from './icons/XCircle.svg';
 import Bell from './icons/Bell.svg';
 import MapPin from './icons/MapPin.svg';
+import Phone from './icons/Phone.svg';
+import Lock from './icons/Lock.svg';
+import Edit2 from './icons/Edit2.svg';
+import Review from './icons/Review.svg';
 export type PropsSVG = SVGAttributes<any>;
 
 export const MailIcon: FunctionComponent<PropsSVG> = (props) => (
@@ -119,6 +123,9 @@ export const BarChartIcon: FunctionComponent<PropsSVG> = (props) => (
 export const EditIcon: FunctionComponent<PropsSVG> = (props) => (
   <Edit {...props} />
 );
+export const Edit2Icon: FunctionComponent<PropsSVG> = (props) => (
+  <Edit2 {...props} />
+);
 export const ImageIcon: FunctionComponent<PropsSVG> = (props) => (
   <Image {...props} />
 );
@@ -170,4 +177,13 @@ export const BellIcon: FunctionComponent<PropsSVG> = (props) => (
 );
 export const MapPinIcon: FunctionComponent<PropsSVG> = (props) => (
   <MapPin {...props} />
+);
+export const PhoneIcon: FunctionComponent<PropsSVG> = (props) => (
+  <Phone {...props} />
+);
+export const LockIcon: FunctionComponent<PropsSVG> = (props) => (
+  <Lock {...props} />
+);
+export const ReviewIcon: FunctionComponent<PropsSVG> = (props) => (
+  <Review {...props} />
 );

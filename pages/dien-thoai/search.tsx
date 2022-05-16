@@ -37,7 +37,7 @@ const SearchPage: NextPage<Props> = ({ products = [] }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex justify-center overflow-auto h-main">
-        <div className="max-w-screen-xl w-full">
+        <div className="max-w-screen-xl w-full px-4">
           <div className="py-4 px-10 justify-center flex gap-x-4">
             {/* <Filter className='flex-4' /> */}
             <div className="flex-19 h-full w-full flex flex-wrap">

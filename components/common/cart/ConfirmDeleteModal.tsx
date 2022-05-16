@@ -56,7 +56,7 @@ const ConfirmDeleteModal: FunctionComponent<Props> = ({
         <div className="bg-white rounded-lg flex-1">
           <div className="flex items-center leading-10 mb-2">
             <AlertTriangleIcon className="text-[#fc9128] mr-2" />
-            <div className="text-[16px] font-medium">Xoá sản phẩm</div>
+            <div className="text-16 font-medium">Xoá sản phẩm</div>
           </div>
           <div className="text-base text-[#515158]">
             Bạn có muốn xóa sản phẩm đang chọn?

@@ -1,5 +1,5 @@
 import { CloseIcon } from '@assets/icons';
-import Button from '@components/common/Buton';
+import Button from '@components/common/Button';
 import Tree from '@components/common/Tree';
 import { FunctionComponent, useState } from 'react';
 import { ColorOption } from 'types';

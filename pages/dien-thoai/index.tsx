@@ -72,7 +72,7 @@ const Home: NextPage<Props> = ({ products = [] }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex justify-center overflow-auto h-main bg-main">
-        <div className="max-w-screen-xl w-full">
+        <div className="max-w-screen-xl w-full px-4">
           <div className="py-4 justify-center flex bg-white">
             <Filter className="w-52 border-r-px border-[#f7f7f7]" />
             <div className="flex-19 h-full w-full flex flex-wrap gap-2">

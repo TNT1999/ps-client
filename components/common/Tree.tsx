@@ -1,6 +1,6 @@
 import { ChevronRightIcon } from '@assets/icons';
 import { FunctionComponent, memo } from 'react';
-import Button from './Buton';
+import Button from './Button';
 import cx from 'classnames';
 import { motion } from 'framer-motion';
 import React from 'react';

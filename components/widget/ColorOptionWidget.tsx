@@ -1,5 +1,5 @@
 import { CloseIcon, PlusIcon } from '@assets/icons';
-import Button from '@components/common/Buton';
+import Button from '@components/common/Button';
 import Field from '@components/common/Field';
 import { nanoid } from '@reduxjs/toolkit';
 import { motion } from 'framer-motion';

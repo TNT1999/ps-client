@@ -1,6 +1,8 @@
 // import Tooltip from '@components/common/Tooltip';
+import Tooltip from '@components/common/Tooltip';
+import Tippy from '@tippyjs/react';
 import classNames from 'classnames';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useState } from 'react';
 type Props = any;
 const NavigationMenuItem: FunctionComponent<Props> = ({
   icon,
@@ -10,10 +12,10 @@ const NavigationMenuItem: FunctionComponent<Props> = ({
   onClick,
   className,
   control,
-  tooltip,
   ...props
 }) => {
   const Icon = icon;
+  const [visibleTooltip, setVisibleTooltip] = useState(false);
   return (
     <div
       className={classNames(
@@ -33,13 +35,25 @@ const NavigationMenuItem: FunctionComponent<Props> = ({
         )}
       >
         <span className="flex items-center w-[13.5rem] min-w-[13.5rem] text-[#616c7a]">
-          <Icon
-            className={classNames('h-5 w-5 text-gray-700 m-[0.4375rem]', {
-              'duration-200': control,
-              'rotate-0': control && collapsed,
-              'rotate-180': control && !collapsed
-            })}
-          />
+          <Tippy
+            visible={collapsed && visibleTooltip && label}
+            arrow={true}
+            placement={'right'}
+            content={<Tooltip text={label} />}
+            delay={100}
+          >
+            <span>
+              <Icon
+                onMouseEnter={() => setVisibleTooltip(true)}
+                onMouseLeave={() => setVisibleTooltip(false)}
+                className={classNames('h-5 w-5 text-gray-700 m-[0.4375rem]', {
+                  'duration-200': control,
+                  'rotate-0': control && collapsed,
+                  'rotate-180': control && !collapsed
+                })}
+              />
+            </span>
+          </Tippy>
           <span
             className={classNames(
               'flex flex-1 overflow-hidden font-semibold text-sm duration-200 ml-3 select-none',

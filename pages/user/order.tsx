@@ -18,7 +18,7 @@ const AccountPage: NextPage<Props> = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex justify-center overflow-auto h-main bg-main">
-        <div className="max-w-screen-xl w-full">
+        <div className="max-w-screen-xl w-full px-4">
           <div className="p-4 justify-center flex-col flex gap-x-4">
             <Breadcrumb
               breadcrumbs={[
