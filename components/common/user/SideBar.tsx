@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { FunctionComponent } from 'react';
 
 type Props = {
-  active: 'profile' | 'order' | 'address' | 'notification' | 'review';
+  active?: 'profile' | 'order' | 'address' | 'notification' | 'review';
 };
 const SideBar: FunctionComponent<Props> = ({ active }) => {
   return (

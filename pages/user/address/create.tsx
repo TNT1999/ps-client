@@ -37,7 +37,7 @@ const CreateAddressPage: NextPage<Props> = () => {
     phone: string;
     is_default: boolean;
   }>({
-    id: null,
+    id: '',
     name: '',
     address: '',
     phone: '',
