@@ -1,4 +1,10 @@
-import { CheckCircleIcon, Edit2Icon, PlusIcon, TrashIcon } from '@assets/icons';
+import {
+  CheckCircleIcon,
+  Edit2Icon,
+  PlusIcon,
+  TrashIcon,
+  XCircleIcon
+} from '@assets/icons';
 import Breadcrumb from '@components/breadcrumb';
 import Divider from '@components/common/Divider';
 import Layout from '@components/common/Layout';
@@ -34,17 +40,20 @@ const CreateAddressPage: NextPage<Props> = () => {
     id: string;
     name: string;
     address: string;
+    address_type: 'home' | 'company';
     phone: string;
     is_default: boolean;
   }>({
-    id: null,
+    id: '',
     name: '',
     address: '',
     phone: '',
+    address_type: 'home',
     is_default: false
   });
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+    const value =
+      e.target.type === 'checkbox' ? e.target.checked : e.target.value;
     setAddress({
       ...address,
       [e.target.name]: value
@@ -77,7 +86,7 @@ const CreateAddressPage: NextPage<Props> = () => {
               <div className="rounded bg-white py-9 px-6">
                 <form className="flex space-x-8">
                   <div className="flex-1">
-                    <div className="flex items-center mb-5">
+                    <div className="flex items-center mb-8">
                       <label
                         htmlFor="name"
                         className="text-base mr-4 text-[#333333] min-w-[110px] w-[110px]"
@@ -95,7 +104,7 @@ const CreateAddressPage: NextPage<Props> = () => {
                         />
                       </div>
                     </div>
-                    <div className="flex items-center mb-5">
+                    <div className="flex items-center mb-8">
                       <label
                         htmlFor="phone"
                         className="text-base mr-4 text-[#333333] min-w-[110px] w-[110px]"
@@ -116,7 +125,7 @@ const CreateAddressPage: NextPage<Props> = () => {
                   </div>
 
                   <div className="flex-1">
-                    <div className="flex items-center mb-5">
+                    <div className="flex items-center mb-8">
                       <label
                         htmlFor="province"
                         className="text-base mr-4 text-[#333333] min-w-[110px] w-[110px]"
@@ -135,7 +144,7 @@ const CreateAddressPage: NextPage<Props> = () => {
                       </select>
                     </div>
 
-                    <div className="flex items-center mb-5">
+                    <div className="flex items-center mb-8">
                       <label
                         htmlFor="district"
                         className="text-base mr-4 text-[#333333] min-w-[110px] w-[110px]"
@@ -154,7 +163,7 @@ const CreateAddressPage: NextPage<Props> = () => {
                       </select>
                     </div>
 
-                    <div className="flex items-center mb-5">
+                    <div className="flex items-center mb-8">
                       <label
                         htmlFor="ward"
                         className="text-base mr-4 text-[#333333] min-w-[110px] w-[110px]"
@@ -173,7 +182,7 @@ const CreateAddressPage: NextPage<Props> = () => {
                       </select>
                     </div>
 
-                    <div className="flex items-center mb-5">
+                    <div className="flex items-center mb-8">
                       <label
                         htmlFor="address"
                         className="self-start text-base mr-4 text-[#333333] min-w-[110px] w-[110px]"
@@ -187,7 +196,43 @@ const CreateAddressPage: NextPage<Props> = () => {
                         placeholder="Nhập địa chỉ..."
                       ></textarea>
                     </div>
-                    <div className="flex items-center mb-5">
+
+                    <div className="flex items-center mb-8">
+                      <div className="flex items-center flex-1">
+                        <label className="text-base mr-4 text-[#333333] min-w-[110px] w-[110px]">
+                          Loại địa chỉ:{' '}
+                        </label>
+                        <div className="flex-1 flex">
+                          <label className="flex items-center mr-4">
+                            <input
+                              type="radio"
+                              name="address_type"
+                              value="home"
+                              onChange={onChange}
+                              className="h-5 w-5 border-gray-300 focus:ring-blue-300"
+                            />
+                            <span className="text-13 ml-2 block">
+                              Nhà riêng / Chung cư
+                            </span>
+                          </label>
+
+                          <label className="flex items-center mr-4">
+                            <input
+                              type="radio"
+                              name="address_type"
+                              value="company"
+                              onChange={onChange}
+                              className="h-5 w-5 border-gray-300 focus:ring-blue-300"
+                            />
+                            <span className="text-13 ml-2 block">
+                              Cơ quan / Công ty
+                            </span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center mb-8">
                       <label className="self-start text-base mr-4 text-[#333333] min-w-[110px] w-[110px]">
                         &nbsp;
                       </label>
@@ -195,9 +240,10 @@ const CreateAddressPage: NextPage<Props> = () => {
                         <input
                           id="default"
                           type="checkbox"
+                          name="is_default"
                           className="h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
-                          // checked={value.includes(brand.value) ? true : false}
-                          // onChange={() => dispatch(handleAction(brand.value))}
+                          checked={address.is_default}
+                          onChange={onChange}
                         />
                         <label
                           htmlFor="default"
@@ -209,10 +255,12 @@ const CreateAddressPage: NextPage<Props> = () => {
                     </div>
                   </div>
                 </form>
-                <Button className="ml-auto text-white flex items-center justify-center bg-primary py-1">
-                  <PlusIcon className="mr-2" />
-                  Thêm
-                </Button>
+                <div className="flex justify-end">
+                  <Button className="flex items-center justify-center py-1 text-white border-px bg-[#0b74e5]">
+                    <PlusIcon className="mr-2" />
+                    Thêm
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
