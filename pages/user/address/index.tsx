@@ -5,34 +5,23 @@ import Layout from '@components/common/Layout';
 import SideBar from '@components/common/user/SideBar';
 import classNames from 'classnames';
 import { isEmpty } from 'lodash';
-import { NextPage } from 'next';
+import { NextPage, NextPageContext } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useState } from 'react';
 import Tippy from '@tippyjs/react';
 import Tooltip from '@components/common/Tooltip';
+import axiosClient from '@utils/api';
+import { Store } from '@reduxjs/toolkit';
+import { parseCookies } from 'nookies';
+import { setAddress } from '@app/slice/authSlice';
+import { AddressType } from '@types';
 
-const add = [
-  {
-    id: '1',
-    name: 'TRẦN NGUYÊN TÀI',
-    address:
-      '10/9 đường 11,........, Phường Bình Thọ, Quận Thủ Đức, Hồ Chí Minh',
-    phone: '0979779284',
-    is_default: true
-  },
-  {
-    id: '2',
-    name: 'TRẦN NGUYÊN TÀI',
-    address:
-      '10/9 đường 11,........, Phường Bình Thọ, Quận Thủ Đức, Hồ Chí Minh',
-    phone: '0979779284',
-    is_default: false
-  }
-];
-type Props = any;
-const AddressPage: NextPage<Props> = () => {
-  const [address, setAddress] = useState(add);
+type Props = {
+  addressProps: AddressType[] | null;
+};
+const AddressPage: NextPage<Props> = ({ addressProps }) => {
+  const [address, setAddress] = useState(addressProps || []);
   return (
     <Layout>
       <Head>
@@ -74,7 +63,7 @@ const AddressPage: NextPage<Props> = () => {
                         <div>
                           <div className="uppercase mb-3 flex">
                             {item.name}
-                            {item.is_default && (
+                            {item.isDefault && (
                               <span className="flex items-center text-green-500 text-[12px] normal-case ml-5">
                                 <CheckCircleIcon className="w-3.5 h-3.5 mr-2" />
                                 <span>Địa chỉ mặc định</span>
@@ -83,7 +72,7 @@ const AddressPage: NextPage<Props> = () => {
                           </div>
                           <div className="mb-2">
                             <span className="text-[#787878]">Địa chỉ: </span>
-                            {item.address}
+                            {`${item.address}, ${item.ward}, ${item.district}, ${item.province}`}
                           </div>
                           <div>
                             <span className="text-[#787878]">Điện thoại: </span>
@@ -98,13 +87,13 @@ const AddressPage: NextPage<Props> = () => {
                           >
                             <span
                               className={classNames({
-                                'mr-5': !item.is_default
+                                'mr-5': !item.isDefault
                               })}
                             >
                               <Edit2Icon className="w-5 h-5 text-gray-500 cursor-pointer" />
                             </span>
                           </Tippy>
-                          {!item.is_default && (
+                          {!item.isDefault && (
                             <>
                               <Tippy
                                 arrow={true}
@@ -128,5 +117,28 @@ const AddressPage: NextPage<Props> = () => {
       </main>
     </Layout>
   );
+};
+
+AddressPage.getInitialProps = async (
+  context: NextPageContext & { store: Store }
+) => {
+  const cookies = parseCookies(context);
+  const TOKENS = cookies['TOKENS'] || '{}';
+  const TOKENS_VALUE = JSON.parse(TOKENS);
+  try {
+    const address: AddressType[] = await axiosClient.get('/address', {
+      headers: {
+        Authorization: TOKENS_VALUE.accessToken
+          ? `Bearer ${TOKENS_VALUE.accessToken}`
+          : ''
+      }
+    });
+    context.store.dispatch(setAddress(address));
+    return { addressProps: address };
+  } catch (err) {
+    return {
+      addressProps: null
+    };
+  }
 };
 export default AddressPage;

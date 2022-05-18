@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { useRouter } from 'next/router';
 import { FunctionComponent, useState } from 'react';
 import isEmpty from 'lodash/isEmpty';
-import { Variant } from 'types';
+import { Variant } from '@types';
 import { SelectIndicatorIcon } from '@assets/icons';
 type Props = {
   option: Variant[];

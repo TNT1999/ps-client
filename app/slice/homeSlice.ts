@@ -3,7 +3,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axiosClient from '@utils/api';
 import isEmpty from 'lodash/isEmpty';
 import omit from 'lodash/omit';
-import { CommentType, DetailProductType, ProductType } from 'types';
+import { CommentType, DetailProductType, ProductType } from '@types';
 
 type Filter = {
   price: string[];

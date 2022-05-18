@@ -1,10 +1,4 @@
-import {
-  CheckCircleIcon,
-  Edit2Icon,
-  PlusIcon,
-  TrashIcon,
-  XCircleIcon
-} from '@assets/icons';
+import { PlusIcon } from '@assets/icons';
 import Breadcrumb from '@components/breadcrumb';
 import Divider from '@components/common/Divider';
 import Layout from '@components/common/Layout';
@@ -12,48 +6,82 @@ import SideBar from '@components/common/user/SideBar';
 import { isEmpty } from 'lodash';
 import { NextPage } from 'next';
 import Head from 'next/head';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useState, useEffect } from 'react';
 import { default as Input } from '@components/common/auth/AuthInput';
 import Button from '@components/common/Button';
+import classNames from 'classnames';
+import { AddressType } from '@types';
+import { useUpdateEffect } from 'react-use';
 
-const add = [
-  {
-    id: '1',
-    name: 'TRẦN NGUYÊN TÀI',
-    address:
-      '10/9 đường 11,........, Phường Bình Thọ, Quận Thủ Đức, Hồ Chí Minh',
-    phone: '0979779284',
-    is_default: true
-  },
-  {
-    id: '2',
-    name: 'TRẦN NGUYÊN TÀI',
-    address:
-      '10/9 đường 11,........, Phường Bình Thọ, Quận Thủ Đức, Hồ Chí Minh',
-    phone: '0979779284',
-    is_default: false
-  }
-];
 type Props = any;
 const CreateAddressPage: NextPage<Props> = () => {
-  const [address, setAddress] = useState<{
-    id: string;
-    name: string;
-    address: string;
-    address_type: 'home' | 'company';
-    phone: string;
-    is_default: boolean;
-  }>({
-    id: '',
+  const [address, setAddress] = useState<Partial<Omit<AddressType, 'id'>>>({
+    phone: '',
+    name: '',
+    districtId: undefined,
+    district: '',
+    provinceId: undefined,
+    province: '',
+    wardId: undefined,
+    ward: '',
+    address: '',
+    isDefault: false,
+    addressType: 'home'
+  });
+
+  const [error, setError] = useState({
     name: '',
     address: '',
     phone: '',
-    address_type: 'home',
-    is_default: false
+    province: '',
+    district: '',
+    ward: ''
   });
-  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
+
+  useEffect(() => {
+    const getProvince = async () => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/address/province`
+      );
+      const result = await response.json();
+      setProvinces(result);
+    };
+    getProvince();
+  }, []);
+
+  useUpdateEffect(() => {
+    const getWards = async () => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/address/ward?district_id=${address.districtId}`
+      );
+      const result = await response.json();
+      setWards(result.wards);
+    };
+    getWards();
+  }, [address.districtId]);
+
+  useUpdateEffect(() => {
+    const getDistricts = async () => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/address/district?province_id=${address.provinceId}`
+      );
+      const result = await response.json();
+      setDistricts(result.districts);
+    };
+    getDistricts();
+  }, [address.provinceId]);
+
+  const onChange = (e: ChangeEvent<any>) => {
     const value =
-      e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+      e.target.type === 'checkbox'
+        ? e.target.checked
+        : e.target.type.startsWith('select')
+        ? parseInt(e.target.value)
+        : e.target.value;
     setAddress({
       ...address,
       [e.target.name]: value
@@ -97,10 +125,12 @@ const CreateAddressPage: NextPage<Props> = () => {
                         <Input
                           id="name"
                           name="name"
-                          value={address.name}
+                          value={address.name || ''}
                           onChange={onChange}
                           inputClassName="!h-10 !mt-0"
                           placeholder="Nhập họ và tên"
+                          isError={error.name !== ''}
+                          message={error.name}
                         />
                       </div>
                     </div>
@@ -115,10 +145,12 @@ const CreateAddressPage: NextPage<Props> = () => {
                         <Input
                           id="phone"
                           name="phone"
-                          value={address.phone}
+                          value={address.phone || ''}
                           onChange={onChange}
                           inputClassName="!h-10 !mt-0"
                           placeholder="Nhập số điện thoại"
+                          isError={error.phone !== ''}
+                          message={error.phone}
                         />
                       </div>
                     </div>
@@ -132,16 +164,37 @@ const CreateAddressPage: NextPage<Props> = () => {
                       >
                         Tỉnh/Thành phố:{' '}
                       </label>
-                      <select
-                        id="province"
-                        className="px-4 h-10 mt-0 w-full block border  text-gray-900 rounded focus:outline-none border-gray-300 focus:border-primary"
-                      >
-                        <option selected>Chọn Tỉnh/ Thành phố</option>
-                        <option value="US">United States</option>
-                        <option value="CA">Canada</option>
-                        <option value="FR">France</option>
-                        <option value="DE">Germany</option>
-                      </select>
+                      <div className="flex-1">
+                        <select
+                          id="province"
+                          name="provinceId"
+                          className={classNames(
+                            'px-4 h-10 mt-0 w-full block border text-gray-900 rounded focus:outline-none',
+                            {
+                              'border-red-400 focus:border-primary':
+                                error.province !== '',
+                              'border-gray-300': error.province === ''
+                            }
+                          )}
+                          onChange={onChange}
+                        >
+                          <option selected value={undefined}>
+                            Chọn Tỉnh/ Thành phố
+                          </option>
+                          {provinces.map((province, index) => {
+                            return (
+                              <option key={index} value={province.province_id}>
+                                {province.name}
+                              </option>
+                            );
+                          })}
+                        </select>
+                        {error.province !== '' && (
+                          <div className="text-red-400 text-sm">
+                            {error.province}
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     <div className="flex items-center mb-8">
@@ -151,16 +204,37 @@ const CreateAddressPage: NextPage<Props> = () => {
                       >
                         Quận huyện:{' '}
                       </label>
-                      <select
-                        id="district"
-                        className="px-4 h-10 mt-0 w-full block border  text-gray-900 rounded focus:outline-none border-gray-300 focus:border-primary"
-                      >
-                        <option selected>Chọn Quận huyện</option>
-                        <option value="US">United States</option>
-                        <option value="CA">Canada</option>
-                        <option value="FR">France</option>
-                        <option value="DE">Germany</option>
-                      </select>
+                      <div className="flex-1">
+                        <select
+                          id="district"
+                          name="districtId"
+                          className={classNames(
+                            'px-4 h-10 mt-0 w-full block border text-gray-900 rounded focus:outline-none',
+                            {
+                              'border-red-400 focus:border-primary':
+                                error.district !== '',
+                              'border-gray-300': error.district === ''
+                            }
+                          )}
+                          onChange={onChange}
+                        >
+                          <option selected value={undefined}>
+                            Chọn Quận huyện
+                          </option>
+                          {districts.map((district, index) => {
+                            return (
+                              <option key={index} value={district.district_id}>
+                                {district.name}
+                              </option>
+                            );
+                          })}
+                        </select>
+                        {error.district !== '' && (
+                          <div className="text-red-400 text-sm">
+                            {error.district}
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     <div className="flex items-center mb-8">
@@ -170,16 +244,37 @@ const CreateAddressPage: NextPage<Props> = () => {
                       >
                         Phường xã:{' '}
                       </label>
-                      <select
-                        id="ward"
-                        className="px-4 h-10 mt-0 w-full block border  text-gray-900 rounded focus:outline-none border-gray-300 focus:border-primary"
-                      >
-                        <option selected>Chọn Phường xã</option>
-                        <option value="US">United States</option>
-                        <option value="CA">Canada</option>
-                        <option value="FR">France</option>
-                        <option value="DE">Germany</option>
-                      </select>
+                      <div className="flex-1">
+                        <select
+                          id="ward"
+                          name="wardId"
+                          className={classNames(
+                            'px-4 h-10 mt-0 w-full block border text-gray-900 rounded focus:outline-none',
+                            {
+                              'border-red-400 focus:border-primary':
+                                error.ward !== '',
+                              'border-gray-300': error.ward === ''
+                            }
+                          )}
+                          onChange={onChange}
+                        >
+                          <option selected value={undefined}>
+                            Chọn Phường xã
+                          </option>
+                          {wards.map((ward, index) => {
+                            return (
+                              <option key={index} value={ward.ward_id}>
+                                {ward.name}
+                              </option>
+                            );
+                          })}
+                        </select>
+                        {error.ward !== '' && (
+                          <div className="text-red-400 text-sm">
+                            {error.ward}
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     <div className="flex items-center mb-8">
@@ -189,12 +284,26 @@ const CreateAddressPage: NextPage<Props> = () => {
                       >
                         Địa chỉ:{' '}
                       </label>
-                      <textarea
-                        id="address"
-                        rows={3}
-                        className="block p-2.5 w-full text-gray-900 rounded border border-gray-300 focus:outline-none focus:border-primary"
-                        placeholder="Nhập địa chỉ..."
-                      ></textarea>
+                      <div className="flex-1">
+                        <textarea
+                          id="address"
+                          rows={3}
+                          name="address"
+                          className={classNames(
+                            'block p-2.5 w-full text-gray-900 rounded border focus:outline-none focus:border-primary',
+                            {
+                              'border-red-400': error.address !== '',
+                              'border-gray-300': error.address === ''
+                            }
+                          )}
+                          placeholder="Nhập địa chỉ..."
+                        />
+                        {error.address !== '' && (
+                          <div className="text-red-400 text-sm">
+                            {error.address}
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     <div className="flex items-center mb-8">
@@ -206,9 +315,10 @@ const CreateAddressPage: NextPage<Props> = () => {
                           <label className="flex items-center mr-4">
                             <input
                               type="radio"
-                              name="address_type"
+                              name="addressType"
                               value="home"
                               onChange={onChange}
+                              checked={address.addressType === 'home'}
                               className="h-5 w-5 border-gray-300 focus:ring-blue-300"
                             />
                             <span className="text-13 ml-2 block">
@@ -219,9 +329,10 @@ const CreateAddressPage: NextPage<Props> = () => {
                           <label className="flex items-center mr-4">
                             <input
                               type="radio"
-                              name="address_type"
+                              name="addressType"
                               value="company"
                               onChange={onChange}
+                              checked={address.addressType === 'company'}
                               className="h-5 w-5 border-gray-300 focus:ring-blue-300"
                             />
                             <span className="text-13 ml-2 block">
@@ -240,9 +351,9 @@ const CreateAddressPage: NextPage<Props> = () => {
                         <input
                           id="default"
                           type="checkbox"
-                          name="is_default"
+                          name="isDefault"
                           className="h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
-                          checked={address.is_default}
+                          checked={address.isDefault}
                           onChange={onChange}
                         />
                         <label

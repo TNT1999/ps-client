@@ -1,7 +1,7 @@
 import { ChevronDownIcon } from '@assets/icons';
 import classNames from 'classnames';
 import { FunctionComponent, useState } from 'react';
-import { DeviceInfoType } from 'types';
+import { DeviceInfoType } from '@types';
 
 type Props = {
   attrs: DeviceInfoType[];

@@ -10,7 +10,7 @@ import { setListHomeProduct, setFilter } from '@app/slice/homeSlice';
 import { customQueryString, Query2FilterArray } from '@utils/index';
 import isEmpty from 'lodash/isEmpty';
 import axiosClient from 'utils/api';
-import { ProductType } from 'types';
+import { ProductType } from '@types';
 import LoadingOverlay from '@components/common/LoadingOverlay';
 import Layout from '@components/common/Layout';
 import { useCallback, useEffect } from 'react';

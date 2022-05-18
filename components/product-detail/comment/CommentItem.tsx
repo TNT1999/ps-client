@@ -7,7 +7,7 @@ import dayjs from '@utils/dayjs';
 import { useRouter } from 'next/router';
 import { ChangeEvent, FunctionComponent, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { CommentType } from 'types';
+import { CommentType } from '@types';
 import CommentInput from './CommentInput';
 import { Descendant } from 'slate';
 import { noop } from 'lodash';

@@ -1,24 +1,25 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axiosClient from '@utils/api';
 import nookies from 'nookies';
-
+import { AddressType } from '@types';
 export type UserInfo = {
   id: string;
   name: string;
   email: string;
   roles: string[];
-} | null;
+};
 export type UserData = {
   accessToken: string;
   refreshToken: string;
   user: UserInfo;
 };
-
 export type AuthState = {
-  user: UserInfo;
+  user: UserInfo | null;
+  address: AddressType[] | null;
 };
 const initialAuthState: AuthState = {
-  user: null
+  user: null,
+  address: null
 };
 
 export const getMe = createAsyncThunk(
@@ -64,7 +65,11 @@ const authSlice = createSlice({
         path: '/'
       });
       state.user = null;
+      state.address = null;
       window.location.reload();
+    },
+    setAddress(state, action: PayloadAction<AddressType[]>) {
+      state.address = action.payload;
     }
   },
   extraReducers: (builder) => {
@@ -74,5 +79,5 @@ const authSlice = createSlice({
   }
 });
 
-export const { login, logout } = authSlice.actions;
+export const { login, logout, setAddress } = authSlice.actions;
 export default authSlice.reducer;

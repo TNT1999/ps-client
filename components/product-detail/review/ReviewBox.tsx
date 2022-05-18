@@ -1,5 +1,5 @@
 import { FunctionComponent } from 'react';
-import { ReviewType } from 'types';
+import { ReviewType } from '@types';
 import RatingBox from '../RatingBox';
 import ReviewItem from './ReviewItem';
 type Props = {

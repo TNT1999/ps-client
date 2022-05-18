@@ -92,3 +92,18 @@ export type CommentType = {
 
 //   rootCommentId?: string;
 // };
+
+export type AddressType = {
+  id: string;
+  phone: string;
+  name: string;
+  districtId: number;
+  district: string;
+  provinceId: number;
+  province: string;
+  wardId: number;
+  ward: string;
+  address: string;
+  isDefault: boolean;
+  addressType: 'home' | 'company';
+};

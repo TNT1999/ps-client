@@ -45,7 +45,7 @@ const AuthInput: FunctionComponent<{
           'w-full block border h-11 placeholder:text-13 placeholder:text-gray-400 text-gray-900 rounded focus:outline-none mt-5',
           {
             'border-gray-300 focus:border-primary': !isError,
-            'border-danger-400': isError,
+            'border-red-400': isError,
             'pl-10 pr-4': icon,
             'px-4': !icon
           }
@@ -53,7 +53,7 @@ const AuthInput: FunctionComponent<{
         autoComplete="off"
         placeholder={placeholder}
       />
-      {isError && <div className="text-danger-400 text-sm">{message}</div>}
+      {isError && <div className="text-red-400 text-sm">{message}</div>}
     </div>
   );
 };
