@@ -3,7 +3,7 @@ import Breadcrumb from '@components/breadcrumb';
 import Divider from '@components/common/Divider';
 import Layout from '@components/common/Layout';
 import SideBar from '@components/common/user/SideBar';
-import { isEmpty } from 'lodash';
+import { isEmpty, isFinite, isNil } from 'lodash';
 import { NextPage } from 'next';
 import Head from 'next/head';
 import { ChangeEvent, useState, useEffect } from 'react';
@@ -12,9 +12,15 @@ import Button from '@components/common/Button';
 import classNames from 'classnames';
 import { AddressType } from '@types';
 import { useUpdateEffect } from 'react-use';
-
+import axiosClient from '@utils/api';
+import { useAppDispatch } from '@app/store';
+import { createAddress } from '@app/slice';
+import { isInteger } from '@utils/misc';
+import router, { useRouter } from 'next/router';
 type Props = any;
 const CreateAddressPage: NextPage<Props> = () => {
+  const dispatch = useAppDispatch();
+  const router = useRouter();
   const [address, setAddress] = useState<Partial<Omit<AddressType, 'id'>>>({
     phone: '',
     name: '',
@@ -86,6 +92,47 @@ const CreateAddressPage: NextPage<Props> = () => {
       ...address,
       [e.target.name]: value
     });
+    setError({
+      name: '',
+      address: '',
+      phone: '',
+      province: '',
+      district: '',
+      ward: ''
+    });
+  };
+  const handleSubmit = async () => {
+    const newError = { ...error };
+
+    if (address.name === '') {
+      newError.name = 'Nhập tên';
+    }
+    if (!isInteger(address.phone)) {
+      newError.phone = 'Số điện thoại sai';
+    }
+    if (address.phone === '') {
+      newError.phone = 'Nhập số điện thoại';
+    }
+    if (address.address === '') {
+      newError.address = 'Nhập địa chỉ';
+    }
+    if (isNil(address.provinceId)) {
+      newError.province = 'Nhập Tỉnh/ Thành phố';
+    }
+    if (isNil(address.districtId)) {
+      newError.district = 'Nhập Quận huyện';
+    }
+    if (isNil(address.wardId)) {
+      newError.ward = 'Nhập Phường xã';
+    }
+    setError({ ...newError });
+    if (Object.values(newError).some((error) => !isEmpty(error))) return;
+    try {
+      await dispatch(createAddress(address));
+      router.push('/user/address');
+    } catch (e) {
+      console.log(e);
+    }
   };
   return (
     <Layout>
@@ -181,13 +228,17 @@ const CreateAddressPage: NextPage<Props> = () => {
                           <option selected value={undefined}>
                             Chọn Tỉnh/ Thành phố
                           </option>
-                          {provinces.map((province, index) => {
-                            return (
-                              <option key={index} value={province.province_id}>
-                                {province.name}
-                              </option>
-                            );
-                          })}
+                          {provinces &&
+                            provinces.map((province, index) => {
+                              return (
+                                <option
+                                  key={index}
+                                  value={province.province_id}
+                                >
+                                  {province.name}
+                                </option>
+                              );
+                            })}
                         </select>
                         {error.province !== '' && (
                           <div className="text-red-400 text-sm">
@@ -221,13 +272,17 @@ const CreateAddressPage: NextPage<Props> = () => {
                           <option selected value={undefined}>
                             Chọn Quận huyện
                           </option>
-                          {districts.map((district, index) => {
-                            return (
-                              <option key={index} value={district.district_id}>
-                                {district.name}
-                              </option>
-                            );
-                          })}
+                          {districts &&
+                            districts.map((district, index) => {
+                              return (
+                                <option
+                                  key={index}
+                                  value={district.district_id}
+                                >
+                                  {district.name}
+                                </option>
+                              );
+                            })}
                         </select>
                         {error.district !== '' && (
                           <div className="text-red-400 text-sm">
@@ -261,13 +316,14 @@ const CreateAddressPage: NextPage<Props> = () => {
                           <option selected value={undefined}>
                             Chọn Phường xã
                           </option>
-                          {wards.map((ward, index) => {
-                            return (
-                              <option key={index} value={ward.ward_id}>
-                                {ward.name}
-                              </option>
-                            );
-                          })}
+                          {wards &&
+                            wards.map((ward, index) => {
+                              return (
+                                <option key={index} value={ward.ward_id}>
+                                  {ward.name}
+                                </option>
+                              );
+                            })}
                         </select>
                         {error.ward !== '' && (
                           <div className="text-red-400 text-sm">
@@ -297,6 +353,7 @@ const CreateAddressPage: NextPage<Props> = () => {
                             }
                           )}
                           placeholder="Nhập địa chỉ..."
+                          onChange={onChange}
                         />
                         {error.address !== '' && (
                           <div className="text-red-400 text-sm">
@@ -367,7 +424,10 @@ const CreateAddressPage: NextPage<Props> = () => {
                   </div>
                 </form>
                 <div className="flex justify-end">
-                  <Button className="flex items-center justify-center py-1 text-white border-px bg-[#0b74e5]">
+                  <Button
+                    className="flex items-center justify-center py-1 text-white border-px bg-[#0b74e5]"
+                    onClick={handleSubmit}
+                  >
                     <PlusIcon className="mr-2" />
                     Thêm
                   </Button>

@@ -13,3 +13,6 @@ export function isJSONResponse(res: Response): boolean {
 export function isServer(): boolean {
   return typeof window === 'undefined';
 }
+export function isInteger(value: any) {
+  return /^\d+$/.test(value);
+}

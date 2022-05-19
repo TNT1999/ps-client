@@ -14,12 +14,12 @@ export type UserData = {
   user: UserInfo;
 };
 export type AuthState = {
-  user: UserInfo | null;
-  address: AddressType[] | null;
+  user: UserInfo | undefined;
+  address: AddressType[] | undefined;
 };
 const initialAuthState: AuthState = {
-  user: null,
-  address: null
+  user: undefined,
+  address: undefined
 };
 
 export const getMe = createAsyncThunk(
@@ -28,6 +28,32 @@ export const getMe = createAsyncThunk(
     try {
       const user: UserInfo = await axiosClient.get('auth/me');
       return user;
+    } catch (err) {
+      return rejectWithValue(err);
+    }
+  }
+);
+
+export const deleteAddress = createAsyncThunk(
+  'deleteAddress',
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const result: { status: string } = await axiosClient.delete('/address', {
+        data: { addressId: id }
+      });
+      return result;
+    } catch (err) {
+      return rejectWithValue(err);
+    }
+  }
+);
+
+export const createAddress = createAsyncThunk(
+  'createAddress',
+  async (data: Partial<AddressType>, { rejectWithValue }) => {
+    try {
+      const result: AddressType = await axiosClient.post('/address', data);
+      return result;
     } catch (err) {
       return rejectWithValue(err);
     }
@@ -64,8 +90,8 @@ const authSlice = createSlice({
       nookies.destroy(null, 'TOKENS', {
         path: '/'
       });
-      state.user = null;
-      state.address = null;
+      state.user = undefined;
+      state.address = undefined;
       window.location.reload();
     },
     setAddress(state, action: PayloadAction<AddressType[]>) {
@@ -75,6 +101,12 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(getMe.fulfilled, (state, action) => {
       state.user = action.payload;
+    });
+    builder.addCase(deleteAddress.fulfilled, (state, action) => {
+      if (action.payload.status === 'success') {
+        const id = action.meta.arg;
+        state.address = state.address?.filter((item) => item.id !== id);
+      }
     });
   }
 });

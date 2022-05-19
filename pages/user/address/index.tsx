@@ -14,14 +14,20 @@ import Tooltip from '@components/common/Tooltip';
 import axiosClient from '@utils/api';
 import { Store } from '@reduxjs/toolkit';
 import { parseCookies } from 'nookies';
-import { setAddress } from '@app/slice/authSlice';
+import { deleteAddress, setAddress } from '@app/slice/authSlice';
 import { AddressType } from '@types';
+import { RootState, useAppDispatch } from '@app/store';
+import { useSelector } from 'react-redux';
 
 type Props = {
-  addressProps: AddressType[] | null;
+  address: AddressType[] | null;
 };
-const AddressPage: NextPage<Props> = ({ addressProps }) => {
-  const [address, setAddress] = useState(addressProps || []);
+const AddressPage: NextPage<Props> = () => {
+  const address = useSelector((state: RootState) => state.auth.address) || [];
+  const dispatch = useAppDispatch();
+  const handleDelete = async (id: string) => {
+    await dispatch(deleteAddress(id));
+  };
   return (
     <Layout>
       <Head>
@@ -101,7 +107,10 @@ const AddressPage: NextPage<Props> = ({ addressProps }) => {
                                 delay={100}
                               >
                                 <span>
-                                  <TrashIcon className="w-5 h-5 text-red-500 cursor-pointer" />
+                                  <TrashIcon
+                                    className="w-5 h-5 text-red-500 cursor-pointer"
+                                    onClick={() => handleDelete(item.id)}
+                                  />
                                 </span>
                               </Tippy>
                             </>
@@ -134,10 +143,10 @@ AddressPage.getInitialProps = async (
       }
     });
     context.store.dispatch(setAddress(address));
-    return { addressProps: address };
+    return { address };
   } catch (err) {
     return {
-      addressProps: null
+      address: null
     };
   }
 };
