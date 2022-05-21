@@ -7,7 +7,7 @@ import dayjs from '@utils/dayjs';
 import { useRouter } from 'next/router';
 import { ChangeEvent, FunctionComponent, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { CommentType } from 'types';
+import { CommentType } from '@types';
 import CommentInput from './CommentInput';
 import { Descendant } from 'slate';
 import { noop } from 'lodash';
@@ -70,59 +70,58 @@ const CommentItem: FunctionComponent<Props> = ({
 
   return (
     <div className="flex flex-col mb-4" style={{ marginLeft }}>
-      <div
-        className={classNames('flex flex-row', {
-          'mb-4': comment.replies
-        })}
-      >
+      <div className="flex flex-row">
         <UserAvatar name={comment.author.name} />
-        <div className="flex flex-col w-full ml-3 shadow rounded-lg bg-white p-3">
-          <div className="flex items-center justify-between">
-            <p className="m-0 text-md font-medium">{comment.author.name}</p>
-            <p className="flex items-center text-sm m-0 font-medium">
-              <ClockIcon />
-              &nbsp;{dayjs(comment.createdAt).fromNow()}
-            </p>
-          </div>
-          <div className="text-13 font-normal text-gray-900 whitespace-pre-wrap">
-            {comment.content}
-          </div>
-          <button
-            className="flex items-center justify-center rounded-md self-end text-red-500 ml-3"
-            onClick={setShowReply(comment.id)}
-          >
-            <MessageSquareIcon className="text-red-500 w-4 h-4" />
-            &nbsp;Trả lời
-          </button>
-        </div>
-      </div>
-      {showInputReplyCommentId === comment.id && (
-        <div className="flex justify-end">
-          {/* <CommentInput
-            width={`calc(100% - ${offset}`}
-            value={commentReply}
-            onChange={(e: any) => setCommentReply(e)}
-            onSend={handleReplyComment}
-          /> */}
-          <div className="w-full flex px-3 py-3">
-            {/* <CommentEditor value={value} onChange={onChange} /> */}
-            <textarea
-              value={commentReply}
-              onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
-                setCommentReply(e.target.value)
-              }
-              placeholder="Xin mời để lại câu hỏi, CellphoneS sẽ trả lời ngay trong 1h, các câu hỏi sau 22h - 8h sẽ được trả lời vào sáng hôm sau."
-            />
+        <div
+          className={classNames('flex flex-col flex-1 ml-3', {
+            'mb-4': comment.replies
+          })}
+        >
+          <div className="flex flex-col w-full shadow rounded bg-[#fafafa] p-3">
+            <div className="flex items-center justify-between">
+              <p className="m-0 text-md font-medium text-[#242424]">
+                {comment.author.name}
+              </p>
+              <p className="flex items-center text-sm m-0 font-medium">
+                <ClockIcon />
+                &nbsp;{dayjs(comment.createdAt).fromNow()}
+              </p>
+            </div>
+            <div className="text-13 font-normal text-[#242424] whitespace-pre-wrap py-3">
+              {comment.content}
+            </div>
             <button
-              className="flex items-center justify-center bg-red-600 rounded-md text-white h-8 w-16 ml-3"
-              onClick={handleReplyComment}
+              className="flex items-center justify-center rounded-md self-end text-red-500 ml-3"
+              onClick={setShowReply(comment.id)}
             >
-              <SendIcon />
-              &nbsp;Gửi
+              <MessageSquareIcon className="text-red-500 w-4 h-4" />
+              &nbsp;Trả lời
             </button>
           </div>
+          {showInputReplyCommentId === comment.id && (
+            <div className="flex justify-end w-full mt-4">
+              <div className="w-full flex flex-col">
+                <textarea
+                  rows={3}
+                  value={commentReply}
+                  onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+                    setCommentReply(e.target.value)
+                  }
+                  className="w-full outline-none border border-gray-300 rounded p-3 mb-2"
+                  placeholder="Xin mời để lại câu hỏi, CellphoneS sẽ trả lời ngay trong 1h, các câu hỏi sau 22h - 8h sẽ được trả lời vào sáng hôm sau."
+                />
+                <button
+                  className="flex self-end items-center justify-center bg-red-600 rounded-md text-white h-10 w-20"
+                  onClick={handleReplyComment}
+                >
+                  <SendIcon className="mr-2 h-5 w-5" />
+                  &nbsp;Gửi
+                </button>
+              </div>
+            </div>
+          )}
         </div>
-      )}
+      </div>
       {comment.replies &&
         comment.replies.map((reply) => (
           <div key={reply.id}>

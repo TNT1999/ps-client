@@ -1,12 +1,5 @@
 import { SendIcon } from '@assets/icons';
-import { ChangeEvent, FunctionComponent } from 'react';
-import dynamic from 'next/dynamic';
-import { Descendant } from 'slate';
-
-// const CommentEditor = dynamic(
-//   () => import('@components/editor/CommentEditor'),
-//   { ssr: false }
-// );
+import { FunctionComponent } from 'react';
 
 type Props = {
   value: string;

@@ -4,7 +4,7 @@ import ProductCard from '@components/product-card';
 import axios from 'axios';
 import useSWR from 'swr';
 import { NextPage, NextPageContext } from 'next';
-import { ProductType } from 'types';
+import { ProductType } from '@types';
 
 // import { Store } from '../../app/store';
 // import { setListHomeProduct, setFilter } from '../../app/slice/homeSlice';

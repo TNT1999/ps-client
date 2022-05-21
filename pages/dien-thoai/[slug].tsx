@@ -5,7 +5,7 @@ import { setSelectedProduct } from '@app/slice/homeSlice';
 import Breadcrumb from '@components/breadcrumb';
 import axiosClient from 'utils/api';
 import ProductCarousel from '@components/carousel';
-import { DetailProductType } from 'types';
+import { DetailProductType } from '@types';
 import DeviceInfo from '@components/product-detail/DeviceInfo';
 import Divider from '@components/common/Divider';
 import MainInfo from '@components/product-detail/MainInfo';

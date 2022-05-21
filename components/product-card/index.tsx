@@ -2,7 +2,7 @@ import React, { FunctionComponent } from 'react';
 import Link from 'next/link';
 import Rating from '@components/common/Rating';
 import { formatMoney } from '@utils/index';
-import { ProductType } from 'types';
+import { ProductType } from '@types';
 
 type Props = {
   product: ProductType;

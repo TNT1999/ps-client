@@ -3,7 +3,7 @@ import { formatMoney } from '@utils/index';
 import classNames from 'classnames';
 import isEmpty from 'lodash/isEmpty';
 import { Dispatch, FunctionComponent, SetStateAction } from 'react';
-import { ColorOption } from 'types';
+import { ColorOption } from '@types';
 
 type Props = {
   colorOptions: ColorOption[];

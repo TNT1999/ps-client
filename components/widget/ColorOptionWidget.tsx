@@ -4,7 +4,7 @@ import Field from '@components/common/Field';
 import { nanoid } from '@reduxjs/toolkit';
 import { motion } from 'framer-motion';
 import { FunctionComponent, useState } from 'react';
-import { ColorOption } from 'types';
+import { ColorOption } from '@types';
 import ColorOptionItemWidget from './ColorOptionItemWidget';
 import NumberWidget from './NumberWidget';
 import TextWidget from './TextWidget';

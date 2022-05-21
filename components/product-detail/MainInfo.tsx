@@ -7,7 +7,7 @@ import Rating from '@components/common/Rating';
 import { formatMoney, noop } from '@utils/index';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { DetailProductType, Variant } from 'types';
+import { DetailProductType, Variant } from '@types';
 import ColorOptionBox from './ColorOptionBox';
 import VariantBox from './VariantBox';
 
