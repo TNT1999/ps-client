@@ -3,43 +3,35 @@ import Breadcrumb from '@components/breadcrumb';
 import Divider from '@components/common/Divider';
 import Layout from '@components/common/Layout';
 import SideBar from '@components/common/user/SideBar';
-import isEmpty from 'lodash/isEmpty';
-import { NextPage } from 'next';
+import { isEmpty } from 'lodash';
+import { NextPage, NextPageContext } from 'next';
 import Head from 'next/head';
-import { ChangeEvent, useState, useEffect } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { default as Input } from '@components/common/auth/AuthInput';
 import Button from '@components/common/Button';
 import classNames from 'classnames';
-import { AddressType, DistrictType, ProvinceType, WardType } from '@types';
+import { AddressType, ProvinceType, DistrictType, WardType } from '@types';
 import { useUpdateEffect } from 'react-use';
 import { useAppDispatch } from '@app/store';
-import { createAddress } from '@app/slice';
+import { updateAddress } from '@app/slice';
 import { isInteger } from '@utils/misc';
 import { useRouter } from 'next/router';
+import useAsyncEffect from 'use-async-effect';
+import axiosClient from '@utils/api';
+import { parseCookies } from 'nookies';
+import { Store } from '@reduxjs/toolkit';
 type Props = any;
 
-const CreateAddressPage: NextPage<Props> = () => {
+const UpdateAddressPage: NextPage<Props> = ({ address }) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const [address, setAddress] = useState<
-    Omit<AddressType, 'id' | 'provinceId' | 'districtId' | 'wardId'> & {
+  const [addressState, setAddressState] = useState<
+    Omit<AddressType, 'provinceId' | 'districtId' | 'wardId'> & {
       provinceId: string;
       districtId: string;
       wardId: string;
     }
-  >({
-    phone: '',
-    name: '',
-    districtId: '',
-    district: '',
-    provinceId: '',
-    province: '',
-    wardId: '',
-    ward: '',
-    address: '',
-    isDefault: false,
-    addressType: 'home'
-  });
+  >(address);
 
   const [error, setError] = useState({
     name: '',
@@ -49,11 +41,6 @@ const CreateAddressPage: NextPage<Props> = () => {
     district: '',
     ward: ''
   });
-
-  const [provinces, setProvinces] = useState<ProvinceType[]>([]);
-  const [districts, setDistricts] = useState<DistrictType[]>([]);
-  const [wards, setWards] = useState<WardType[]>([]);
-
   const resetError = () => {
     setError({
       name: '',
@@ -64,43 +51,63 @@ const CreateAddressPage: NextPage<Props> = () => {
       ward: ''
     });
   };
-  useEffect(() => {
+
+  const [provinces, setProvinces] = useState<ProvinceType[]>([]);
+  const [districts, setDistricts] = useState<DistrictType[]>([]);
+  const [wards, setWards] = useState<WardType[]>([]);
+
+  useAsyncEffect(async () => {
     const getProvince = async () => {
+      if (!addressState.provinceId) return;
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/address/province`
       );
       const result = await response.json();
       setProvinces(result);
-      setDistricts([]);
-      setWards([]);
     };
-    getProvince();
+    const getDistricts = async () => {
+      if (!addressState.districtId) return;
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/address/district?province_id=${addressState.provinceId}`
+      );
+      const result = await response.json();
+      setDistricts(result.districts);
+    };
+    const getWards = async () => {
+      if (!addressState.wardId) return;
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/address/ward?district_id=${addressState.districtId}`
+      );
+      const result = await response.json();
+      setWards(result.wards);
+    };
+    await Promise.all([getProvince(), getDistricts(), getWards()]);
   }, []);
 
   useUpdateEffect(() => {
-    if (!address.districtId) return;
+    if (!addressState.districtId) return;
     const getWards = async () => {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/address/ward?district_id=${address.districtId}`
+        `${process.env.NEXT_PUBLIC_API_URL}/address/ward?district_id=${addressState.districtId}`
       );
       const result = await response.json();
       setWards(result.wards);
     };
     getWards();
-  }, [address.districtId]);
+  }, [addressState.districtId]);
 
   useUpdateEffect(() => {
-    if (!address.provinceId) return;
+    if (!addressState.provinceId) return;
     const getDistricts = async () => {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/address/district?province_id=${address.provinceId}`
+        `${process.env.NEXT_PUBLIC_API_URL}/address/district?province_id=${addressState.provinceId}`
       );
       const result = await response.json();
       setDistricts(result.districts);
       setWards([]);
     };
     getDistricts();
-  }, [address.provinceId]);
+  }, [addressState.provinceId]);
 
   const onChange = (e: ChangeEvent<any>) => {
     const value =
@@ -109,8 +116,8 @@ const CreateAddressPage: NextPage<Props> = () => {
         : e.target.type.startsWith('select')
         ? parseInt(e.target.value)
         : e.target.value;
-    setAddress({
-      ...address,
+    setAddressState({
+      ...addressState,
       [e.target.name]: value
     });
     resetError();
@@ -119,8 +126,8 @@ const CreateAddressPage: NextPage<Props> = () => {
   const onChangeSelect = (e: ChangeEvent<any>) => {
     if (e.target.name === 'province') {
       const provinceId = e.target.value;
-      setAddress({
-        ...address,
+      setAddressState({
+        ...addressState,
         province:
           provinces.find((province) => province.province_id == provinceId)
             ?.name || '',
@@ -133,8 +140,8 @@ const CreateAddressPage: NextPage<Props> = () => {
     }
     if (e.target.name === 'district') {
       const districtId = e.target.value;
-      setAddress({
-        ...address,
+      setAddressState({
+        ...addressState,
         district:
           districts.find((district) => district.district_id == districtId)
             ?.name || '',
@@ -145,8 +152,8 @@ const CreateAddressPage: NextPage<Props> = () => {
     }
     if (e.target.name === 'ward') {
       const wardId = e.target.value;
-      setAddress({
-        ...address,
+      setAddressState({
+        ...addressState,
         ward: wards.find((ward) => ward.ward_id == wardId)?.name || '',
         wardId
       });
@@ -156,31 +163,31 @@ const CreateAddressPage: NextPage<Props> = () => {
   const handleSubmit = async () => {
     const newError = { ...error };
 
-    if (address.name === '') {
+    if (addressState.name === '') {
       newError.name = 'Nhập tên';
     }
-    if (!isInteger(address.phone)) {
+    if (!isInteger(addressState.phone)) {
       newError.phone = 'Số điện thoại sai';
     }
-    if (address.phone === '') {
+    if (addressState.phone === '') {
       newError.phone = 'Nhập số điện thoại';
     }
-    if (address.address === '') {
+    if (addressState.address === '') {
       newError.address = 'Nhập địa chỉ';
     }
-    if (address.provinceId === '') {
+    if (addressState.provinceId === '') {
       newError.province = 'Nhập Tỉnh/ Thành phố';
     }
-    if (address.districtId === '') {
+    if (addressState.districtId === '') {
       newError.district = 'Nhập Quận huyện';
     }
-    if (address.wardId === '') {
+    if (addressState.wardId === '') {
       newError.ward = 'Nhập Phường xã';
     }
     setError({ ...newError });
     if (Object.values(newError).some((error) => !isEmpty(error))) return;
     try {
-      await dispatch(createAddress(address));
+      await dispatch(updateAddress(addressState));
       router.push('/user/address');
     } catch (e) {
       console.log(e);
@@ -189,7 +196,7 @@ const CreateAddressPage: NextPage<Props> = () => {
   return (
     <Layout>
       <Head>
-        <title>Địa chỉ của tôi</title>
+        <title>Chỉnh sửa địa chỉ</title>
         <meta name="description" content="Generated by create next app" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -208,7 +215,7 @@ const CreateAddressPage: NextPage<Props> = () => {
             <SideBar />
             <div className="flex-1">
               <div className="text-2xl font-light mt-1 mb-4">
-                Tạo mới địa chỉ
+                Chỉnh sửa địa chỉ
               </div>
               <div className="rounded bg-white py-9 px-6">
                 <form className="flex space-x-8">
@@ -224,7 +231,7 @@ const CreateAddressPage: NextPage<Props> = () => {
                         <Input
                           id="name"
                           name="name"
-                          value={address.name || ''}
+                          value={addressState.name || ''}
                           onChange={onChange}
                           inputClassName="!h-10 !mt-0"
                           placeholder="Nhập họ và tên"
@@ -244,7 +251,7 @@ const CreateAddressPage: NextPage<Props> = () => {
                         <Input
                           id="phone"
                           name="phone"
-                          value={address.phone || ''}
+                          value={addressState.phone || ''}
                           onChange={onChange}
                           inputClassName="!h-10 !mt-0"
                           placeholder="Nhập số điện thoại"
@@ -267,7 +274,7 @@ const CreateAddressPage: NextPage<Props> = () => {
                         <select
                           id="province"
                           name="province"
-                          value={address.provinceId}
+                          value={addressState.provinceId}
                           className={classNames(
                             'px-4 h-10 mt-0 w-full block border text-gray-900 rounded focus:outline-none',
                             {
@@ -310,7 +317,7 @@ const CreateAddressPage: NextPage<Props> = () => {
                         <select
                           id="district"
                           name="district"
-                          value={address.districtId}
+                          value={addressState.districtId}
                           className={classNames(
                             'px-4 h-10 mt-0 w-full block border text-gray-900 rounded focus:outline-none',
                             {
@@ -353,7 +360,7 @@ const CreateAddressPage: NextPage<Props> = () => {
                         <select
                           id="ward"
                           name="ward"
-                          value={address.wardId}
+                          value={addressState.wardId}
                           className={classNames(
                             'px-4 h-10 mt-0 w-full block border text-gray-900 rounded focus:outline-none',
                             {
@@ -394,6 +401,7 @@ const CreateAddressPage: NextPage<Props> = () => {
                           id="address"
                           rows={3}
                           name="address"
+                          value={addressState.address}
                           className={classNames(
                             'block p-2.5 w-full text-gray-900 rounded border focus:outline-none focus:border-primary',
                             {
@@ -424,7 +432,7 @@ const CreateAddressPage: NextPage<Props> = () => {
                               name="addressType"
                               value="home"
                               onChange={onChange}
-                              checked={address.addressType === 'home'}
+                              checked={addressState.addressType === 'home'}
                               className="h-5 w-5 border-gray-300 focus:ring-blue-300"
                             />
                             <span className="text-13 ml-2 block">
@@ -438,7 +446,7 @@ const CreateAddressPage: NextPage<Props> = () => {
                               name="addressType"
                               value="company"
                               onChange={onChange}
-                              checked={address.addressType === 'company'}
+                              checked={addressState.addressType === 'company'}
                               className="h-5 w-5 border-gray-300 focus:ring-blue-300"
                             />
                             <span className="text-13 ml-2 block">
@@ -459,7 +467,7 @@ const CreateAddressPage: NextPage<Props> = () => {
                           type="checkbox"
                           name="isDefault"
                           className="h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
-                          checked={address.isDefault}
+                          checked={addressState.isDefault}
                           onChange={onChange}
                         />
                         <label
@@ -489,4 +497,30 @@ const CreateAddressPage: NextPage<Props> = () => {
     </Layout>
   );
 };
-export default CreateAddressPage;
+
+UpdateAddressPage.getInitialProps = async (
+  context: NextPageContext & { store: Store }
+) => {
+  const cookies = parseCookies(context);
+  const TOKENS = cookies['TOKENS'] || '{}';
+  const TOKENS_VALUE = JSON.parse(TOKENS);
+  try {
+    const address: AddressType = await axiosClient.get(
+      `/address/${context.query.id}`,
+      {
+        headers: {
+          Authorization: TOKENS_VALUE.accessToken
+            ? `Bearer ${TOKENS_VALUE.accessToken}`
+            : ''
+        }
+      }
+    );
+    return { address };
+  } catch (err) {
+    return {
+      address: null
+    };
+  }
+};
+
+export default UpdateAddressPage;

@@ -4,11 +4,10 @@ import Divider from '@components/common/Divider';
 import Layout from '@components/common/Layout';
 import SideBar from '@components/common/user/SideBar';
 import classNames from 'classnames';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import { NextPage, NextPageContext } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
-import { useState } from 'react';
 import Tippy from '@tippyjs/react';
 import Tooltip from '@components/common/Tooltip';
 import axiosClient from '@utils/api';
@@ -18,6 +17,7 @@ import { deleteAddress, setAddress } from '@app/slice/authSlice';
 import { AddressType } from '@types';
 import { RootState, useAppDispatch } from '@app/store';
 import { useSelector } from 'react-redux';
+import { useRouter } from 'next/router';
 
 type Props = {
   address: AddressType[] | null;
@@ -25,8 +25,14 @@ type Props = {
 const AddressPage: NextPage<Props> = () => {
   const address = useSelector((state: RootState) => state.auth.address) || [];
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const handleDelete = async (id: string) => {
-    await dispatch(deleteAddress(id));
+    if (confirm('Bạn có thật sự muốn xoá')) {
+      await dispatch(deleteAddress(id));
+    }
+  };
+  const handleUpdate = (id: string) => {
+    router.push(`/user/address/update/${id}`);
   };
   return (
     <Layout>
@@ -96,7 +102,10 @@ const AddressPage: NextPage<Props> = () => {
                                 'mr-5': !item.isDefault
                               })}
                             >
-                              <Edit2Icon className="w-5 h-5 text-gray-500 cursor-pointer" />
+                              <Edit2Icon
+                                className="w-5 h-5 text-gray-500 cursor-pointer"
+                                onClick={() => handleUpdate(item.id)}
+                              />
                             </span>
                           </Tippy>
                           {!item.isDefault && (

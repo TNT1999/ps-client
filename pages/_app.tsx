@@ -19,7 +19,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const store = useStore(pageProps.initialReduxState);
   const [isUserLoaded, setUserLoaded] = useState(false);
 
-  const getUserData = async () => {
+  useAsyncEffect(async () => {
     const cookies = parseCookies();
     const TOKENS = cookies['TOKENS'] || '{}';
     const TOKENS_VALUE = JSON.parse(TOKENS);
@@ -37,9 +37,6 @@ function MyApp({ Component, pageProps }: AppProps) {
     } finally {
       setUserLoaded(true);
     }
-  };
-  useAsyncEffect(() => {
-    getUserData();
     // store.dispatch(restoreCartFromLocalStorage());
     // restore cart
   }, []);

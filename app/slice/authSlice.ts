@@ -7,19 +7,19 @@ export type UserInfo = {
   name: string;
   email: string;
   roles: string[];
-};
+} | null;
 export type UserData = {
   accessToken: string;
   refreshToken: string;
   user: UserInfo;
 };
 export type AuthState = {
-  user: UserInfo | undefined;
-  address: AddressType[] | undefined;
+  user: UserInfo | null;
+  address: AddressType[] | null;
 };
 const initialAuthState: AuthState = {
-  user: undefined,
-  address: undefined
+  user: null,
+  address: null
 };
 
 export const getMe = createAsyncThunk(
@@ -50,9 +50,46 @@ export const deleteAddress = createAsyncThunk(
 
 export const createAddress = createAsyncThunk(
   'createAddress',
-  async (data: Partial<AddressType>, { rejectWithValue }) => {
+  async (
+    data: Omit<AddressType, 'id' | 'provinceId' | 'districtId' | 'wardId'> & {
+      provinceId: string;
+      districtId: string;
+      wardId: string;
+    },
+    { rejectWithValue }
+  ) => {
     try {
-      const result: AddressType = await axiosClient.post('/address', data);
+      const body: any = { ...data };
+      body.provinceId = parseInt(data.provinceId);
+      body.districtId = parseInt(data.districtId);
+      body.wardId = parseInt(data.wardId);
+      const result: AddressType = await axiosClient.post('/address', body);
+      return result;
+    } catch (err) {
+      return rejectWithValue(err);
+    }
+  }
+);
+
+export const updateAddress = createAsyncThunk(
+  'updateAddress',
+  async (
+    data: Omit<AddressType, 'provinceId' | 'districtId' | 'wardId'> & {
+      provinceId: string;
+      districtId: string;
+      wardId: string;
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const body: any = { ...data };
+      body.provinceId = parseInt(data.provinceId);
+      body.districtId = parseInt(data.districtId);
+      body.wardId = parseInt(data.wardId);
+      const result: AddressType = await axiosClient.put(
+        `/address/${body.id}`,
+        body
+      );
       return result;
     } catch (err) {
       return rejectWithValue(err);
@@ -90,8 +127,8 @@ const authSlice = createSlice({
       nookies.destroy(null, 'TOKENS', {
         path: '/'
       });
-      state.user = undefined;
-      state.address = undefined;
+      state.user = null;
+      state.address = null;
       window.location.reload();
     },
     setAddress(state, action: PayloadAction<AddressType[]>) {
@@ -105,7 +142,7 @@ const authSlice = createSlice({
     builder.addCase(deleteAddress.fulfilled, (state, action) => {
       if (action.payload.status === 'success') {
         const id = action.meta.arg;
-        state.address = state.address?.filter((item) => item.id !== id);
+        state.address = state.address?.filter((item) => item.id !== id) || null;
       }
     });
   }

@@ -107,3 +107,21 @@ export type AddressType = {
   isDefault: boolean;
   addressType: 'home' | 'company';
 };
+export type Nullable<T> = { [K in keyof T]: T[K] | null };
+export type Override<T1, T2> = Omit<T1, keyof T2> & T2;
+
+export type ProvinceType = {
+  name: string;
+  province_id: number;
+};
+export type DistrictType = {
+  name: string;
+  province_id: number;
+  district_id: number;
+};
+export type WardType = {
+  name: string;
+  ward_id: number;
+  district_id: number;
+  province_id: number;
+};
