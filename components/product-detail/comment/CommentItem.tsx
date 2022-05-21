@@ -99,7 +99,7 @@ const CommentItem: FunctionComponent<Props> = ({
             </button>
           </div>
           {showInputReplyCommentId === comment.id && (
-            <div className="flex justify-end w-full mt-4 ml-3">
+            <div className="flex justify-end w-full mt-4">
               <div className="w-full flex flex-col">
                 <textarea
                   rows={3}
