@@ -2,7 +2,7 @@ import { MinusIcon, PlusIcon } from '@assets/icons';
 import classNames from 'classnames';
 import { values } from 'lodash';
 import isNaN from 'lodash/isNaN';
-import { FunctionComponent } from 'react';
+import { ChangeEvent, FunctionComponent } from 'react';
 type Props = {
   type?: 'sm' | 'md';
   value: number;
@@ -25,7 +25,6 @@ const NumberQuantity: FunctionComponent<Props> = ({
         onClick={() => {
           if (!isNaN(value) && value > 1) {
             const newValue = value - 1;
-            console.log(newValue);
             onChange(newValue);
           }
           return false;
@@ -55,19 +54,19 @@ const NumberQuantity: FunctionComponent<Props> = ({
         })}
         value={value}
         maxLength={3}
+        min={1}
+        max={maxValue}
         onKeyPress={(event) => {
-          // if (isNaN(value + String.fromCharCode(event.keyCode))) {
-          //   return false;
-          // }
-          console.log('press');
-          return false;
+          if (isNaN(`${value}${event.key}`)) {
+            return false;
+          }
         }}
-        onChange={(value) => {
-          console.log('change');
-          // if (value == 0) {
-          //   onChange(1);
-          // }
-          // onChange(value);
+        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+          if (e.target.value === '0' || e.target.value === '') {
+            onChange(1);
+            return;
+          }
+          onChange(parseInt(e.target.value));
         }}
       />
       <button
@@ -84,7 +83,6 @@ const NumberQuantity: FunctionComponent<Props> = ({
           onClick={() => {
             if (!isNaN(value)) {
               const newValue = value + 1;
-              console.log(newValue);
               onChange(newValue);
             }
             return false;

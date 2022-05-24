@@ -1,8 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axiosClient from '@utils/api';
-import { save2localStorage } from '@utils/cart';
-import { isServer } from '@utils/misc';
 import omit from 'lodash/omit';
+import debounce from 'lodash/debounce';
 
 export type CartItemType = {
   discount?: number;
@@ -29,10 +28,15 @@ export type RemoveItemType = {
   productId?: string;
   optionId?: string;
 };
-export type UpdateItemType = {
+export type UpdateSelectedItemType = {
   productId?: string;
   optionId?: string;
   selected: boolean;
+};
+export type UpdateQuantityItemType = {
+  productId?: string;
+  optionId?: string;
+  quantity: number;
 };
 export type CountCartType = {
   status: string;
@@ -89,7 +93,7 @@ export const removeCartItem = createAsyncThunk(
 );
 export const updateSelectedCartItem = createAsyncThunk(
   'cart/updateSelect',
-  async (data: UpdateItemType, { rejectWithValue }) => {
+  async (data: UpdateSelectedItemType, { rejectWithValue }) => {
     try {
       const result: { selected: boolean; status: string } =
         await axiosClient.patch('cart/updateSelect', data);
@@ -99,6 +103,22 @@ export const updateSelectedCartItem = createAsyncThunk(
     }
   }
 );
+
+export const updateQuantityCartItem = createAsyncThunk(
+  'cart/updateQuantity',
+  async (data: UpdateQuantityItemType, { rejectWithValue }) => {
+    try {
+      const result: { qty?: number; status: string } = await axiosClient.patch(
+        'cart/quantity',
+        data
+      );
+      return result;
+    } catch (err) {
+      return rejectWithValue(err);
+    }
+  }
+);
+
 const cartSlice = createSlice({
   name: 'cart',
   initialState,
@@ -113,9 +133,25 @@ const cartSlice = createSlice({
     },
     removeCart(state) {
       state.items = [];
+    },
+    setQuantityItemCart(state, action: PayloadAction<UpdateQuantityItemType>) {
+      const { productId, optionId, quantity } = action.payload;
+      if (!productId || !optionId) {
+        return;
+      }
+      const index = state.items.findIndex(
+        (item) => item.productId === productId && item.option.id === optionId
+      );
+      state.items[index].quantity = quantity;
     }
   },
   extraReducers: (builder) => {
+    builder.addCase(getCountCart.fulfilled, (state, action) => {
+      if (action.payload.status === 'success') {
+        const { result } = action.payload;
+        state.count = result?.itemsCount || 0;
+      }
+    });
     builder.addCase(add2Cart.fulfilled, (state, action) => {
       if (action.payload.status === 'success') {
         state.items.push(omit(action.payload, ['status', 'discount']));
@@ -151,15 +187,25 @@ const cartSlice = createSlice({
         state.items[index].selected = selected;
       }
     });
-    builder.addCase(getCountCart.fulfilled, (state, action) => {
+    builder.addCase(updateQuantityCartItem.fulfilled, (state, action) => {
       if (action.payload.status === 'success') {
-        const { result } = action.payload;
-        state.count = result?.itemsCount || 0;
+        const { productId, optionId, quantity } = action.meta.arg;
+        if (!productId || !optionId) {
+          return;
+        }
+        const index = state.items.findIndex(
+          (item) => item.productId === productId && item.option.id === optionId
+        );
+        state.items[index].quantity = quantity;
       }
     });
   }
 });
 
-export const { restoreCartFromLocalStorage, removeCart, setCart } =
-  cartSlice.actions;
+export const {
+  restoreCartFromLocalStorage,
+  removeCart,
+  setCart,
+  setQuantityItemCart
+} = cartSlice.actions;
 export default cartSlice.reducer;

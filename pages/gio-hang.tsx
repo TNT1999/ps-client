@@ -6,7 +6,7 @@ import {
   updateSelectedCartItem
 } from '@app/slice/cartSlice';
 import { RootState, Store, useAppDispatch } from '@app/store';
-import { TrashIcon } from '@assets/icons';
+import { CouponIcon, TrashIcon, TruckIcon } from '@assets/icons';
 import Layout from '@components/common/Layout';
 import axiosClient from '@utils/api';
 import { formatMoney } from '@utils/index';
@@ -42,6 +42,10 @@ const CartPage: NextPage<Props> = () => {
   const [selectedAllCartItem, setSelectedAllCartItem] = useState(
     cart.items.every((item) => item.selected === true)
   );
+  const atLeastOneItemSelected = cart.items.some(
+    (item) => item.selected === true
+  );
+
   // const [checkoutCart, setCheckoutCart] = useState<any>(cart);
 
   // const handleChangeProductToCheckoutCart = (id: string, checked: boolean) => {
@@ -203,8 +207,30 @@ const CartPage: NextPage<Props> = () => {
               <div className="flex-1 basis-[calc(100%-930px)] ml-5">
                 <div>
                   <div>
-                    <div className="bg-white rounded p-4 mb-3">
-                      <h4 className="font-light text-[#333333]">Khuyến mãi</h4>
+                    <div className="bg-white rounded p-4 mb-4">
+                      <div className="flex justify-between mb-4">
+                        <h3 className="flex items-center font-medium text-13 text-[#38383d]">
+                          <TruckIcon className="mr-2 h-5 w-5" />
+                          <span>Địa chỉ</span>
+                        </h3>
+                        <a>Thay đổi</a>
+                      </div>
+                      <div className="flex flex-nowrap justify-between space-x-3 mt-4 h-10">
+                        <div className="flex items-center font-semibold mb-1 text-[#38383d]">
+                          <p>Trần Nguyên Tài</p>
+                          <i className="block w-px mx-3 h-full bg-[#ebebf0]"></i>
+                          <p> 0979779284</p>
+                        </div>
+                      </div>
+                      <div className="text-[#808089]">
+                        Phường Bình Thọ, Quận Thủ Đức - TP Thủ Đức, Hồ Chí Minh
+                      </div>
+                    </div>
+                    <div className="bg-white rounded p-4 mb-4">
+                      <h4 className="flex items-center font-medium text-13 text-[#242424]">
+                        <CouponIcon className="mr-2" />
+                        <span>Khuyến mãi</span>
+                      </h4>
                       <div className="flex flex-nowrap justify-between space-x-3 mt-4 h-10">
                         <input
                           className="flex-1 py-3 px-2 border outline-none rounded w-auto block placeholder:text-13 text-gray-500"
@@ -237,8 +263,8 @@ const CartPage: NextPage<Props> = () => {
                           Tổng tiền
                         </span>
                         <div>
-                          {false ? (
-                            <div className="text-[15px] font-normal text-right text-red-600">
+                          {!atLeastOneItemSelected ? (
+                            <div className="text-[15px] font-medium text-right text-[#fe3834]">
                               Vui lòng chọn sản phẩm
                             </div>
                           ) : (

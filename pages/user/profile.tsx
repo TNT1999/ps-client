@@ -85,7 +85,7 @@ const AccountPage: NextPage<Props> = ({ user }) => {
                 </Tippy>
               </div>
               <div className="bg-white flex flex-nowrap rounded-lg justify-between">
-                <div className="w-[560px] p-4 pr-6">
+                <div className="flex-1 p-4 pr-6">
                   <span className="text-16 font-normal text-[#64646d]">
                     Thông tin cá nhân
                   </span>
@@ -153,7 +153,7 @@ const AccountPage: NextPage<Props> = ({ user }) => {
                 </div>
 
                 <div className="my-4 border-l-px border-[#ebebf0]"></div>
-                <div className="w-[calc(100%-560px)] p-4 pl-6 flex flex-col">
+                <div className="flex-1 p-4 pl-6 flex flex-col">
                   <span className="text-16 font-normal text-[#64646d]">
                     Số điện thoại và Email
                   </span>
