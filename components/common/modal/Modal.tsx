@@ -50,10 +50,10 @@ export const Modal: FunctionComponent<
     ? createPortal(
         <div
           className={classNames(
-            'fixed z-30 top-0 left-0 h-screen w-screen flex justify-center items-center bg-primary bg-opacity-5 select-none',
+            'fixed z-30 top-0 left-0 h-screen w-screen flex justify-center items-center bg-primary bg-opacity-5 select-none transition-opacity duration-1000',
             className
           )}
-          style={{ backdropFilter: 'blur(1px)' }}
+          // style={{ backdropFilter: 'blur(1px)' }}
           onClick={(event) => {
             event.stopPropagation();
             if (onClose != null) {

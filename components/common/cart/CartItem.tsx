@@ -1,11 +1,20 @@
-import { CartItemType, updateSelectedCartItem } from '@app/slice/cartSlice';
+import {
+  CartItemType,
+  setQuantityItemCart,
+  updateQuantityCartItem,
+  updateSelectedCartItem
+} from '@app/slice/cartSlice';
 import { useAppDispatch } from '@app/store';
 import { TrashIcon } from '@assets/icons';
 import { formatMoney } from '@utils/index';
-import { FunctionComponent, useState } from 'react';
+import { FunctionComponent, useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
+import { useDebounce } from 'react-use';
 import NumberQuantity from '../NumberQuantity';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
+import Debounce from 'lodash/debounce';
+import Tippy from '@tippyjs/react';
+import Tooltip from '@components/common/Tooltip';
 type Props = {
   item: CartItemType;
 };
@@ -15,6 +24,25 @@ const CartItem: FunctionComponent<Props> = ({ item }) => {
   const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
   const dispatch = useAppDispatch();
 
+  const handleUpdateQuantityCartItem = async (qty: number) => {
+    try {
+      await dispatch(
+        updateQuantityCartItem({
+          productId: item.productId,
+          optionId: item.option.id,
+          quantity: qty
+        })
+      ).unwrap();
+      // toast.success('Cập nhật sản phẩm thành công', {
+      //   autoClose: 1000
+      // });
+    } catch (err) {
+      toast.error('Cập nhật sản phẩm thất bại', {
+        autoClose: 1000
+      });
+    }
+  };
+  const handleChangeQty = Debounce(handleUpdateQuantityCartItem, 0);
   const handleUpdateSelectedCartItem = async (selected: boolean) => {
     try {
       await dispatch(
@@ -89,9 +117,7 @@ const CartItem: FunctionComponent<Props> = ({ item }) => {
           <div className="w-[130px] px-4">
             <NumberQuantity
               value={item.quantity}
-              onChange={function (value: string | number): void {
-                throw new Error('Function not implemented.');
-              }}
+              onChange={(qty) => handleChangeQty(qty)}
             />
           </div>
           <div className="w-[130px] px-4">
@@ -104,12 +130,14 @@ const CartItem: FunctionComponent<Props> = ({ item }) => {
             </span>
           </div>
           <div className="w-[50px] text-right">
-            <span
-              className="cursor-pointer inline-block"
-              onClick={() => setConfirmDeleteVisible(true)}
-            >
-              <TrashIcon className="h-[16px] w-[16px] text-gray-400 hover:text-gray-500 cursor-pointer" />
-            </span>
+            <Tippy arrow={true} content={<Tooltip text={'Xoá'} />} delay={100}>
+              <span
+                className="cursor-pointer inline-block"
+                onClick={() => setConfirmDeleteVisible(true)}
+              >
+                <TrashIcon className="h-[16px] w-[16px] text-gray-400 hover:text-gray-500 cursor-pointer" />
+              </span>
+            </Tippy>
             {confirmDeleteVisible && (
               <ConfirmDeleteModal
                 onClose={() => setConfirmDeleteVisible(false)}

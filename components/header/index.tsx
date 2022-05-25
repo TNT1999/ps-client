@@ -55,7 +55,7 @@ const Header: FunctionComponent<Props> = () => {
             </>
           )}
           <div className="pl-4 relative">
-            <Link href="/gio-hang">
+            <Link href="/checkout/cart">
               <a>
                 <CartIcon className="h-5 sm:h-6 text-white" />
               </a>

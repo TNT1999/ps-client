@@ -23,7 +23,8 @@ module.exports = {
   // all plugins (eslint-plugin-xxx) go here:
   plugins: [
     '@typescript-eslint',
-    '@next/eslint-plugin-next' // https://github.com/vercel/next.js/blob/canary/packages/eslint-plugin-next/lib/index.js
+    'unused-imports',
+    '@next/eslint-plugin-next' // https://github.com/vercel/next.js/blob/canary/packages/eslint-plugin-next/lib/index.js.
   ],
 
   // all configs (eslint-config-xxx) go here:
@@ -57,6 +58,7 @@ module.exports = {
     '@typescript-eslint/no-unsafe-argument': 'off',
     '@typescript-eslint/no-unsafe-return': 'off',
     '@typescript-eslint/no-unsafe-assignment': 'off',
-    '@typescript-eslint/no-unsafe-call': 'off'
+    '@typescript-eslint/no-unsafe-call': 'off',
+    '@typescript-eslint/no-unused-vars': 'off'
   }
 };

@@ -46,8 +46,12 @@ import Phone from './icons/Phone.svg';
 import Lock from './icons/Lock.svg';
 import Edit2 from './icons/Edit2.svg';
 import Review from './icons/Review.svg';
+import Coupon from './icons/Coupon.svg';
 export type PropsSVG = SVGAttributes<any>;
 
+export const CouponIcon: FunctionComponent<PropsSVG> = (props) => (
+  <Coupon {...props} />
+);
 export const MailIcon: FunctionComponent<PropsSVG> = (props) => (
   <Mail {...props} />
 );

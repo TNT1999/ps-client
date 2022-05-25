@@ -90,7 +90,29 @@ module.exports = {
           '100%': {
             transform: 'scaleX(0)'
           }
+        },
+        expandOutLeft: {
+          '0%': {
+            transform: 'translateX(300px)'
+          },
+          '100%': {
+            transform: 'translateX(0)'
+          }
+        },
+        fadeInDown: {
+          '0%': {
+            opacity: 0,
+            transform: 'translateY(-100px)'
+          },
+          '100%': {
+            opacity: 1,
+            transform: 'translateY(0)'
+          }
         }
+      },
+      animation: {
+        expandOutLeft: 'expandOutLeft .3s',
+        fadeInDown: 'fadeInDown .45s'
       }
     }
   },

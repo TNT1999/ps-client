@@ -77,7 +77,7 @@ const CommentItem: FunctionComponent<Props> = ({
             'mb-4': comment.replies
           })}
         >
-          <div className="flex flex-col w-full shadow rounded bg-[#fafafa] p-3">
+          <div className="flex flex-col w-full shadow-sm rounded-md bg-[#fafafa] border p-3">
             <div className="flex items-center justify-between">
               <p className="m-0 text-md font-medium text-[#242424]">
                 {comment.author.name}

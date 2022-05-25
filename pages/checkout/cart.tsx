@@ -1,12 +1,10 @@
-/* eslint-disable no-constant-condition */
 import {
   CartItemType,
-  removeCart,
   setCart,
   updateSelectedCartItem
 } from '@app/slice/cartSlice';
 import { RootState, Store, useAppDispatch } from '@app/store';
-import { TrashIcon } from '@assets/icons';
+import { CouponIcon, TrashIcon, TruckIcon } from '@assets/icons';
 import Layout from '@components/common/Layout';
 import axiosClient from '@utils/api';
 import { formatMoney } from '@utils/index';
@@ -15,14 +13,18 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { useAsyncEffect } from 'use-async-effect';
-import { parseCookies, setCookie } from 'nookies';
+import { parseCookies } from 'nookies';
 import isEmpty from 'lodash/isEmpty';
 import Link from 'next/link';
 import ConfirmDeleteModal from '@components/common/cart/ConfirmDeleteModal';
 import CartItem from '@components/common/cart/CartItem';
 import { useSelector } from 'react-redux';
-
+import Tooltip from '@components/common/Tooltip';
+import Tippy from '@tippyjs/react';
+import useAsyncEffect from 'use-async-effect';
+import { setAddress } from '@app/slice/authSlice';
+import { AddressType } from '@types';
+import SelectAddressDrawer from '@components/common/cart/SelectAddressDrawer';
 type Cart = {
   items: CartItemType[];
 };
@@ -34,14 +36,30 @@ type Props = {
 const CartPage: NextPage<Props> = () => {
   const cart: Cart = useSelector((state: RootState) => state.cart);
   const [total, setTotal] = useState(0);
-  const router = useRouter();
   const dispatch = useAppDispatch();
-
+  const router = useRouter();
   const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
 
   const [selectedAllCartItem, setSelectedAllCartItem] = useState(
     cart.items.every((item) => item.selected === true)
   );
+  const atLeastOneItemSelected = cart.items.some(
+    (item) => item.selected === true
+  );
+
+  const [visibleSelectAddress, setVisibleSelectAddress] = useState(false);
+
+  const defaultAddress = useSelector(
+    (state: RootState) => state.auth.address
+  )?.find((item) => item.isDefault === true);
+  useAsyncEffect(async () => {
+    try {
+      const address: AddressType = await axiosClient.get('address/default');
+      dispatch(setAddress([address]));
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
   // const [checkoutCart, setCheckoutCart] = useState<any>(cart);
 
   // const handleChangeProductToCheckoutCart = (id: string, checked: boolean) => {
@@ -149,16 +167,24 @@ const CartPage: NextPage<Props> = () => {
                       className="w-[35px] flex justify-end cursor-pointer"
                       onClick={() => setConfirmDeleteVisible(true)}
                     >
-                      <TrashIcon className="h-[16px] w-[16px] text-gray-400 hover:text-gray-500 cursor-pointer" />
-                      {confirmDeleteVisible && (
-                        <ConfirmDeleteModal
-                          onClose={() => setConfirmDeleteVisible(false)}
-                          isDeleteSelected={true}
-                          productId={''}
-                          optionId={''}
-                        />
-                      )}
+                      <Tippy
+                        arrow={true}
+                        content={<Tooltip text={'Xoá mục đã chọn'} />}
+                        delay={100}
+                      >
+                        <span>
+                          <TrashIcon className="h-[16px] w-[16px] text-gray-400 hover:text-gray-500 cursor-pointer" />
+                        </span>
+                      </Tippy>
                     </span>
+                    {confirmDeleteVisible && (
+                      <ConfirmDeleteModal
+                        onClose={() => setConfirmDeleteVisible(false)}
+                        isDeleteSelected={true}
+                        productId={''}
+                        optionId={''}
+                      />
+                    )}
                   </div>
                   <div>
                     <div className="h-auto overflow-auto">
@@ -203,8 +229,40 @@ const CartPage: NextPage<Props> = () => {
               <div className="flex-1 basis-[calc(100%-930px)] ml-5">
                 <div>
                   <div>
-                    <div className="bg-white rounded p-4 mb-3">
-                      <h4 className="font-light text-[#333333]">Khuyến mãi</h4>
+                    <div className="bg-white rounded p-4 mb-4">
+                      <div className="flex justify-between mb-4">
+                        <h3 className="flex items-center font-medium text-13 text-[#38383d]">
+                          <TruckIcon className="mr-2 h-5 w-5" />
+                          <span>Địa chỉ</span>
+                        </h3>
+                        <a
+                          className="cursor-pointer"
+                          onClick={() => setVisibleSelectAddress(true)}
+                        >
+                          Thay đổi
+                        </a>
+                        {visibleSelectAddress && (
+                          <SelectAddressDrawer
+                            onClose={() => setVisibleSelectAddress(false)}
+                          />
+                        )}
+                      </div>
+                      <div className="flex flex-nowrap justify-between space-x-3 mt-4 h-10">
+                        <div className="flex items-center font-semibold mb-1 text-[#38383d]">
+                          <p>{defaultAddress?.name}</p>
+                          <i className="block w-px mx-3 h-full bg-[#ebebf0]"></i>
+                          <p> {defaultAddress?.phone}</p>
+                        </div>
+                      </div>
+                      <div className="text-[#808089]">
+                        {`${defaultAddress?.address}, ${defaultAddress?.ward}, ${defaultAddress?.district}, ${defaultAddress?.province}`}
+                      </div>
+                    </div>
+                    <div className="bg-white rounded p-4 mb-4">
+                      <h4 className="flex items-center font-medium text-13 text-[#242424]">
+                        <CouponIcon className="mr-2" />
+                        <span>Khuyến mãi</span>
+                      </h4>
                       <div className="flex flex-nowrap justify-between space-x-3 mt-4 h-10">
                         <input
                           className="flex-1 py-3 px-2 border outline-none rounded w-auto block placeholder:text-13 text-gray-500"
@@ -237,8 +295,8 @@ const CartPage: NextPage<Props> = () => {
                           Tổng tiền
                         </span>
                         <div>
-                          {false ? (
-                            <div className="text-[15px] font-normal text-right text-red-600">
+                          {!atLeastOneItemSelected ? (
+                            <div className="text-[15px] font-medium text-right text-[#fe3834]">
                               Vui lòng chọn sản phẩm
                             </div>
                           ) : (
@@ -252,7 +310,7 @@ const CartPage: NextPage<Props> = () => {
                   </div>
                   <button
                     className="bg-red-500 text-white text-center w-full block cursor-pointer rounded mt-4 py-3 px-2 border-none hover:opacity-80"
-                    onClick={checkout}
+                    onClick={() => router.push('/checkout/payment')}
                   >{`Mua hàng (${
                     cart.items.filter((item) => item.selected === true).length
                   })`}</button>

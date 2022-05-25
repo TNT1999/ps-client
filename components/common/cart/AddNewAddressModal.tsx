@@ -1,9 +1,7 @@
-import { removeCartItem } from '@app/slice/cartSlice';
 import { useAppDispatch } from '@app/store';
 import { AlertTriangleIcon } from '@assets/icons';
 import { Modal } from '@components/common/modal/Modal';
 import { FunctionComponent } from 'react';
-import { toast } from 'react-toastify';
 
 type Props = {
   onClose: () => void;
@@ -11,37 +9,9 @@ type Props = {
   productId: string;
   optionId: string;
 };
-const ConfirmDeleteModal: FunctionComponent<Props> = ({
-  onClose,
-  isDeleteSelected = false,
-  productId,
-  optionId
-}) => {
+const ConfirmDeleteModal: FunctionComponent<Props> = ({ onClose }) => {
   const dispatch = useAppDispatch();
 
-  const handleDeleteItem = async () => {
-    try {
-      await dispatch(
-        removeCartItem(
-          isDeleteSelected
-            ? {}
-            : {
-                productId,
-                optionId
-              }
-        )
-      ).unwrap();
-      toast.success('Xoá sản phẩm thành công', {
-        autoClose: 1000
-      });
-    } catch (err) {
-      toast.error('Xoá sản phẩm thất bại', {
-        autoClose: 1000
-      });
-    } finally {
-      onClose();
-    }
-  };
   return (
     <Modal
       modalBackgroundColor="bg-white"
@@ -62,10 +32,7 @@ const ConfirmDeleteModal: FunctionComponent<Props> = ({
             Bạn có muốn xóa sản phẩm đang chọn?
           </div>
           <div className="flex text-center justify-end text-base mt-[24px] h-[36px]">
-            <div
-              className="mr-2 rounded cursor-pointer py-2 px-4 text-[#0b74e5] border-px border-[#0b74e5]"
-              onClick={handleDeleteItem}
-            >
+            <div className="mr-2 rounded cursor-pointer py-2 px-4 text-[#0b74e5] border-px border-[#0b74e5]">
               Xác nhận
             </div>
             <div

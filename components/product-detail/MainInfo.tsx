@@ -72,9 +72,6 @@ const MainInfo: FunctionComponent<Props> = ({
         autoClose: 1000
       });
     }
-    // finally {
-    //   setComment(initialValue);
-    // }
   };
   const handleColorOption = useCallback(
     (item) => {
@@ -152,12 +149,6 @@ const MainInfo: FunctionComponent<Props> = ({
       </>
       <div className="flex items-center h-8 my-4">
         <span className="font-medium text-base mr-3">Số lượng: </span>
-        {/* <NumberInput
-          inputClassName="text-lg pl-4"
-          initValue={finalSelectProduct.quantity}
-          onChange={(e) => handleQuantity(e)}
-          containerClassName="w-auto"
-        /> */}
         <NumberQuantity
           value={finalSelectProduct.quantity}
           onChange={(e) => handleQuantity(e)}

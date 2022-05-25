@@ -8,14 +8,14 @@
     "build": "yarn run build:css && next build",
     "start": "next start -p 8080",
     "lint": "eslint . --ext=js,jsx,ts,tsx --ignore-path .gitignore --ignore-pattern node_modules/",
-    "lint:fix": "eslint . --ext=js,jsx,ts,tsx --fix --ignore-path .gitignore --ignore-pattern node_modules/",
+    "lint:fix": "./node_modules/.bin/eslint . --ext=js,jsx,ts,tsx --fix --ignore-path .gitignore --ignore-pattern node_modules/",
     "prepare": "husky install",
     "check:pret": "prettier --check .",
     "format": "prettier --write .",
     "pre-commit": "lint-staged",
     "optimize-svg": "svgo -r -f public/assets",
-    "watch:css": "postcss -w ./styles/tailwind.css -o ./styles/main.css",
-    "build:css": "postcss ./styles/tailwind.css -o ./styles/main.css"
+    "watch:css": "postcss -w ./styles/index.css -o ./styles/main.css",
+    "build:css": "postcss ./styles/index.css -o ./styles/main.css"
   },
   "dependencies": {
     "@headlessui/react": "^1.2.0",
@@ -77,6 +77,7 @@
     "eslint": "^7.30.0",
     "eslint-config-next": "^12.0.8",
     "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-unused-imports": "^2.0.0",
     "husky": "^7.0.4",
     "lint-staged": "^12.2.1",
     "npm-run-all": "^4.1.5",
