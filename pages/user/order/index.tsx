@@ -110,7 +110,7 @@ const OrderPage: NextPage<Props> = () => {
                           Đang vận chuyển
                         </div>
                       </li>
-                      <li>
+                      <li className="mr-2">
                         <div
                           className={classNames(
                             'cursor-pointer px-5 py-4 border-b-2',
@@ -126,7 +126,7 @@ const OrderPage: NextPage<Props> = () => {
                           Đã giao
                         </div>
                       </li>
-                      <li>
+                      <li className="mr-2">
                         <div
                           className={classNames(
                             'cursor-pointer px-5 py-4 border-b-2',
