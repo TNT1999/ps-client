@@ -13,6 +13,8 @@ import { useDebounce } from 'react-use';
 import NumberQuantity from '../NumberQuantity';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 import Debounce from 'lodash/debounce';
+import Tippy from '@tippyjs/react';
+import Tooltip from '@components/common/Tooltip';
 type Props = {
   item: CartItemType;
 };
@@ -128,12 +130,14 @@ const CartItem: FunctionComponent<Props> = ({ item }) => {
             </span>
           </div>
           <div className="w-[50px] text-right">
-            <span
-              className="cursor-pointer inline-block"
-              onClick={() => setConfirmDeleteVisible(true)}
-            >
-              <TrashIcon className="h-[16px] w-[16px] text-gray-400 hover:text-gray-500 cursor-pointer" />
-            </span>
+            <Tippy arrow={true} content={<Tooltip text={'Xoá'} />} delay={100}>
+              <span
+                className="cursor-pointer inline-block"
+                onClick={() => setConfirmDeleteVisible(true)}
+              >
+                <TrashIcon className="h-[16px] w-[16px] text-gray-400 hover:text-gray-500 cursor-pointer" />
+              </span>
+            </Tippy>
             {confirmDeleteVisible && (
               <ConfirmDeleteModal
                 onClose={() => setConfirmDeleteVisible(false)}

@@ -14,8 +14,8 @@
     "format": "prettier --write .",
     "pre-commit": "lint-staged",
     "optimize-svg": "svgo -r -f public/assets",
-    "watch:css": "postcss -w ./styles/tailwind.css -o ./styles/main.css",
-    "build:css": "postcss ./styles/tailwind.css -o ./styles/main.css"
+    "watch:css": "postcss -w ./styles/index.css -o ./styles/main.css",
+    "build:css": "postcss ./styles/index.css -o ./styles/main.css"
   },
   "dependencies": {
     "@headlessui/react": "^1.2.0",

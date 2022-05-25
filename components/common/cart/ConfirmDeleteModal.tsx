@@ -45,10 +45,10 @@ const ConfirmDeleteModal: FunctionComponent<Props> = ({
   return (
     <Modal
       modalBackgroundColor="bg-white"
-      containerClassName="p-5"
+      containerClassName="p-5 animate-fadeInDown"
       width={312}
-      shadow="shadow-xl"
-      rounded="rounded-xl"
+      shadow="shadow"
+      rounded="rounded"
       onClose={onClose}
       className="bg-[#27272ab3]"
     >
