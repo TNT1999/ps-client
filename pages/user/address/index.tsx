@@ -14,7 +14,7 @@ import axiosClient from '@utils/api';
 import { Store } from '@reduxjs/toolkit';
 import { parseCookies } from 'nookies';
 import { deleteAddress, setAddress } from '@app/slice/authSlice';
-import { AddressType } from '@types';
+import { AddressType, AddressWithIdType } from '@types';
 import { RootState, useAppDispatch } from '@app/store';
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
@@ -58,7 +58,7 @@ const AddressPage: NextPage<Props> = () => {
               <div className="text-2xl font-light mt-1 mb-4">
                 Địa chỉ của tôi
               </div>
-              <div>
+              <div className="mb-3">
                 <Link href={'/user/address/create'}>
                   <a className="h-14 border-px border-dashed border-[#d8d8d8] mb-3 flex items-center justify-center bg-white text-base">
                     <PlusIcon className="mx-4 text-[#787878]" />
@@ -144,7 +144,7 @@ AddressPage.getInitialProps = async (
   const TOKENS = cookies['TOKENS'] || '{}';
   const TOKENS_VALUE = JSON.parse(TOKENS);
   try {
-    const address: AddressType[] = await axiosClient.get('/address', {
+    const address: AddressWithIdType[] = await axiosClient.get('/address', {
       headers: {
         Authorization: TOKENS_VALUE.accessToken
           ? `Bearer ${TOKENS_VALUE.accessToken}`

@@ -21,20 +21,14 @@ type Props = any;
 const CreateAddressPage: NextPage<Props> = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const [address, setAddress] = useState<
-    Omit<AddressType, 'id' | 'provinceId' | 'districtId' | 'wardId'> & {
-      provinceId: string;
-      districtId: string;
-      wardId: string;
-    }
-  >({
+  const [address, setAddress] = useState<AddressType>({
     phone: '',
     name: '',
-    districtId: '',
-    district: '',
-    provinceId: '',
+    provinceId: -1,
     province: '',
-    wardId: '',
+    districtId: -1,
+    district: '',
+    wardId: -1,
     ward: '',
     address: '',
     isDefault: false,
@@ -78,7 +72,7 @@ const CreateAddressPage: NextPage<Props> = () => {
   }, []);
 
   useUpdateEffect(() => {
-    if (!address.districtId) return;
+    if (address.districtId === -1) return;
     const getWards = async () => {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/address/ward?district_id=${address.districtId}`
@@ -90,7 +84,7 @@ const CreateAddressPage: NextPage<Props> = () => {
   }, [address.districtId]);
 
   useUpdateEffect(() => {
-    if (!address.provinceId) return;
+    if (address.provinceId === -1) return;
     const getDistricts = async () => {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/address/district?province_id=${address.provinceId}`
@@ -118,7 +112,7 @@ const CreateAddressPage: NextPage<Props> = () => {
 
   const onChangeSelect = (e: ChangeEvent<any>) => {
     if (e.target.name === 'province') {
-      const provinceId = e.target.value;
+      const provinceId = parseInt(e.target.value);
       setAddress({
         ...address,
         province:
@@ -126,13 +120,13 @@ const CreateAddressPage: NextPage<Props> = () => {
             ?.name || '',
         provinceId,
         district: '',
-        districtId: '',
+        districtId: -1,
         ward: '',
-        wardId: ''
+        wardId: -1
       });
     }
     if (e.target.name === 'district') {
-      const districtId = e.target.value;
+      const districtId = parseInt(e.target.value);
       setAddress({
         ...address,
         district:
@@ -140,11 +134,11 @@ const CreateAddressPage: NextPage<Props> = () => {
             ?.name || '',
         districtId,
         ward: '',
-        wardId: ''
+        wardId: -1
       });
     }
     if (e.target.name === 'ward') {
-      const wardId = e.target.value;
+      const wardId = parseInt(e.target.value);
       setAddress({
         ...address,
         ward: wards.find((ward) => ward.ward_id == wardId)?.name || '',
@@ -168,13 +162,13 @@ const CreateAddressPage: NextPage<Props> = () => {
     if (address.address === '') {
       newError.address = 'Nhập địa chỉ';
     }
-    if (address.provinceId === '') {
+    if (address.provinceId === -1) {
       newError.province = 'Nhập Tỉnh/ Thành phố';
     }
-    if (address.districtId === '') {
+    if (address.districtId === -1) {
       newError.district = 'Nhập Quận huyện';
     }
-    if (address.wardId === '') {
+    if (address.wardId === -1) {
       newError.ward = 'Nhập Phường xã';
     }
     setError({ ...newError });
@@ -278,7 +272,7 @@ const CreateAddressPage: NextPage<Props> = () => {
                           )}
                           onChange={onChangeSelect}
                         >
-                          <option value={''}>Chọn Tỉnh/ Thành phố</option>
+                          <option value={-1}>Chọn Tỉnh/ Thành phố</option>
                           {provinces &&
                             provinces.map((province, index) => {
                               return (
@@ -292,7 +286,7 @@ const CreateAddressPage: NextPage<Props> = () => {
                             })}
                         </select>
                         {error.province !== '' && (
-                          <div className="text-red-400 text-sm">
+                          <div className="text-red-400 text-sm ml-1">
                             {error.province}
                           </div>
                         )}
@@ -321,7 +315,7 @@ const CreateAddressPage: NextPage<Props> = () => {
                           )}
                           onChange={onChangeSelect}
                         >
-                          <option value={''}>Chọn Quận huyện</option>
+                          <option value={-1}>Chọn Quận huyện</option>
                           {districts &&
                             districts.map((district, index) => {
                               return (
@@ -335,7 +329,7 @@ const CreateAddressPage: NextPage<Props> = () => {
                             })}
                         </select>
                         {error.district !== '' && (
-                          <div className="text-red-400 text-sm">
+                          <div className="text-red-400 text-sm ml-1">
                             {error.district}
                           </div>
                         )}
@@ -364,7 +358,7 @@ const CreateAddressPage: NextPage<Props> = () => {
                           )}
                           onChange={onChangeSelect}
                         >
-                          <option value={''}>Chọn Phường xã</option>
+                          <option value={-1}>Chọn Phường xã</option>
                           {wards &&
                             wards.map((ward, index) => {
                               return (
@@ -375,7 +369,7 @@ const CreateAddressPage: NextPage<Props> = () => {
                             })}
                         </select>
                         {error.ward !== '' && (
-                          <div className="text-red-400 text-sm">
+                          <div className="text-red-400 text-sm ml-1">
                             {error.ward}
                           </div>
                         )}
@@ -403,9 +397,10 @@ const CreateAddressPage: NextPage<Props> = () => {
                           )}
                           placeholder="Nhập địa chỉ..."
                           onChange={onChange}
+                          value={address.address}
                         />
                         {error.address !== '' && (
-                          <div className="text-red-400 text-sm">
+                          <div className="text-red-400 text-sm ml-1">
                             {error.address}
                           </div>
                         )}

@@ -1,7 +1,8 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { AddressWithIdType } from '@types';
 import axiosClient from '@utils/api';
 import omit from 'lodash/omit';
-import debounce from 'lodash/debounce';
+// import debounce from 'lodash/debounce';
 
 export type CartItemType = {
   discount?: number;
@@ -42,10 +43,15 @@ export type CountCartType = {
   status: string;
   result?: { itemsCount: number; itemsQty: number };
 };
-const initialState: { items: CartItemType[]; count: number } = {
+export type CartState = {
+  items: CartItemType[];
+  count?: number;
+  shippingAddress?: AddressWithIdType;
+};
+const initialState: CartState = {
   items: [],
-  count: 0
-  // address_shipping: null,
+  count: 0,
+  shippingAddress: undefined
   // paymentType: 'COD'
 };
 
@@ -119,6 +125,19 @@ export const updateQuantityCartItem = createAsyncThunk(
   }
 );
 
+export const updateShippingAddress = createAsyncThunk(
+  'cart/updateShippingAddress',
+  async (address: AddressWithIdType, { rejectWithValue }) => {
+    try {
+      const result: { status: string; shippingAddressId?: string } =
+        await axiosClient.patch('cart/address', { addressId: address.id });
+      return result;
+    } catch (err) {
+      return rejectWithValue(err);
+    }
+  }
+);
+
 const cartSlice = createSlice({
   name: 'cart',
   initialState,
@@ -128,8 +147,12 @@ const cartSlice = createSlice({
       const cart = localCart ? JSON.parse(localCart) : [];
       state.items = cart;
     },
-    setCart(state, action: PayloadAction<CartItemType[]>) {
-      state.items = action.payload;
+    setCart(state, action: PayloadAction<CartState>) {
+      state.items = action.payload.items;
+      state.shippingAddress = action.payload.shippingAddress;
+    },
+    setShippingCart(state, action: PayloadAction<AddressWithIdType>) {
+      state.shippingAddress = action.payload;
     },
     removeCart(state) {
       state.items = [];
@@ -199,6 +222,12 @@ const cartSlice = createSlice({
         state.items[index].quantity = quantity;
       }
     });
+    builder.addCase(updateShippingAddress.fulfilled, (state, action) => {
+      if (action.payload.status === 'success') {
+        const selectedAddress: AddressWithIdType = action.meta.arg;
+        state.shippingAddress = selectedAddress;
+      }
+    });
   }
 });
 
@@ -206,6 +235,7 @@ export const {
   restoreCartFromLocalStorage,
   removeCart,
   setCart,
+  setShippingCart,
   setQuantityItemCart
 } = cartSlice.actions;
 export default cartSlice.reducer;
