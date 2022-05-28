@@ -1,48 +1,60 @@
 import { setAddress } from '@app/slice';
 import { RootState, useAppDispatch } from '@app/store';
-import { CheckCircleIcon } from '@assets/icons';
 import { Modal } from '@components/common/modal/Modal';
-import { AddressType } from '@types';
+import { AddressWithIdType } from '@types';
 import axiosClient from '@utils/api';
-import classNames from 'classnames';
-import { FunctionComponent, useEffect, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import useAsyncEffect from 'use-async-effect';
+import AddressModal, { MODE } from '@components/common/cart/AddressModal';
+import SelectAddressItem from '@components/common/cart/SelectAddressItem';
+import { updateShippingAddress } from '@app/slice/cartSlice';
 
 type Props = {
   onClose: () => void;
+  hidden?: boolean;
+  selectedAddressId?: string;
 };
-const SelectAddressDrawer: FunctionComponent<Props> = ({ onClose }) => {
+const SelectAddressDrawer: FunctionComponent<Props> = ({
+  onClose,
+  selectedAddressId
+}) => {
   const dispatch = useAppDispatch();
   const address = useSelector((state: RootState) => state.auth.address);
-  const [selectedAddress, setSelectedAddress] = useState(
-    address?.find((item) => item.isDefault === true)
-  );
+
+  const [stateSelectedAddressId, setStateSelectedAddressId] =
+    useState(selectedAddressId);
+
+  const [hidden, setHidden] = useState(false);
   const [visibleNewAddressModal, setVisibleNewAddressModal] = useState(false);
   useAsyncEffect(async () => {
-    const address: AddressType[] = await axiosClient.get('address');
+    if (hidden) return;
+    const address: AddressWithIdType[] = await axiosClient.get('address');
     dispatch(setAddress(address));
+  }, [hidden]);
+
+  // useEffect(() => {
+  //   if (!address) return;
+  //   setSelectedAddressId(address?.find((item) => item.isDefault === true)?.id);
+  // }, [address]);
+
+  const handleHiddenDrawer = useCallback((hidden: boolean) => {
+    setHidden(hidden);
   }, []);
 
-  useEffect(() => {
-    if (!address) return;
-    setSelectedAddress(address?.find((item) => item.isDefault === true));
-  }, [address]);
-
-  // const handleDeleteItem = async () => {
-  //   try {
-  //     await dispatch().unwrap();
-  //     toast.success('Xoá sản phẩm thành công', {
-  //       autoClose: 1000
-  //     });
-  //   } catch (err) {
-  //     toast.error('Xoá sản phẩm thất bại', {
-  //       autoClose: 1000
-  //     });
-  //   } finally {
-  //     onClose();
-  //   }
-  // };
+  const handleSelectAddress = async () => {
+    if (!stateSelectedAddressId) return;
+    try {
+      const selectedAddress =
+        address && address.find((item) => item.id === stateSelectedAddressId);
+      if (!selectedAddress) return;
+      await dispatch(updateShippingAddress(selectedAddress));
+    } catch (err) {
+      console.log(err);
+    } finally {
+      onClose();
+    }
+  };
 
   return (
     <Modal
@@ -52,7 +64,7 @@ const SelectAddressDrawer: FunctionComponent<Props> = ({ onClose }) => {
       shadow=""
       rounded=""
       onClose={onClose}
-      className="bg-[#27272ab3]"
+      className={`bg-[#27272ab3] ${hidden ? 'hidden' : ''}`}
     >
       <div className="p-8">
         <div className="flex justify-between mb-8">
@@ -61,67 +73,60 @@ const SelectAddressDrawer: FunctionComponent<Props> = ({ onClose }) => {
           </h3>
           <a
             className="cursor-pointer"
-            onClick={() => setVisibleNewAddressModal(true)}
+            onClick={() => {
+              setHidden(true);
+              setVisibleNewAddressModal(true);
+            }}
           >
             Tạo địa chỉ mới
           </a>
+          {visibleNewAddressModal && (
+            <AddressModal
+              onClose={() => {
+                setVisibleNewAddressModal(false);
+                setHidden(false);
+              }}
+              mode={MODE.NEW}
+            />
+          )}
         </div>
         <div className="space-y-3">
-          {address?.map((item, index) => {
-            return (
-              <div
-                key={index}
-                className={classNames('flex p-4 rounded-md border mb-3', {
-                  'border-[#dadada]': item.id !== selectedAddress?.id,
-                  'border-blue-500': item.id === selectedAddress?.id
-                })}
-              >
-                <div className="mr-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className={classNames('w-7 h-7 cursor-pointer', {
-                      'text-gray-300': item.id !== selectedAddress?.id,
-                      'text-blue-600': item.id === selectedAddress?.id
-                    })}
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    onClick={() => setSelectedAddress(item)}
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clipRule="evenodd"
-                    ></path>
-                  </svg>
-                </div>
-                <div>
-                  <div className="flex items-center justify-between mb-1 text-black">
-                    <div className="uppercase mb-3 flex">
-                      <p>{item.name}</p>
-                      <i className="block w-px mx-3 h-full bg-[#ebebf0]" />
-                      <p>{item.phone}</p>
-                    </div>
-                    {item.isDefault && (
-                      <span className="flex items-center self-start text-green-500 text-[12px] normal-case">
-                        <CheckCircleIcon className="w-3.5 h-3.5 mr-1" />
-                        <span>Mặc định</span>
-                      </span>
-                    )}
+          {address
+            ? address.map((item, index) => {
+                return (
+                  <SelectAddressItem
+                    key={item.id}
+                    isSelected={stateSelectedAddressId === item.id}
+                    handleSelect={() => setStateSelectedAddressId(item.id)}
+                    address={item}
+                    handleHiddenDrawer={handleHiddenDrawer}
+                  />
+                );
+              })
+            : [1, 2, 3].map((i) => (
+                <div key={i} className="py-3">
+                  <div className="animate-pulse flex flex-1 gap-4 mb-3">
+                    <div className="h-5 bg-zinc-200 rounded flex-2"></div>
+                    <div className="h-5 bg-zinc-200 rounded flex-1"></div>
                   </div>
-                  <div>
-                    {`${item.address}, ${item.ward}, ${item.district}, ${item.province}`}
+                  <div className="animate-pulse">
+                    <div className="h-5 bg-zinc-200 rounded-md"></div>
+                    <div className="h-5 bg-zinc-200 rounded-md w-2/5 mt-1"></div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              ))}
         </div>
 
-        <div className="flex text-center justify-end text-base mt-6 h-[36px]">
-          <div className="rounded cursor-pointer py-2 px-4 text-white border-px border-[#0b74e5] bg-[#0b74e5]">
-            Xác nhận
+        {address && (
+          <div className="flex text-center justify-end text-base mt-6 h-[36px]">
+            <div
+              className="rounded cursor-pointer py-2 px-4 text-white border-px border-[#0b74e5] bg-[#0b74e5]"
+              onClick={handleSelectAddress}
+            >
+              Xác nhận
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </Modal>
   );

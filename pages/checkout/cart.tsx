@@ -1,5 +1,6 @@
 import {
   CartItemType,
+  CartState,
   setCart,
   updateSelectedCartItem
 } from '@app/slice/cartSlice';
@@ -25,16 +26,10 @@ import useAsyncEffect from 'use-async-effect';
 import { setAddress } from '@app/slice/authSlice';
 import { AddressType } from '@types';
 import SelectAddressDrawer from '@components/common/cart/SelectAddressDrawer';
-type Cart = {
-  items: CartItemType[];
-};
-type Props = {
-  cart: {
-    items: CartItemType[];
-  };
-};
-const CartPage: NextPage<Props> = () => {
-  const cart: Cart = useSelector((state: RootState) => state.cart);
+
+const CartPage: NextPage<any> = () => {
+  const cart: CartState = useSelector((state: RootState) => state.cart);
+  const shippingAddress = cart.shippingAddress;
   const [total, setTotal] = useState(0);
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -48,18 +43,20 @@ const CartPage: NextPage<Props> = () => {
   );
 
   const [visibleSelectAddress, setVisibleSelectAddress] = useState(false);
+  // const [defaultAddress, setDefaultAddress] = useState<AddressType>();
+  // const defaultAddress = useSelector(
+  //   (state: RootState) => state.auth.address
+  // )?.find((item) => item.isDefault === true);
 
-  const defaultAddress = useSelector(
-    (state: RootState) => state.auth.address
-  )?.find((item) => item.isDefault === true);
-  useAsyncEffect(async () => {
-    try {
-      const address: AddressType = await axiosClient.get('address/default');
-      dispatch(setAddress([address]));
-    } catch (err) {
-      console.log(err);
-    }
-  }, []);
+  // useAsyncEffect(async () => {
+  //   try {
+  //     const address: AddressType = await axiosClient.get('address/default');
+  //     setDefaultAddress(address);
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // }, []);
+
   // const [checkoutCart, setCheckoutCart] = useState<any>(cart);
 
   // const handleChangeProductToCheckoutCart = (id: string, checked: boolean) => {
@@ -244,18 +241,35 @@ const CartPage: NextPage<Props> = () => {
                         {visibleSelectAddress && (
                           <SelectAddressDrawer
                             onClose={() => setVisibleSelectAddress(false)}
+                            selectedAddressId={shippingAddress?.id}
                           />
                         )}
                       </div>
                       <div className="flex flex-nowrap justify-between space-x-3 mt-4 h-10">
-                        <div className="flex items-center font-semibold mb-1 text-[#38383d]">
-                          <p>{defaultAddress?.name}</p>
-                          <i className="block w-px mx-3 h-full bg-[#ebebf0]"></i>
-                          <p> {defaultAddress?.phone}</p>
+                        <div className="flex flex-1 items-center font-semibold mb-1 text-[#38383d]">
+                          {shippingAddress ? (
+                            <>
+                              <p>{shippingAddress?.name}</p>
+                              <i className="block w-px mx-3 h-full bg-[#ebebf0]"></i>
+                              <p> {shippingAddress?.phone}</p>
+                            </>
+                          ) : (
+                            <div className="animate-pulse flex flex-1 gap-4">
+                              <div className="h-5 bg-zinc-200 rounded flex-2"></div>
+                              <div className="h-5 bg-zinc-200 rounded flex-1"></div>
+                            </div>
+                          )}
                         </div>
                       </div>
                       <div className="text-[#808089]">
-                        {`${defaultAddress?.address}, ${defaultAddress?.ward}, ${defaultAddress?.district}, ${defaultAddress?.province}`}
+                        {shippingAddress ? (
+                          `${shippingAddress?.address}, ${shippingAddress?.ward}, ${shippingAddress?.district}, ${shippingAddress?.province}`
+                        ) : (
+                          <div className="animate-pulse">
+                            <div className="h-5 bg-zinc-200 rounded-md"></div>
+                            <div className="h-5 bg-zinc-200 rounded-md w-2/5 mt-1"></div>
+                          </div>
+                        )}
                       </div>
                     </div>
                     <div className="bg-white rounded p-4 mb-4">
@@ -331,14 +345,14 @@ CartPage.getInitialProps = async (
   const TOKENS = cookies['TOKENS'] || '{}';
   const TOKENS_VALUE = JSON.parse(TOKENS);
   try {
-    const cart: Cart = await axiosClient.get('/cart', {
+    const cart: CartState = await axiosClient.get('/cart', {
       headers: {
         Authorization: TOKENS_VALUE.accessToken
           ? `Bearer ${TOKENS_VALUE.accessToken}`
           : ''
       }
     });
-    context.store.dispatch(setCart(cart.items));
+    context.store.dispatch(setCart(cart));
     return { cart: cart };
   } catch (err) {
     return {

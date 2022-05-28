@@ -10,7 +10,13 @@ import { ChangeEvent, useState } from 'react';
 import { default as Input } from '@components/common/auth/AuthInput';
 import Button from '@components/common/Button';
 import classNames from 'classnames';
-import { AddressType, ProvinceType, DistrictType, WardType } from '@types';
+import {
+  AddressType,
+  ProvinceType,
+  DistrictType,
+  WardType,
+  AddressWithIdType
+} from '@types';
 import { useUpdateEffect } from 'react-use';
 import { useAppDispatch } from '@app/store';
 import { updateAddress } from '@app/slice';
@@ -25,13 +31,7 @@ type Props = any;
 const UpdateAddressPage: NextPage<Props> = ({ address }) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const [addressState, setAddressState] = useState<
-    Omit<AddressType, 'provinceId' | 'districtId' | 'wardId'> & {
-      provinceId: string;
-      districtId: string;
-      wardId: string;
-    }
-  >(address);
+  const [addressState, setAddressState] = useState<AddressWithIdType>(address);
 
   const [error, setError] = useState({
     name: '',
@@ -85,7 +85,7 @@ const UpdateAddressPage: NextPage<Props> = ({ address }) => {
   }, []);
 
   useUpdateEffect(() => {
-    if (!addressState.districtId) return;
+    if (addressState.districtId === -1) return;
     const getWards = async () => {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/address/ward?district_id=${addressState.districtId}`
@@ -97,7 +97,7 @@ const UpdateAddressPage: NextPage<Props> = ({ address }) => {
   }, [addressState.districtId]);
 
   useUpdateEffect(() => {
-    if (!addressState.provinceId) return;
+    if (addressState.provinceId === -1) return;
     const getDistricts = async () => {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/address/district?province_id=${addressState.provinceId}`
@@ -125,7 +125,7 @@ const UpdateAddressPage: NextPage<Props> = ({ address }) => {
 
   const onChangeSelect = (e: ChangeEvent<any>) => {
     if (e.target.name === 'province') {
-      const provinceId = e.target.value;
+      const provinceId = parseInt(e.target.value);
       setAddressState({
         ...addressState,
         province:
@@ -133,13 +133,13 @@ const UpdateAddressPage: NextPage<Props> = ({ address }) => {
             ?.name || '',
         provinceId,
         district: '',
-        districtId: '',
+        districtId: -1,
         ward: '',
-        wardId: ''
+        wardId: -1
       });
     }
     if (e.target.name === 'district') {
-      const districtId = e.target.value;
+      const districtId = parseInt(e.target.value);
       setAddressState({
         ...addressState,
         district:
@@ -147,11 +147,11 @@ const UpdateAddressPage: NextPage<Props> = ({ address }) => {
             ?.name || '',
         districtId,
         ward: '',
-        wardId: ''
+        wardId: -1
       });
     }
     if (e.target.name === 'ward') {
-      const wardId = e.target.value;
+      const wardId = parseInt(e.target.value);
       setAddressState({
         ...addressState,
         ward: wards.find((ward) => ward.ward_id == wardId)?.name || '',
@@ -175,13 +175,13 @@ const UpdateAddressPage: NextPage<Props> = ({ address }) => {
     if (addressState.address === '') {
       newError.address = 'Nhập địa chỉ';
     }
-    if (addressState.provinceId === '') {
+    if (addressState.provinceId === -1) {
       newError.province = 'Nhập Tỉnh/ Thành phố';
     }
-    if (addressState.districtId === '') {
+    if (addressState.districtId === -1) {
       newError.district = 'Nhập Quận huyện';
     }
-    if (addressState.wardId === '') {
+    if (addressState.wardId === -1) {
       newError.ward = 'Nhập Phường xã';
     }
     setError({ ...newError });
@@ -285,7 +285,7 @@ const UpdateAddressPage: NextPage<Props> = ({ address }) => {
                           )}
                           onChange={onChangeSelect}
                         >
-                          <option value={''}>Chọn Tỉnh/ Thành phố</option>
+                          <option value={-1}>Chọn Tỉnh/ Thành phố</option>
                           {provinces &&
                             provinces.map((province, index) => {
                               return (
@@ -299,7 +299,7 @@ const UpdateAddressPage: NextPage<Props> = ({ address }) => {
                             })}
                         </select>
                         {error.province !== '' && (
-                          <div className="text-red-400 text-sm">
+                          <div className="text-red-400 text-sm ml-1">
                             {error.province}
                           </div>
                         )}
@@ -328,7 +328,7 @@ const UpdateAddressPage: NextPage<Props> = ({ address }) => {
                           )}
                           onChange={onChangeSelect}
                         >
-                          <option value={''}>Chọn Quận huyện</option>
+                          <option value={-1}>Chọn Quận huyện</option>
                           {districts &&
                             districts.map((district, index) => {
                               return (
@@ -342,7 +342,7 @@ const UpdateAddressPage: NextPage<Props> = ({ address }) => {
                             })}
                         </select>
                         {error.district !== '' && (
-                          <div className="text-red-400 text-sm">
+                          <div className="text-red-400 text-sm ml-1">
                             {error.district}
                           </div>
                         )}
@@ -371,7 +371,7 @@ const UpdateAddressPage: NextPage<Props> = ({ address }) => {
                           )}
                           onChange={onChangeSelect}
                         >
-                          <option value={''}>Chọn Phường xã</option>
+                          <option value={-1}>Chọn Phường xã</option>
                           {wards &&
                             wards.map((ward, index) => {
                               return (
@@ -382,7 +382,7 @@ const UpdateAddressPage: NextPage<Props> = ({ address }) => {
                             })}
                         </select>
                         {error.ward !== '' && (
-                          <div className="text-red-400 text-sm">
+                          <div className="text-red-400 text-sm ml-1">
                             {error.ward}
                           </div>
                         )}
@@ -413,7 +413,7 @@ const UpdateAddressPage: NextPage<Props> = ({ address }) => {
                           onChange={onChange}
                         />
                         {error.address !== '' && (
-                          <div className="text-red-400 text-sm">
+                          <div className="text-red-400 text-sm ml-1">
                             {error.address}
                           </div>
                         )}

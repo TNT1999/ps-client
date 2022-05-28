@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axiosClient from '@utils/api';
 import nookies from 'nookies';
-import { AddressType } from '@types';
+import { AddressType, AddressWithIdType } from '@types';
 export type UserInfo = {
   id: string;
   name: string;
@@ -15,7 +15,7 @@ export type UserData = {
 };
 export type AuthState = {
   user: UserInfo | null;
-  address: AddressType[] | null;
+  address: AddressWithIdType[] | null;
 };
 const initialAuthState: AuthState = {
   user: null,
@@ -50,20 +50,9 @@ export const deleteAddress = createAsyncThunk(
 
 export const createAddress = createAsyncThunk(
   'createAddress',
-  async (
-    data: Omit<AddressType, 'id' | 'provinceId' | 'districtId' | 'wardId'> & {
-      provinceId: string;
-      districtId: string;
-      wardId: string;
-    },
-    { rejectWithValue }
-  ) => {
+  async (data: AddressType, { rejectWithValue }) => {
     try {
-      const body: any = { ...data };
-      body.provinceId = parseInt(data.provinceId);
-      body.districtId = parseInt(data.districtId);
-      body.wardId = parseInt(data.wardId);
-      const result: AddressType = await axiosClient.post('/address', body);
+      const result: AddressType = await axiosClient.post('/address', data);
       return result;
     } catch (err) {
       return rejectWithValue(err);
@@ -73,22 +62,11 @@ export const createAddress = createAsyncThunk(
 
 export const updateAddress = createAsyncThunk(
   'updateAddress',
-  async (
-    data: Omit<AddressType, 'provinceId' | 'districtId' | 'wardId'> & {
-      provinceId: string;
-      districtId: string;
-      wardId: string;
-    },
-    { rejectWithValue }
-  ) => {
+  async (data: AddressWithIdType, { rejectWithValue }) => {
     try {
-      const body: any = { ...data };
-      body.provinceId = parseInt(data.provinceId);
-      body.districtId = parseInt(data.districtId);
-      body.wardId = parseInt(data.wardId);
-      const result: AddressType = await axiosClient.put(
-        `/address/${body.id}`,
-        body
+      const result: AddressWithIdType = await axiosClient.put(
+        `/address/${data.id}`,
+        data
       );
       return result;
     } catch (err) {
@@ -131,7 +109,7 @@ const authSlice = createSlice({
       state.address = null;
       window.location.reload();
     },
-    setAddress(state, action: PayloadAction<AddressType[]>) {
+    setAddress(state, action: PayloadAction<AddressWithIdType[]>) {
       state.address = action.payload;
     }
   },

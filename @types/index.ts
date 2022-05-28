@@ -94,19 +94,23 @@ export type CommentType = {
 // };
 
 export type AddressType = {
-  id: string;
   phone: string;
   name: string;
-  districtId: number;
-  district: string;
   provinceId: number;
   province: string;
+  districtId: number;
+  district: string;
   wardId: number;
   ward: string;
   address: string;
   isDefault: boolean;
   addressType: 'home' | 'company';
 };
+
+export type AddressWithIdType = AddressType & {
+  id: string;
+};
+
 export type Nullable<T> = { [K in keyof T]: T[K] | null };
 export type Override<T1, T2> = Omit<T1, keyof T2> & T2;
 

@@ -53,7 +53,7 @@ const AuthInput: FunctionComponent<{
         autoComplete="off"
         placeholder={placeholder}
       />
-      {isError && <div className="text-red-400 text-sm">{message}</div>}
+      {isError && <div className="text-red-400 text-sm ml-1">{message}</div>}
     </div>
   );
 };
