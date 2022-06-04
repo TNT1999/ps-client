@@ -6,7 +6,7 @@ import { ShippingIcon } from '@assets/icons';
 type Props = {
   option?: any;
   isSelected?: boolean;
-  handleSelect?: (option) => void;
+  handleSelect?: () => void;
   loading?: boolean;
 };
 const DeliveryOption: FunctionComponent<Props> = ({
@@ -18,11 +18,11 @@ const DeliveryOption: FunctionComponent<Props> = ({
   return (
     <div
       className={classNames(
-        'flex flex-col flex-1/3 p-3 pl-2 rounded-md mb-3 cursor-pointer',
+        'flex flex-col flex-1/3 p-3 pl-2 rounded-md cursor-pointer',
         {
           'border-[#dadada] border': !isSelected && !loading,
           'border-[#c2e1ff] bg-[#f0f8ff] border': isSelected && !loading,
-          'animate-pulse border-zinc-200': loading
+          'animate-pulse border border-zinc-200': loading
         }
       )}
       onClick={handleSelect}

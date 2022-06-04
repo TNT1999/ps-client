@@ -133,3 +133,15 @@ export type WardType = {
   // district_id: number;
   // province_id: number;
 };
+
+export enum OrderStatus {
+  WAIT_CONFIRMED = 'wait_confirm',
+  PROCESSING = 'processing',
+  SHIPPING = 'shipping',
+  SUCCESS = 'success',
+  CANCELED = 'cancel'
+}
+export enum PaymentType {
+  COD = 'cod',
+  VNP = 'vnp'
+}

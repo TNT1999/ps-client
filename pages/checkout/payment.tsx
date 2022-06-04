@@ -18,7 +18,7 @@ import { formatMoney } from '@utils/index';
 import { NextPage, NextPageContext } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { parseCookies } from 'nookies';
 import isEmpty from 'lodash/isEmpty';
@@ -33,6 +33,7 @@ import SelectAddressDrawer from '@components/common/checkout/cart/SelectAddressD
 import dayjs from '@utils/dayjs';
 import DeliveryOption from '@components/common/checkout/payment/DeliveryOption';
 import PaymentMethodOption from '@components/common/checkout/payment/PaymentMethodOption';
+import { PaymentType } from '@types';
 
 const PaymentPage: NextPage<any> = () => {
   const cart: CartState = useSelector((state: RootState) => state.cart);
@@ -53,9 +54,34 @@ const PaymentPage: NextPage<any> = () => {
 
   const [deliveryOption, setDeliveryOption] = useState([]);
   const [loadingDelivery, setLoadingDelivery] = useState(false);
-  const [selectedDeliveryOption, setSelectedDeliveryOption] = useState();
+  const [selectedDeliveryOption, setSelectedDeliveryOption] = useState<{
+    total: number;
+    [key: string]: any;
+  }>();
 
   const [paymentMethod, setPaymentMethod] = useState<'VNPAY' | 'COD'>('COD');
+
+  const productTotal = useCallback(
+    () =>
+      cart.items
+        .filter((item) => item.selected === true)
+        .reduce((accumulator, currentValue) => {
+          const price = currentValue.discount
+            ? currentValue.option.price * 0.01 * (100 - currentValue.discount)
+            : currentValue.option.price;
+          return (accumulator += currentValue.quantity * price);
+        }, 0),
+    [cart]
+  );
+
+  useEffect(() => {
+    setSelectedDeliveryOption(deliveryOption[0]);
+  }, [deliveryOption]);
+
+  useEffect(() => {
+    const totalPrice = productTotal() + (selectedDeliveryOption?.total || 0);
+    setTotal(totalPrice);
+  }, [productTotal, selectedDeliveryOption]);
   // const [defaultAddress, setDefaultAddress] = useState<AddressType>();
   // const defaultAddress = useSelector(
   //   (state: RootState) => state.auth.address
@@ -111,7 +137,8 @@ const PaymentPage: NextPage<any> = () => {
         {
           totalAmount: total,
           products: cart.items.filter((item) => item.selected === true),
-          shippingFee: 35000
+          shippingFee: selectedDeliveryOption && selectedDeliveryOption?.total,
+          paymentType: PaymentType.VNP
         }
       );
       window.location.href = payment_url_vnpay;
@@ -122,17 +149,10 @@ const PaymentPage: NextPage<any> = () => {
     }
   };
 
-  useEffect(() => {
-    const totalPrice = cart.items
-      .filter((item) => item.selected === true)
-      .reduce((accumulator, currentValue) => {
-        const price = currentValue.discount
-          ? currentValue.option.price * 0.01 * (100 - currentValue.discount)
-          : currentValue.option.price;
-        return (accumulator += currentValue.quantity * price);
-      }, 0);
-    setTotal(totalPrice);
-  }, [cart]);
+  // useEffect(() => {
+  //   const totalPrice = calcTotal();
+  //   setTotal(totalPrice);
+  // }, [cart]);
   return (
     <Layout>
       <Head>
@@ -259,7 +279,7 @@ const PaymentPage: NextPage<any> = () => {
                           <div className="font-light text-[#333333]">
                             Tạm tính
                           </div>
-                          <div>{formatMoney(total)}</div>
+                          <div>{formatMoney(productTotal())}</div>
                         </li>
                         <li className="flex flex-nowrap mb-2.5 justify-between">
                           <div className=" font-light text-[#333333]">

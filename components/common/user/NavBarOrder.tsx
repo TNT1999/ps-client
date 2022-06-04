@@ -1,9 +1,10 @@
+import { OrderStatus } from '@types';
 import classNames from 'classnames';
 import { FunctionComponent } from 'react';
 
 type Props = {
-  status: string;
-  onChange: (status: OrderStatus) => void;
+  status?: string;
+  onChange: (status?: OrderStatus) => void;
 };
 enum Status {
   ALL = 'all',
@@ -14,100 +15,89 @@ enum Status {
   CANCELED = 'canceled'
 }
 
-enum OrderStatus {
-  ALL = 'Tất cả',
-  CANCELED = 'Đã huỷ',
-  UNCONFIRMED = 'Chưa xác nhận',
-  CONFIRMED = 'Đã xác nhận',
-  SHIPPING = 'Đang giao hàng',
-  SUCCESS = 'Giao hàng thành công'
-}
-
 const NavBarOrder: FunctionComponent<Props> = ({ status, onChange }) => {
   return (
     <div className="bg-white">
-      <div>
-        <div className="text-center text-gray-500 border-b border-gray-200">
-          <ul className="flex flex-wrap -mb-px leading-4">
-            <li className="mr-2">
-              <div
-                className={classNames('cursor-pointer px-5 py-4 border-b-2', {
-                  'border-[#0d5cb6] text-[#0d5cb6]': status === OrderStatus.ALL,
-                  'hover:text-gray-600 hover:border-gray-300 border-transparent':
-                    status !== Status.ALL
-                })}
-                onClick={() => onChange(Status.ALL)}
-              >
-                Tất cả
-              </div>
-            </li>
-            <li className="mr-2">
-              <div
-                className={classNames('cursor-pointer px-5 py-4 border-b-2 ', {
-                  'border-[#0d5cb6] text-[#0d5cb6]':
-                    status === Status.AWAITING_PAYMENT,
-                  'hover:text-gray-600 hover:border-gray-300 border-transparent':
-                    status !== Status.AWAITING_PAYMENT
-                })}
-                onClick={() => onChange(Status.AWAITING_PAYMENT)}
-              >
-                Chờ thanh toán
-              </div>
-            </li>
-            <li className="mr-2">
-              <div
-                className={classNames('cursor-pointer px-5 py-4 border-b-2', {
-                  'border-[#0d5cb6] text-[#0d5cb6]':
-                    status === Status.PROCESSING,
-                  'hover:text-gray-600 hover:border-gray-300 border-transparent':
-                    status !== Status.PROCESSING
-                })}
-                onClick={() => onChange(Status.PROCESSING)}
-              >
-                Đang xử lý
-              </div>
-            </li>
-            <li className="mr-2">
-              <div
-                className={classNames('cursor-pointer px-5 py-4 border-b-2', {
-                  'border-[#0d5cb6] text-[#0d5cb6]':
-                    status === OrderStatus.SHIPPING,
-                  'hover:text-gray-600 hover:border-gray-300 border-transparent':
-                    status !== OrderStatus.SHIPPING
-                })}
-                onClick={() => onChange(OrderStatus.SHIPPING)}
-              >
-                Đang vận chuyển
-              </div>
-            </li>
-            <li className="mr-2">
-              <div
-                className={classNames('cursor-pointer px-5 py-4 border-b-2', {
-                  'border-[#0d5cb6] text-[#0d5cb6]':
-                    status === OrderStatus.SUCCESS,
-                  'hover:text-gray-600 hover:border-gray-300 border-transparent':
-                    status !== OrderStatus.SUCCESS
-                })}
-                onClick={() => onChange(OrderStatus.SUCCESS)}
-              >
-                Đã giao
-              </div>
-            </li>
-            <li className="mr-2">
-              <div
-                className={classNames('cursor-pointer px-5 py-4 border-b-2', {
-                  'border-[#0d5cb6] text-[#0d5cb6]':
-                    status === OrderStatus.CANCELED,
-                  'hover:text-gray-600 hover:border-gray-300 border-transparent':
-                    status !== OrderStatus.CANCELED
-                })}
-                onClick={() => onChange(OrderStatus.CANCELED)}
-              >
-                Đã huỷ
-              </div>
-            </li>
-          </ul>
-        </div>
+      <div className="text-center text-gray-500 border-b border-gray-200 select-none">
+        <ul className="flex flex-wrap -mb-px leading-4 gap-x-1">
+          <li className="flex-1">
+            <div
+              className={classNames('cursor-pointer px-5 py-4 border-b-2', {
+                'border-[#0d5cb6] text-[#0d5cb6]': status === undefined,
+                'hover:text-gray-600 hover:border-gray-300 border-transparent':
+                  status !== undefined
+              })}
+              onClick={() => onChange(undefined)}
+            >
+              Tất cả
+            </div>
+          </li>
+          <li className="flex-1">
+            <div
+              className={classNames('cursor-pointer px-5 py-4 border-b-2 ', {
+                'border-[#0d5cb6] text-[#0d5cb6]':
+                  status === OrderStatus.WAIT_CONFIRMED,
+                'hover:text-gray-600 hover:border-gray-300 border-transparent':
+                  status !== OrderStatus.WAIT_CONFIRMED
+              })}
+              onClick={() => onChange(OrderStatus.WAIT_CONFIRMED)}
+            >
+              Chờ xác nhận
+            </div>
+          </li>
+          <li className="flex-1">
+            <div
+              className={classNames('cursor-pointer px-5 py-4 border-b-2', {
+                'border-[#0d5cb6] text-[#0d5cb6]':
+                  status === OrderStatus.PROCESSING,
+                'hover:text-gray-600 hover:border-gray-300 border-transparent':
+                  status !== OrderStatus.PROCESSING
+              })}
+              onClick={() => onChange(OrderStatus.PROCESSING)}
+            >
+              Đang xử lý
+            </div>
+          </li>
+          <li className="flex-1">
+            <div
+              className={classNames('cursor-pointer px-5 py-4 border-b-2', {
+                'border-[#0d5cb6] text-[#0d5cb6]':
+                  status === OrderStatus.SHIPPING,
+                'hover:text-gray-600 hover:border-gray-300 border-transparent':
+                  status !== OrderStatus.SHIPPING
+              })}
+              onClick={() => onChange(OrderStatus.SHIPPING)}
+            >
+              Đang giao hàng
+            </div>
+          </li>
+          <li className="flex-1">
+            <div
+              className={classNames('cursor-pointer px-5 py-4 border-b-2', {
+                'border-[#0d5cb6] text-[#0d5cb6]':
+                  status === OrderStatus.SUCCESS,
+                'hover:text-gray-600 hover:border-gray-300 border-transparent':
+                  status !== OrderStatus.SUCCESS
+              })}
+              onClick={() => onChange(OrderStatus.SUCCESS)}
+            >
+              Đã giao
+            </div>
+          </li>
+          <li className="flex-1">
+            <div
+              className={classNames('cursor-pointer px-5 py-4 border-b-2', {
+                'border-[#0d5cb6] text-[#0d5cb6]':
+                  status === OrderStatus.CANCELED,
+                'hover:text-gray-600 hover:border-gray-300 border-transparent':
+                  status !== OrderStatus.CANCELED
+              })}
+              onClick={() => onChange(OrderStatus.CANCELED)}
+            >
+              Đã huỷ
+            </div>
+          </li>
+        </ul>
       </div>
     </div>
   );

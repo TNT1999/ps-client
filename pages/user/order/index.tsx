@@ -8,7 +8,9 @@ import Head from 'next/head';
 import { useState } from 'react';
 import NavBarOrder from '@components/common/user/NavBarOrder';
 import axiosClient from '@utils/api';
+import { OrderStatus } from '@types';
 type Props = any;
+
 enum Status {
   ALL = 'all',
   AWAITING_PAYMENT = 'awaiting_payment',
@@ -17,25 +19,24 @@ enum Status {
   COMPLETED = 'completed',
   CANCELED = 'canceled'
 }
-enum OrderStatus {
-  ALL = 'Tất cả',
-  CANCELED = 'Đã huỷ',
-  UNCONFIRMED = 'Chưa xác nhận',
-  CONFIRMED = 'Đã xác nhận',
-  SHIPPING = 'Đang giao hàng',
-  SUCCESS = 'Giao hàng thành công'
-}
 
 const OrderPage: NextPage<Props> = () => {
-  const [status, setStatus] = useState<OrderStatus>(OrderStatus.ALL);
+  const [status, setStatus] = useState<OrderStatus>();
+  const [loadingOrders, setLoadingOrders] = useState(false);
   const [orders, setOrders] = useState<any>();
-  const onChange = (status: Status) => {
+  const onChange = (status?: OrderStatus) => {
     setStatus(status);
   };
 
   useAsyncEffect(async () => {
-    const orders = await axiosClient.get(`orders?status=${status}`);
+    setLoadingOrders(true);
+    const orders = await axiosClient.get('orders', {
+      params: {
+        status
+      }
+    });
     setOrders(orders);
+    setLoadingOrders(false);
   }, [status]);
 
   return (
