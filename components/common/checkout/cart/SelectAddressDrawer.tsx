@@ -3,12 +3,15 @@ import { RootState, useAppDispatch } from '@app/store';
 import { Modal } from '@components/common/modal/Modal';
 import { AddressWithIdType } from '@types';
 import axiosClient from '@utils/api';
-import { FunctionComponent, useCallback, useEffect, useState } from 'react';
+import { FunctionComponent, useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import useAsyncEffect from 'use-async-effect';
-import AddressModal, { MODE } from '@components/common/cart/AddressModal';
-import SelectAddressItem from '@components/common/cart/SelectAddressItem';
+import AddressModal, {
+  MODE
+} from '@components/common/checkout/cart/AddressModal';
+import SelectAddressItem from '@components/common/checkout/cart/SelectAddressItem';
 import { updateShippingAddress } from '@app/slice/cartSlice';
+import { SpinnerIcon } from '@assets/icons';
 
 type Props = {
   onClose: () => void;
@@ -21,7 +24,7 @@ const SelectAddressDrawer: FunctionComponent<Props> = ({
 }) => {
   const dispatch = useAppDispatch();
   const address = useSelector((state: RootState) => state.auth.address);
-
+  const [isLoading, setIsLoading] = useState(false);
   const [stateSelectedAddressId, setStateSelectedAddressId] =
     useState(selectedAddressId);
 
@@ -48,10 +51,12 @@ const SelectAddressDrawer: FunctionComponent<Props> = ({
       const selectedAddress =
         address && address.find((item) => item.id === stateSelectedAddressId);
       if (!selectedAddress) return;
+      setIsLoading(true);
       await dispatch(updateShippingAddress(selectedAddress));
     } catch (err) {
       console.log(err);
     } finally {
+      setIsLoading(false);
       onClose();
     }
   };
@@ -68,7 +73,7 @@ const SelectAddressDrawer: FunctionComponent<Props> = ({
     >
       <div className="p-8">
         <div className="flex justify-between mb-8">
-          <h3 className="uppercase text-lg m-0 leading-7 text-black">
+          <h3 className="uppercase m-0 leading-7 text-black">
             Địa chỉ giao hàng
           </h3>
           <a
@@ -118,12 +123,16 @@ const SelectAddressDrawer: FunctionComponent<Props> = ({
         </div>
 
         {address && (
-          <div className="flex text-center justify-end text-base mt-6 h-[36px]">
+          <div className="text-13 flex text-center justify-end text-base mt-6 h-[36px]">
             <div
-              className="rounded cursor-pointer py-2 px-4 text-white border-px border-[#0b74e5] bg-[#0b74e5]"
+              className="rounded cursor-pointer py-2 px-4 text-white border-px border-[#0b74e5] bg-[#0b74e5] w-28 flex justify-center items-center"
               onClick={handleSelectAddress}
             >
-              Xác nhận
+              {isLoading ? (
+                <SpinnerIcon className="animate-spin fill-current text-white" />
+              ) : (
+                'Xác nhận'
+              )}
             </div>
           </div>
         )}

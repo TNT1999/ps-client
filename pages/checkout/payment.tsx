@@ -5,7 +5,13 @@ import {
   updateSelectedCartItem
 } from '@app/slice/cartSlice';
 import { RootState, Store, useAppDispatch } from '@app/store';
-import { CouponIcon, TrashIcon, TruckIcon } from '@assets/icons';
+import {
+  CODIcon,
+  CouponIcon,
+  TrashIcon,
+  TruckIcon,
+  VNPayIcon
+} from '@assets/icons';
 import Layout from '@components/common/Layout';
 import axiosClient from '@utils/api';
 import { formatMoney } from '@utils/index';
@@ -17,17 +23,18 @@ import { toast } from 'react-toastify';
 import { parseCookies } from 'nookies';
 import isEmpty from 'lodash/isEmpty';
 import Link from 'next/link';
-import ConfirmDeleteModal from '@components/common/cart/ConfirmDeleteModal';
-import CartItem from '@components/common/cart/CartItem';
+import CartItem from '@components/common/checkout/cart/CartItem';
 import { useSelector } from 'react-redux';
 import Tooltip from '@components/common/Tooltip';
 import Tippy from '@tippyjs/react';
 import useAsyncEffect from 'use-async-effect';
 import { setAddress } from '@app/slice/authSlice';
-import { AddressType } from '@types';
-import SelectAddressDrawer from '@components/common/cart/SelectAddressDrawer';
+import SelectAddressDrawer from '@components/common/checkout/cart/SelectAddressDrawer';
+import dayjs from '@utils/dayjs';
+import DeliveryOption from '@components/common/checkout/payment/DeliveryOption';
+import PaymentMethodOption from '@components/common/checkout/payment/PaymentMethodOption';
 
-const CartPage: NextPage<any> = () => {
+const PaymentPage: NextPage<any> = () => {
   const cart: CartState = useSelector((state: RootState) => state.cart);
   const shippingAddress = cart.shippingAddress;
   const [total, setTotal] = useState(0);
@@ -43,6 +50,12 @@ const CartPage: NextPage<any> = () => {
   );
 
   const [visibleSelectAddress, setVisibleSelectAddress] = useState(false);
+
+  const [deliveryOption, setDeliveryOption] = useState([]);
+  const [loadingDelivery, setLoadingDelivery] = useState(false);
+  const [selectedDeliveryOption, setSelectedDeliveryOption] = useState();
+
+  const [paymentMethod, setPaymentMethod] = useState<'VNPAY' | 'COD'>('COD');
   // const [defaultAddress, setDefaultAddress] = useState<AddressType>();
   // const defaultAddress = useSelector(
   //   (state: RootState) => state.auth.address
@@ -72,6 +85,18 @@ const CartPage: NextPage<any> = () => {
   //   );
   //   setCheckoutCart([...newCheckoutCart]);
   // };
+
+  useAsyncEffect(async () => {
+    setLoadingDelivery(true);
+    const result: [] = await axiosClient.post('/order/shipping', {
+      storeId: 1,
+      to_district: shippingAddress?.districtId,
+      to_ward: shippingAddress?.wardCode
+    });
+    setLoadingDelivery(false);
+    setDeliveryOption(result);
+  }, [shippingAddress?.id]);
+
   useEffect(() => {
     const selectedAllCartItem = cart.items.every(
       (item) => item.selected === true
@@ -80,30 +105,20 @@ const CartPage: NextPage<any> = () => {
   }, [cart.items]);
 
   const checkout = async () => {
-    const payment_url: string = await axiosClient.post(
-      'vnp/create_payment_url',
-      {
-        amount: total,
-        products: cart.items
-      }
-    );
-    window.location.href = payment_url;
-  };
-
-  const handleUpdateSelectedAllCartItem = async (selected: boolean) => {
-    try {
-      await dispatch(
-        updateSelectedCartItem({
-          selected
-        })
-      ).unwrap();
-      // toast.success('Cập nhật sản phẩm thành công', {
-      //   autoClose: 1000
-      // });
-    } catch (err) {
-      toast.error('Cập nhật sản phẩm thất bại', {
-        autoClose: 1000
-      });
+    if (paymentMethod === 'VNPAY') {
+      const payment_url_vnpay: string = await axiosClient.post(
+        'vnp/create_payment_url',
+        {
+          totalAmount: total,
+          products: cart.items.filter((item) => item.selected === true),
+          shippingFee: 35000
+        }
+      );
+      window.location.href = payment_url_vnpay;
+      return;
+    }
+    if (paymentMethod === 'COD') {
+      return;
     }
   };
 
@@ -127,103 +142,52 @@ const CartPage: NextPage<any> = () => {
       </Head>
       <main className="flex justify-center overflow-auto h-main bg-main">
         <div className="max-w-screen-xl w-full px-4">
-          <div className="my-5 mx-0">
-            <h4 className=" uppercase text-xl m-0 leading-7 text-black">
-              Giỏ hàng
-            </h4>
-          </div>
+          <div className="my-5 mx-0"></div>
           <div className="flex flex-nowrap justify-between basis-full">
-            {!isEmpty(cart.items) ? (
-              <div className="flex-1 basis-[910px]">
-                <div>
-                  <div className="bg-white py-2 px-4 rounded text-13 mb-3 text-[#242424] font-normal sticky flex items-center  after:contents after:h-3 after:w-full after:inset-x-0 after:-bottom-3 after:absolute">
-                    <span className="flex w-[398px] items-center">
-                      <input
-                        id="all-product"
-                        name="color[]"
-                        value="white"
-                        type="checkbox"
-                        className="h-4 w-4 border-gray-300 rounded-lg text-indigo-600 focus:ring-indigo-500"
-                        onChange={(e) =>
-                          handleUpdateSelectedAllCartItem(e.target.checked)
-                        }
-                        checked={selectedAllCartItem}
-                      />
-                      <label
-                        htmlFor="all-product"
-                        className="ml-3 min-w-0 flex-1 text-gray-600 text-sm"
-                      >
-                        {' '}
-                        {`Tất cả (${cart.items.length} sản phẩm)`}{' '}
-                      </label>
-                    </span>
-                    <span className="inline-block w-[190px]">Đơn giá</span>
-                    <span className="inline-block w-[130px]">Số lượng</span>
-                    <span className="inline-block w-[130px]">Thành tiền</span>
-                    <span
-                      className="w-[35px] flex justify-end cursor-pointer"
-                      onClick={() => setConfirmDeleteVisible(true)}
-                    >
-                      <Tippy
-                        arrow={true}
-                        content={<Tooltip text={'Xoá mục đã chọn'} />}
-                        delay={100}
-                      >
-                        <span>
-                          <TrashIcon className="h-[16px] w-[16px] text-gray-400 hover:text-gray-500 cursor-pointer" />
-                        </span>
-                      </Tippy>
-                    </span>
-                    {confirmDeleteVisible && (
-                      <ConfirmDeleteModal
-                        onClose={() => setConfirmDeleteVisible(false)}
-                        isDeleteSelected={true}
-                        productId={''}
-                        optionId={''}
-                      />
-                    )}
-                  </div>
-                  <div>
-                    <div className="h-auto overflow-auto">
-                      <div className="bg-white rounded mb-3">
-                        <div className="px-4 py-2">
-                          {cart.items.map((item, index) => {
-                            return (
-                              <CartItem
-                                key={`${item.productId}-${item.option.id}`}
-                                item={item}
-                              />
-                            );
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+            <div className="flex flex-col flex-1 basis-[910px]">
+              <div className="bg-white rounded p-5 mb-4">
+                <h4 className="uppercase text-lg m-0 mb-4 leading-7 text-black">
+                  Chọn hình thức giao hàng
+                </h4>
+                <div className="flex flex-wrap gap-x-2">
+                  {loadingDelivery
+                    ? [1, 2].map((option, index) => (
+                        <DeliveryOption key={index} loading={true} />
+                      ))
+                    : deliveryOption.map((option, index) => (
+                        <DeliveryOption
+                          key={index}
+                          option={option}
+                          isSelected={true}
+                          handleSelect={() => setSelectedDeliveryOption(option)}
+                          loading={false}
+                        />
+                      ))}
                 </div>
               </div>
-            ) : (
-              <div className="flex-1">
-                <div className="mb-24">
-                  <div className="bg-white rounded text-center w-full py-10 px-5">
-                    <img
-                      src="https://salt.tikicdn.com/desktop/img/mascot@2x.png"
-                      alt=""
-                      className="w-[190px] inline-block"
-                    />
-                    <p className="mt-4 mb-8">
-                      Không có sản phẩm nào trong giỏ hàng của bạn.
-                    </p>
-                    <Link href="/dien-thoai">
-                      <a className="bg-[#fdd835] text-[#4a4a4a] font-medium inline-block rounded py-3 px-14">
-                        Tiếp tục mua sắm
-                      </a>
-                    </Link>
-                  </div>
+              <div className="bg-white rounded p-5 mb-4">
+                <h4 className="uppercase text-lg m-0 mb-4 leading-7 text-black">
+                  Chọn hình thức thanh toán
+                </h4>
+                <div className="flex flex-col">
+                  <PaymentMethodOption
+                    method={'Thanh toán tiền mặt khi nhận hàng'}
+                    isSelected={paymentMethod === 'COD'}
+                    icon={CODIcon}
+                    handleSelect={() => setPaymentMethod('COD')}
+                  />
+                  <PaymentMethodOption
+                    method={'Thanh toán bằng VNPAY'}
+                    isSelected={paymentMethod === 'VNPAY'}
+                    icon={VNPayIcon}
+                    iconClassName="h-[32px] w-[32px]"
+                    handleSelect={() => setPaymentMethod('VNPAY')}
+                  />
                 </div>
               </div>
-            )}
+            </div>
             {!isEmpty(cart.items) && (
-              <div className="flex-1 basis-[calc(100%-930px)] ml-5">
+              <div className="flex-1 basis-[calc(100%-930px)] ml-5 mb-4">
                 <div>
                   <div>
                     <div className="bg-white rounded p-4 mb-4">
@@ -303,6 +267,14 @@ const CartPage: NextPage<any> = () => {
                           </div>
                           <div>0đ</div>
                         </li>
+                        <li className="flex flex-nowrap mb-2.5 justify-between">
+                          <div className=" font-light text-[#333333]">
+                            Phí vận chuyển
+                          </div>
+                          <div>
+                            {formatMoney(selectedDeliveryOption?.total)}
+                          </div>
+                        </li>
                       </ul>
                       <div className="py-4 px-5 flex flex-nowrap justify-between">
                         <span className="font-light text-[#333333]">
@@ -324,10 +296,10 @@ const CartPage: NextPage<any> = () => {
                   </div>
                   <button
                     className="bg-red-500 text-white text-center w-full block cursor-pointer rounded mt-4 py-3 px-2 border-none hover:opacity-80"
-                    onClick={() => router.push('/checkout/payment')}
-                  >{`Mua hàng (${
-                    cart.items.filter((item) => item.selected === true).length
-                  })`}</button>
+                    onClick={checkout}
+                  >
+                    Đặt hàng
+                  </button>
                 </div>
               </div>
             )}
@@ -338,7 +310,7 @@ const CartPage: NextPage<any> = () => {
   );
 };
 
-CartPage.getInitialProps = async (
+PaymentPage.getInitialProps = async (
   context: NextPageContext & { store: Store }
 ) => {
   const cookies = parseCookies(context);
@@ -362,4 +334,4 @@ CartPage.getInitialProps = async (
     };
   }
 };
-export default CartPage;
+export default PaymentPage;

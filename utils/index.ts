@@ -18,6 +18,7 @@ const Display = ['<5', '5-5.5', '5.5-6', '>6'];
 const order = ['brand', 'ram', 'storage', 'price', 'display'];
 
 export function formatMoney(money: number | string) {
+  if (!money) return;
   if (typeof money === 'number') {
     money = money.toString();
   }

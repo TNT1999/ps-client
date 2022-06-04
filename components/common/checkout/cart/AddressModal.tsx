@@ -34,7 +34,7 @@ const initNewAddress: AddressType = {
   province: '',
   districtId: -1,
   district: '',
-  wardId: -1,
+  wardCode: '',
   ward: '',
   address: '',
   isDefault: false,
@@ -79,12 +79,12 @@ const AddressModal: FunctionComponent<Props> = ({ onClose, mode, address }) => {
       setDistricts(result.districts);
     };
     const getWards = async () => {
-      if (!editAddress?.wardId) return;
+      if (editAddress?.wardCode === '') return;
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/address/ward?district_id=${editAddress?.districtId}`
       );
       const result = await response.json();
-      setWards(result.wards);
+      setWards(result);
     };
     await Promise.all([getProvince(), getDistricts(), getWards()]);
   }, []);
@@ -126,7 +126,7 @@ const AddressModal: FunctionComponent<Props> = ({ onClose, mode, address }) => {
         }`
       );
       const result = await response.json();
-      setWards(result.wards);
+      setWards(result);
     };
     getWards();
   }, [newAddress.districtId, editAddress?.districtId]);
@@ -184,20 +184,21 @@ const AddressModal: FunctionComponent<Props> = ({ onClose, mode, address }) => {
           district: '',
           districtId: -1,
           ward: '',
-          wardId: -1
+          wardCode: ''
+        });
+      } else {
+        setCreateAddress({
+          ...newAddress,
+          province:
+            provinces.find((province) => province.province_id == provinceId)
+              ?.name || '',
+          provinceId,
+          district: '',
+          districtId: -1,
+          ward: '',
+          wardCode: ''
         });
       }
-      setCreateAddress({
-        ...newAddress,
-        province:
-          provinces.find((province) => province.province_id == provinceId)
-            ?.name || '',
-        provinceId,
-        district: '',
-        districtId: -1,
-        ward: '',
-        wardId: -1
-      });
     }
     if (e.target.name === 'district') {
       const districtId = parseInt(e.target.value);
@@ -208,34 +209,36 @@ const AddressModal: FunctionComponent<Props> = ({ onClose, mode, address }) => {
           district:
             districts.find((district) => district.district_id == districtId)
               ?.name || '',
-          wardId: -1,
+          wardCode: '',
+          ward: ''
+        });
+      } else {
+        setCreateAddress({
+          ...newAddress,
+          districtId,
+          district:
+            districts.find((district) => district.district_id == districtId)
+              ?.name || '',
+          wardCode: '',
           ward: ''
         });
       }
-      setCreateAddress({
-        ...newAddress,
-        districtId,
-        district:
-          districts.find((district) => district.district_id == districtId)
-            ?.name || '',
-        wardId: -1,
-        ward: ''
-      });
     }
     if (e.target.name === 'ward') {
-      const wardId = parseInt(e.target.value);
+      const wardCode = e.target.value;
       if (MODE.EDIT && editAddress) {
         setEditAddress({
           ...editAddress,
-          wardId,
-          ward: wards.find((ward) => ward.ward_id == wardId)?.name || ''
+          wardCode,
+          ward: wards.find((ward) => ward.WardCode === wardCode)?.WardName || ''
+        });
+      } else {
+        setCreateAddress({
+          ...newAddress,
+          wardCode,
+          ward: wards.find((ward) => ward.WardCode === wardCode)?.WardName || ''
         });
       }
-      setCreateAddress({
-        ...newAddress,
-        wardId,
-        ward: wards.find((ward) => ward.ward_id == wardId)?.name || ''
-      });
     }
     resetError();
   };
@@ -280,8 +283,8 @@ const AddressModal: FunctionComponent<Props> = ({ onClose, mode, address }) => {
       newError.district = 'Nhập Quận huyện';
     }
     if (
-      (mode === MODE.EDIT && editAddress?.wardId === -1) ||
-      (mode === MODE.NEW && newAddress.wardId === -1)
+      (mode === MODE.EDIT && editAddress?.wardCode === '') ||
+      (mode === MODE.NEW && newAddress.wardCode === '')
     ) {
       newError.ward = 'Nhập Phường xã';
     }
@@ -307,12 +310,12 @@ const AddressModal: FunctionComponent<Props> = ({ onClose, mode, address }) => {
   return (
     <Modal
       modalBackgroundColor="bg-white"
-      containerClassName="p-5 animate-fadeInDown fixed top-[40px]"
+      containerClassName="p-5 animate-fadeInDown fixed top-[40px] max-h-[calc(100%-60px)] overflow-auto"
       shadow="shadow"
       rounded="rounded"
       width={832}
       onClose={onClose}
-      className="bg-[#27272ab3] overflow-auto"
+      className="bg-[#27272ab3]"
     >
       <div className="flex">
         <div className="bg-white rounded-lg flex-1">
@@ -385,9 +388,9 @@ const AddressModal: FunctionComponent<Props> = ({ onClose, mode, address }) => {
                       id="province"
                       name="province"
                       value={
-                        (mode === MODE.EDIT
+                        mode === MODE.EDIT
                           ? editAddress?.provinceId
-                          : newAddress.provinceId) || ''
+                          : newAddress.provinceId
                       }
                       className={classNames(
                         'px-4 h-10 mt-0 w-full block border text-gray-900 rounded focus:outline-none',
@@ -429,9 +432,9 @@ const AddressModal: FunctionComponent<Props> = ({ onClose, mode, address }) => {
                       id="district"
                       name="district"
                       value={
-                        (mode === MODE.EDIT
+                        mode === MODE.EDIT
                           ? editAddress?.districtId
-                          : newAddress.districtId) || ''
+                          : newAddress.districtId
                       }
                       className={classNames(
                         'px-4 h-10 mt-0 w-full block border text-gray-900 rounded focus:outline-none',
@@ -473,9 +476,9 @@ const AddressModal: FunctionComponent<Props> = ({ onClose, mode, address }) => {
                       id="ward"
                       name="ward"
                       value={
-                        (mode === MODE.EDIT
-                          ? editAddress?.wardId
-                          : newAddress.wardId) || ''
+                        mode === MODE.EDIT
+                          ? editAddress?.wardCode
+                          : newAddress.wardCode
                       }
                       className={classNames(
                         'px-4 h-10 mt-0 w-full block border text-gray-900 rounded focus:outline-none',
@@ -487,12 +490,12 @@ const AddressModal: FunctionComponent<Props> = ({ onClose, mode, address }) => {
                       )}
                       onChange={onChangeSelect}
                     >
-                      <option value={-1}>Chọn Phường xã</option>
+                      <option value={''}>Chọn Phường xã</option>
                       {wards &&
                         wards.map((ward, index) => {
                           return (
-                            <option key={index} value={ward.ward_id}>
-                              {ward.name}
+                            <option key={index} value={ward.WardCode}>
+                              {ward.WardName}
                             </option>
                           );
                         })}
@@ -584,32 +587,33 @@ const AddressModal: FunctionComponent<Props> = ({ onClose, mode, address }) => {
                     </div>
                   </div>
                 </div>
-
-                <div className="flex items-center mb-8">
-                  <label className="self-start text-base mr-4 text-[#333333] min-w-[110px] w-[110px]">
-                    &nbsp;
-                  </label>
-                  <div className="flex items-center select-none">
-                    <input
-                      id="default"
-                      type="checkbox"
-                      name="isDefault"
-                      className="h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
-                      checked={
-                        mode === MODE.EDIT
-                          ? editAddress?.isDefault
-                          : newAddress.isDefault
-                      }
-                      onChange={onChange}
-                    />
-                    <label
-                      htmlFor="default"
-                      className="text-base ml-4 text-[#333333]"
-                    >
-                      Đặt làm địa chỉ mặc định
+                {!address?.isDefault && (
+                  <div className="flex items-center mb-8">
+                    <label className="self-start text-base mr-4 text-[#333333] min-w-[110px] w-[110px]">
+                      &nbsp;
                     </label>
+                    <div className="flex items-center select-none">
+                      <input
+                        id="default"
+                        type="checkbox"
+                        name="isDefault"
+                        className="h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                        checked={
+                          mode === MODE.EDIT
+                            ? editAddress?.isDefault
+                            : newAddress.isDefault
+                        }
+                        onChange={onChange}
+                      />
+                      <label
+                        htmlFor="default"
+                        className="text-base ml-4 text-[#333333]"
+                      >
+                        Đặt làm địa chỉ mặc định
+                      </label>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </form>
           </div>
