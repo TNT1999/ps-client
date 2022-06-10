@@ -28,7 +28,7 @@ const UserAvatar: FunctionComponent<AvatarType> = ({ avatar, name, email }) => {
   return (
     <div
       className={classNames(
-        'flex justify-center items-center w-9 h-9 uppercase border-white shadow-sm rounded-full font-bold text-sm overflow-hidden',
+        'flex justify-center items-center w-9 h-9 uppercase border-white shadow-sm rounded-full font-medium text-sm overflow-hidden',
         {
           'bg-gray-200': avatar == null
         }

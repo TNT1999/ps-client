@@ -109,11 +109,20 @@ module.exports = {
             opacity: 1,
             transform: 'translateY(0)'
           }
+        },
+        fadeIn: {
+          '0%': {
+            opacity: 0
+          },
+          '100%': {
+            opacity: 1
+          }
         }
       },
       animation: {
         expandOutLeft: 'expandOutLeft .3s',
-        fadeInDown: 'fadeInDown .45s'
+        fadeInDown: 'fadeInDown .45s',
+        fadeIn: 'fadeIn .3s'
       }
     }
   },
