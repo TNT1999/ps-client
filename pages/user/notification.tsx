@@ -27,7 +27,7 @@ const NotificationPage: NextPage<Props> = () => {
                 { value: 'Thông báo của tôi', href: '/notification' }
               ]}
             />
-            <Divider className="mt-0 mb-4" />
+            <Divider />
           </div>
           <div className="flex">
             <SideBar active="notification" />

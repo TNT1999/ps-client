@@ -63,7 +63,7 @@ const AddressModal: FunctionComponent<Props> = ({ onClose, mode, address }) => {
   useAsyncEffect(async () => {
     if (mode === MODE.NEW) return;
     const getProvince = async () => {
-      if (!editAddress?.provinceId) return;
+      if (editAddress?.provinceId === -1) return;
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/address/province`
       );
@@ -71,7 +71,7 @@ const AddressModal: FunctionComponent<Props> = ({ onClose, mode, address }) => {
       setProvinces(result);
     };
     const getDistricts = async () => {
-      if (!editAddress?.districtId) return;
+      if (editAddress?.districtId === -1) return;
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/address/district?province_id=${editAddress?.provinceId}`
       );
@@ -115,14 +115,14 @@ const AddressModal: FunctionComponent<Props> = ({ onClose, mode, address }) => {
 
   useUpdateEffect(() => {
     if (
-      (newAddress.districtId === -1 && MODE.NEW) ||
-      (editAddress?.districtId === -1 && MODE.EDIT)
+      (newAddress.districtId === -1 && mode === MODE.NEW) ||
+      (editAddress?.districtId === -1 && mode === MODE.EDIT)
     )
       return;
     const getWards = async () => {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/address/ward?district_id=${
-          MODE.EDIT ? editAddress?.districtId : newAddress.districtId
+          mode === MODE.EDIT ? editAddress?.districtId : newAddress.districtId
         }`
       );
       const result = await response.json();
@@ -133,14 +133,15 @@ const AddressModal: FunctionComponent<Props> = ({ onClose, mode, address }) => {
 
   useUpdateEffect(() => {
     if (
-      (newAddress.provinceId === -1 && MODE.NEW) ||
-      (editAddress?.provinceId === -1 && MODE.EDIT)
-    )
+      (newAddress.provinceId === -1 && mode === MODE.NEW) ||
+      (editAddress?.provinceId === -1 && mode === MODE.EDIT)
+    ) {
       return;
+    }
     const getDistricts = async () => {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/address/district?province_id=${
-          MODE.EDIT ? editAddress?.provinceId : newAddress.provinceId
+          mode === MODE.EDIT ? editAddress?.provinceId : newAddress.provinceId
         }`
       );
       const result = await response.json();
@@ -174,7 +175,7 @@ const AddressModal: FunctionComponent<Props> = ({ onClose, mode, address }) => {
   const onChangeSelect = (e: ChangeEvent<any>) => {
     if (e.target.name === 'province') {
       const provinceId = parseInt(e.target.value);
-      if (MODE.EDIT && editAddress) {
+      if (mode === MODE.EDIT && editAddress) {
         setEditAddress({
           ...editAddress,
           province:
@@ -202,7 +203,7 @@ const AddressModal: FunctionComponent<Props> = ({ onClose, mode, address }) => {
     }
     if (e.target.name === 'district') {
       const districtId = parseInt(e.target.value);
-      if (MODE.EDIT && editAddress) {
+      if (mode === MODE.EDIT && editAddress) {
         setEditAddress({
           ...editAddress,
           districtId,
@@ -226,7 +227,7 @@ const AddressModal: FunctionComponent<Props> = ({ onClose, mode, address }) => {
     }
     if (e.target.name === 'ward') {
       const wardCode = e.target.value;
-      if (MODE.EDIT && editAddress) {
+      if (mode === MODE.EDIT && editAddress) {
         setEditAddress({
           ...editAddress,
           wardCode,

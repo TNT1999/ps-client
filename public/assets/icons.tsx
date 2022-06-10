@@ -51,10 +51,14 @@ import Shipping from './icons/Shipping.svg';
 import VNPay from './icons/vnpay.svg';
 import COD from './icons/cod.svg';
 import Logo from './icons/Logo.svg';
+import Slash from './icons/Slash.svg';
 export type PropsSVG = SVGAttributes<any>;
 
 export const CouponIcon: FunctionComponent<PropsSVG> = (props) => (
   <Coupon {...props} />
+);
+export const SlashIcon: FunctionComponent<PropsSVG> = (props) => (
+  <Slash {...props} />
 );
 export const LogoIcon: FunctionComponent<PropsSVG> = (props) => (
   <Logo {...props} />

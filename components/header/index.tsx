@@ -9,7 +9,7 @@ import { RootState } from 'app/store';
 import { isEmpty } from 'lodash';
 
 type Props = any;
-const Header: FunctionComponent<Props> = () => {
+const Header: FunctionComponent<Props> = React.memo(() => {
   const user = useSelector((state: RootState) => state.auth.user);
   const cart = useSelector((state: RootState) => state.cart);
   const [authModalVisible, setAuthModalVisible] = useState(false);
@@ -72,6 +72,7 @@ const Header: FunctionComponent<Props> = () => {
       </nav>
     </header>
   );
-};
+});
 
+Header.displayName = 'h_';
 export default Header;

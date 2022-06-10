@@ -30,6 +30,7 @@ import SelectAddressDrawer from '@components/common/checkout/cart/SelectAddressD
 const CartPage: NextPage<any> = () => {
   const cart: CartState = useSelector((state: RootState) => state.cart);
   const shippingAddress = cart.shippingAddress;
+
   const [total, setTotal] = useState(0);
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -78,17 +79,6 @@ const CartPage: NextPage<any> = () => {
     );
     setSelectedAllCartItem(selectedAllCartItem);
   }, [cart.items]);
-
-  const checkout = async () => {
-    const payment_url: string = await axiosClient.post(
-      'vnp/create_payment_url',
-      {
-        amount: total,
-        products: cart.items
-      }
-    );
-    window.location.href = payment_url;
-  };
 
   const handleUpdateSelectedAllCartItem = async (selected: boolean) => {
     try {

@@ -141,6 +141,7 @@ export enum OrderStatus {
   SUCCESS = 'success',
   CANCELED = 'cancel'
 }
+
 export enum PaymentType {
   COD = 'cod',
   VNP = 'vnp'

@@ -209,7 +209,7 @@ const UpdateAddressPage: NextPage<Props> = ({ address }) => {
                 { value: 'Địa chỉ của tôi', href: '/address' }
               ]}
             />
-            <Divider className="mt-0 mb-4" />
+            <Divider />
           </div>
           <div className="flex">
             <SideBar />

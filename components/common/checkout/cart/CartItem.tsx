@@ -1,15 +1,13 @@
 import {
   CartItemType,
-  setQuantityItemCart,
   updateQuantityCartItem,
   updateSelectedCartItem
 } from '@app/slice/cartSlice';
 import { useAppDispatch } from '@app/store';
 import { TrashIcon } from '@assets/icons';
 import { formatMoney } from '@utils/index';
-import { FunctionComponent, useCallback, useState } from 'react';
+import { FunctionComponent, useState } from 'react';
 import { toast } from 'react-toastify';
-import { useDebounce } from 'react-use';
 import NumberQuantity from '../../NumberQuantity';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 import Debounce from 'lodash/debounce';

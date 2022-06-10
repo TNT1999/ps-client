@@ -5,10 +5,15 @@ import SideBar from '@components/common/user/SideBar';
 import useAsyncEffect from 'use-async-effect';
 import { NextPage } from 'next';
 import Head from 'next/head';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import NavBarOrder from '@components/common/user/NavBarOrder';
 import axiosClient from '@utils/api';
 import { OrderStatus } from '@types';
+import OrderHistoryItem from '@components/common/user/OrderHistoryItem';
+import { isEmpty } from 'lodash';
+import { formatMoney } from '@utils/index';
+import { SlashIcon, TruckIcon } from '@assets/icons';
+import { useRouter } from 'next/router';
 type Props = any;
 
 enum Status {
@@ -23,11 +28,30 @@ enum Status {
 const OrderPage: NextPage<Props> = () => {
   const [status, setStatus] = useState<OrderStatus>();
   const [loadingOrders, setLoadingOrders] = useState(false);
+  const router = useRouter();
   const [orders, setOrders] = useState<any>();
   const onChange = (status?: OrderStatus) => {
     setStatus(status);
   };
 
+  const renderOrderStatus = useCallback((status: OrderStatus) => {
+    switch (status) {
+      case OrderStatus.CANCELED:
+        return (
+          <>
+            <SlashIcon className="mr-2 h-5 w-5" />
+            <span>Đã huỷ</span>
+          </>
+        );
+      case OrderStatus.SUCCESS:
+        return (
+          <>
+            <TruckIcon className="mr-2 h-5 w-5 text-[#00ab56]" />
+            <span className="text-[#00ab56]">Giao hàng thành công</span>
+          </>
+        );
+    }
+  }, []);
   useAsyncEffect(async () => {
     setLoadingOrders(true);
     const orders = await axiosClient.get('orders', {
@@ -55,7 +79,7 @@ const OrderPage: NextPage<Props> = () => {
                 { value: 'Đơn hàng của tôi', href: '/user/order' }
               ]}
             />
-            <Divider className="mt-0 mb-4" />
+            <Divider />
           </div>
           <div className="flex">
             <SideBar active="order" />
@@ -64,6 +88,63 @@ const OrderPage: NextPage<Props> = () => {
                 Đơn hàng của tôi
               </div>
               <NavBarOrder status={status} onChange={onChange} />
+              {!isEmpty(orders) ? (
+                orders.map((order: any) => {
+                  return (
+                    <div
+                      key={order.id}
+                      className="bg-white mb-5 py-4 px-5 rounded"
+                    >
+                      <div className="flex items-center pb-3 font-medium border-b border-[#ebebf0] text-[#808089]">
+                        {renderOrderStatus(order.orderStatus)}
+                      </div>
+                      <OrderHistoryItem items={order.products} />
+                      <div className="flex flex-col w-full items-end mt-3">
+                        <div className="flex mb-3 text-lg">
+                          <div className="mr-2 text-[#808089] font-light">
+                            Tổng tiền:
+                          </div>
+                          <div className="text-[#38383d] font-normal">
+                            {formatMoney(order.finalTotal)}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="flex text-13">
+                            <div className="flex justify-center items-center mr-2 text-[#0b74e5] border border-[#0b74e5] rounded h-9 py-3 px-2 cursor-pointer">
+                              Mua lại
+                            </div>
+                            <div
+                              className="flex justify-center items-center text-[#0b74e5] border border-[#0b74e5] rounded h-9 py-3 px-2 cursor-pointer"
+                              onClick={() =>
+                                router.push(`/user/order/view/${order.orderId}`)
+                              }
+                            >
+                              Xem chi tiết
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div>
+                  <div className="bg-white h-auto">
+                    <div className="flex flex-col items-center w-full p-9">
+                      <img
+                        className="h-44 w-44"
+                        src={
+                          'https://frontend.tikicdn.com/_desktop-next/static/img/account/empty-order.png'
+                        }
+                        alt=""
+                      />
+                      <p className="text-[#38383d] text-lg mt-4">
+                        Chưa có đơn hàng
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

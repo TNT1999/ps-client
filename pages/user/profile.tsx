@@ -64,7 +64,7 @@ const AccountPage: NextPage<Props> = ({ user }) => {
                 { value: 'Thông tin tài khoản', href: '/profile' }
               ]}
             />
-            <Divider className="mt-0 mb-4" />
+            <Divider />
           </div>
           <div className="flex">
             <SideBar active="profile" />

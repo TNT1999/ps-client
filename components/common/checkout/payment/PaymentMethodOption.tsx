@@ -1,12 +1,10 @@
-import { formatMoney } from '@utils/index';
 import classNames from 'classnames';
-import dayjs from '@utils/dayjs';
 import { FunctionComponent } from 'react';
-import { PropsSVG, ShippingIcon } from '@assets/icons';
+import { PropsSVG } from '@assets/icons';
 type Props = {
   method: any;
   isSelected: boolean;
-  handleSelect: (option) => void;
+  handleSelect: () => void;
   icon: FunctionComponent<PropsSVG>;
   iconClassName?: string;
 };
@@ -19,13 +17,7 @@ const PaymentMethodItem: FunctionComponent<Props> = ({
 }) => {
   const Icon = icon;
   return (
-    <div
-      className={classNames('flex p-3 pl-2 mb-3', {
-        // 'border-[#dadada]': !isSelected,
-        // 'border-[#c2e1ff] bg-[#f0f8ff]': isSelected
-      })}
-      onClick={handleSelect}
-    >
+    <div className="flex p-3 pl-2 mb-3" onClick={handleSelect}>
       <div className="flex cursor-pointer">
         <div className="mr-3 flex items-center justify-center">
           <svg

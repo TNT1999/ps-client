@@ -177,7 +177,8 @@ const cartSlice = createSlice({
     });
     builder.addCase(add2Cart.fulfilled, (state, action) => {
       if (action.payload.status === 'success') {
-        state.items.push(omit(action.payload, ['status', 'discount']));
+        console.log(action.payload);
+        state.items.push(omit(action.payload, ['status']));
         state.count = state.items.length;
       }
     });

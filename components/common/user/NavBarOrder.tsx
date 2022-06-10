@@ -6,18 +6,10 @@ type Props = {
   status?: string;
   onChange: (status?: OrderStatus) => void;
 };
-enum Status {
-  ALL = 'all',
-  AWAITING_PAYMENT = 'awaiting_payment',
-  PROCESSING = 'processing',
-  SHIPPING = 'shipping',
-  COMPLETED = 'completed',
-  CANCELED = 'canceled'
-}
 
 const NavBarOrder: FunctionComponent<Props> = ({ status, onChange }) => {
   return (
-    <div className="bg-white">
+    <div className="bg-white mb-3">
       <div className="text-center text-gray-500 border-b border-gray-200 select-none">
         <ul className="flex flex-wrap -mb-px leading-4 gap-x-1">
           <li className="flex-1">

@@ -135,9 +135,10 @@ const PaymentPage: NextPage<any> = () => {
       const payment_url_vnpay: string = await axiosClient.post(
         'vnp/create_payment_url',
         {
-          totalAmount: total,
+          finalTotal: total,
           products: cart.items.filter((item) => item.selected === true),
-          shippingFee: selectedDeliveryOption && selectedDeliveryOption?.total,
+          shippingInfo: selectedDeliveryOption,
+          shippingAddress,
           paymentType: PaymentType.VNP
         }
       );

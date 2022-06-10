@@ -20,6 +20,7 @@ export const Modal: FunctionComponent<
     shadow?: string;
     rounded?: string;
     selector?: Element;
+    clickOutsideToClose?: boolean;
   }
 > = ({
   onClose,
@@ -36,7 +37,8 @@ export const Modal: FunctionComponent<
   className,
   height,
   shadow = 'shadow-lg',
-  rounded = 'rounded-xl'
+  rounded = 'rounded-xl',
+  clickOutsideToClose = true
 }) => {
   const [mounted, setMounted] = useState(false);
   const ref = useRef<Element>();
@@ -55,6 +57,9 @@ export const Modal: FunctionComponent<
           )}
           // style={{ backdropFilter: 'blur(1px)' }}
           onClick={(event) => {
+            if (!clickOutsideToClose) {
+              return;
+            }
             event.stopPropagation();
             if (onClose != null) {
               onClose();
