@@ -68,6 +68,7 @@ export const FileService = {
             if (img.width < 120 || img.height < 120) {
               reject(new Error(COPY.dimensionError));
             }
+            console.log('run in image');
             const resizedDimensions = FileService.calculateAspectRatioFit(
               img.width,
               img.height,

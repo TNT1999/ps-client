@@ -82,8 +82,8 @@ const ReviewModal: FunctionComponent<Props> = ({ onClose, product }) => {
       });
     }
   }, [files.length]);
-  const handleDeleteImage = (filename: string) => {
-    setFiles(files.filter((file) => file.file.name !== filename));
+  const handleDeleteImage = (deletedIndex: number) => {
+    setFiles(files.filter((_, index) => index !== deletedIndex));
   };
   const handleFileInputChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const fileList = [...(e.target.files || [])];
@@ -94,38 +94,18 @@ const ReviewModal: FunctionComponent<Props> = ({ onClose, product }) => {
       });
       return;
     }
-    setLoadingImage(true);
-    const previewImages: any[] = await Promise.all(
-      fileList.map((file) => FileService.getImagePreview(file))
-    );
-    setFiles([...files, ...previewImages]);
-    setLoadingImage(false);
-
-    // const result = await FileService.getBase64(fileList[0]);
-    // console.log(result);
-
-    // const p = await FileService.getImagePreview(fileList[0]);
-    // console.log(p);
-    // console.log(fileList);
-    // const isValid = await isImageFileValid(fileList[0]);
-
-    // if (!isValid) {
-    //   return;
-    // }
-
-    // const uploadedFile = await doUpload(fileList);
-    // if (uploadedFile[0] == null) {
-    //   return;
-    // }
-
-    // setImageSelector(undefined);
-    // const { width, height, tempUrl, url, presignedUrl, file } = uploadedFile[0];
-
-    // if (presignedUrl && file) {
-    //   putToS3ByPresignedUrl(presignedUrl, file);
-    // }
-
-    // imageSelector?.onSelect({ image: { width, height, url }, data: tempUrl });
+    try {
+      setLoadingImage(true);
+      const previewImages: any[] = await Promise.all(
+        fileList.map((file) => FileService.getImagePreview(file))
+      );
+      setFiles([...files, ...previewImages]);
+      setLoadingImage(false);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      e.target.value = '';
+    }
   };
 
   const uploadImage = async (file: File) => {
@@ -217,13 +197,13 @@ const ReviewModal: FunctionComponent<Props> = ({ onClose, product }) => {
             {files.map((file, index) => {
               return (
                 <div
-                  key={file.file.name}
+                  key={index}
                   className="rounded h-16 w-16 border border-[#e0e0e0] bg-cover mr-4 relative"
                   style={{ backgroundImage: `url(${file.photoBase64})` }}
                 >
                   <span
                     className="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 bg-gray-200 text-black rounded-full flex items-center w-5 h-5 justify-center cursor-pointer"
-                    onClick={() => handleDeleteImage(file.file.name)}
+                    onClick={() => handleDeleteImage(index)}
                   >
                     <CloseIcon className="w-3 h-3" />
                   </span>

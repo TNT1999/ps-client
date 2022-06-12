@@ -53,7 +53,7 @@ const Tree: FunctionComponent<Props> = memo(
             onMouseEnter={onHeaderMouseEnter}
             onMouseLeave={onHeaderMouseLeave}
           >
-            {label && <label>{label}</label>}
+            {label && !expanded && <label>{label}</label>}
             {description && (
               <div
                 className={cx('duration-200 mt-[0.375rem]', {

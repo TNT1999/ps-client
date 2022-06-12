@@ -1,62 +1,140 @@
-import { FunctionComponent, useState } from 'react';
+import { ChangeEvent, FunctionComponent, useCallback, useState } from 'react';
 import TextWidget from '@components/widget/TextWidget';
 import BooleanWidget from '@components/widget/BooleanWidget';
 import AttributeWidget from '@components/widget/AttributeWidget';
 import NumberWidget from '@components/widget/NumberWidget';
 import ColorOptionWidget from '@components/widget/ColorOptionWidget';
+import { ColorOption } from '@types';
 type Props = any;
+
+export type Attribute = {
+  name: string;
+  value: string;
+};
+
+const initProduct = {
+  name: 'Tên sản phẩm',
+  isHot: false,
+  price: 0,
+  hasVariants: false,
+  discount: 0,
+  attrs: [
+    {
+      name: 'Hãng sản xuất',
+      value: ''
+    },
+    {
+      name: 'Hệ điều hành',
+      value: ''
+    },
+    {
+      name: 'Kích thước màn hình',
+      value: ''
+    },
+    {
+      name: 'Dung lượng RAM',
+      value: ''
+    },
+    {
+      name: 'Bộ nhớ trong',
+      value: ''
+    },
+    {
+      name: 'Pin',
+      value: ''
+    },
+    {
+      name: 'Kích thước',
+      value: ''
+    },
+    {
+      name: 'Trọng lượng',
+      value: ''
+    }
+  ],
+  colorOptions: [] as ColorOption[]
+};
 const Editor: FunctionComponent<Props> = () => {
-  const [value, setValue] = useState('initial value');
-  const [booleanHot, setHot] = useState(false);
+  const [product, setProduct] = useState(initProduct);
   const [variant, setVariant] = useState(false);
-  const [price, setPrice] = useState<number | null>(null);
+
+  const handleChangeTextWidget = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setProduct({
+        ...product,
+        [e.target.name]: e.target.value
+      });
+    },
+    []
+  );
+  const handleChangeAttrsWidget = useCallback((attrs: Attribute[]) => {
+    setProduct({
+      ...product,
+      attrs
+    });
+  }, []);
+
+  const handleChangeBooleanWidget = useCallback(
+    (name: string, boolean: boolean) => {
+      setProduct({
+        ...product,
+        [name]: boolean
+      });
+    },
+    []
+  );
+
+  const handleChangeColorOptionWidget = useCallback(
+    (colorOptions: ColorOption[]) => {
+      setProduct({
+        ...product,
+        colorOptions
+      });
+    },
+    []
+  );
   return (
     <>
       <TextWidget
         title
-        name="title"
         label="Product Name"
-        value={value}
-        onChange={(newValue) => setValue(newValue)}
+        name="name"
+        value={product.name}
+        onChange={handleChangeTextWidget}
       />
       <BooleanWidget
-        name={'Hot Product'}
         label={'Hot'}
-        onChange={(s) => setHot(s)}
-        value={booleanHot}
+        name={'isHot'}
+        onChange={handleChangeBooleanWidget}
+        value={product.isHot}
       />
       <BooleanWidget
-        name={'Has variants'}
         label={'Variants'}
-        onChange={(s) => setVariant(s)}
-        value={variant}
+        name={'hasVariants'}
+        onChange={handleChangeBooleanWidget}
+        value={product.hasVariants}
       />
       <AttributeWidget
-        value={value}
-        onNameChanged={function (name: string): void {
-          console.log(name);
-        }}
-        onValueChanged={function (value: string): void {
-          console.log(value);
-        }}
+        value={product.attrs}
+        onChange={handleChangeAttrsWidget}
         name={'attribute'}
       />
       <NumberWidget
         name={'price'}
-        value={price}
+        value={product.price}
         title={false}
-        onChange={(value) => setPrice(value || null)}
+        onChange={(newPrice) =>
+          setProduct({
+            ...product,
+            price: newPrice
+          })
+        }
         label={'Price'}
       />
       <ColorOptionWidget
         name={''}
-        value={''}
-        onNameChanged={function (name: string): void {
-          throw new Error('Function not implemented.');
-        }}
-        onValueChanged={function (value: string): void {
-          throw new Error('Function not implemented.');
-        }}
+        value={product.colorOptions}
+        onChange={handleChangeColorOptionWidget}
       />
     </>
   );

@@ -123,6 +123,7 @@ const EditableText: FunctionComponent<PropType> = ({
               lineHeight: 'inherit',
               ...editStyles
             }}
+            autoComplete="off"
             className={classNames(
               'editable-text absolute top-0 left-0 outline-none box-content',
               editClassName || 'w-full h-full rounded'

@@ -3,33 +3,40 @@ import Button from '@components/common/Button';
 import Field from '@components/common/Field';
 import { nanoid } from '@reduxjs/toolkit';
 import { motion } from 'framer-motion';
-import { FunctionComponent, useState } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 import { ColorOption } from '@types';
 import ColorOptionItemWidget from './ColorOptionItemWidget';
 import NumberWidget from './NumberWidget';
 import TextWidget from './TextWidget';
+import UploadImageWidget from './UploadImageWidget';
 
 type Props = {
   name: string;
   onClick?: () => void;
-  value: string;
+  value: ColorOption[];
   readOnly?: boolean;
   placeholder?: string;
-  onNameChanged: (name: string) => void;
-  onValueChanged: (value: string) => void;
+  onChange: (colorOptions: ColorOption[]) => void;
+  // onNameChanged: (name: string) => void;
+  // onValueChanged: (value: string) => void;
 };
 
-const ColorOptionWidget: FunctionComponent<Props> = ({ onClick }) => {
-  const [colors, setColors] = useState<ColorOption[]>([
-    {
-      id: nanoid(),
-      name: 'ew',
-      price: 12,
-      amount: 1212,
-      images: ['sadsd', 'asdd']
-    }
-  ]);
+const ColorOptionWidget: FunctionComponent<Props> = ({
+  onClick,
+  value,
+  onChange
+}) => {
+  const [colors, setColors] = useState<ColorOption[]>(value);
 
+  const [files, setFiles] = useState<
+    {
+      colorId: string;
+      images: {
+        file: File;
+        photoBase64?: string;
+      }[];
+    }[]
+  >([]);
   const [expandedItems, setExpandedItems] = useState<number[]>([]); // list index of explandItem
   const deleteColor = (id: string) => {
     const removedColor = colors.filter((color) => color.id !== id);
@@ -65,7 +72,6 @@ const ColorOptionWidget: FunctionComponent<Props> = ({ onClick }) => {
     setExpandedItems(expandedItemsTemp);
   };
   const addNewColor = (color: ColorOption) => {
-    console.log(colors.length);
     setColors((colors) => {
       return [
         ...colors,
@@ -74,9 +80,24 @@ const ColorOptionWidget: FunctionComponent<Props> = ({ onClick }) => {
         }
       ];
     });
-    console.log(colors.length);
     setExpandedItems((expandedItems) => [...expandedItems, colors.length]);
   };
+
+  const handleChangeColorOption = (
+    newColorOption: ColorOption,
+    index: number
+  ) => {
+    setColors([
+      ...colors.slice(0, index),
+      newColorOption,
+      ...colors.slice(index + 1)
+    ]);
+  };
+
+  useEffect(() => {
+    onChange(colors);
+  }, [colors]);
+
   return (
     <Field label={'Color option'} onClick={onClick} noBorder={true}>
       {colors.length > 0 &&
@@ -89,39 +110,75 @@ const ColorOptionWidget: FunctionComponent<Props> = ({ onClick }) => {
               fields={(setItemValue, index) => (
                 <>
                   <TextWidget
-                    name="featureTitle"
+                    name="name"
                     label="Name"
-                    value={'ádas'}
-                    onChange={(featureTitle) =>
-                      setItemValue({ featureTitle }, index)
-                    }
+                    value={color.name}
+                    onChange={(e) => {
+                      const newColorOption = {
+                        ...color,
+                        name: e.target.value
+                      };
+                      setItemValue(newColorOption, index);
+                    }}
                     title={false}
                   />
-                  <TextWidget
+                  <NumberWidget
                     name="featureDescription"
                     label="Price"
-                    value={'ass'}
-                    onChange={(featureDescription) =>
-                      setItemValue({ featureDescription }, index)
-                    }
+                    value={color.price}
+                    onChange={(newPrice) => {
+                      const newColorOption = {
+                        ...color,
+                        price: newPrice
+                      };
+                      setItemValue(newColorOption, index);
+                    }}
                     title={false}
                   />
                   <NumberWidget
                     name={''}
-                    value={121212}
-                    title={false}
-                    onChange={function (e?: number): void {
-                      throw new Error('Function not implemented.');
-                    }}
                     label={'Amount'}
+                    value={color.amount}
+                    title={false}
+                    onChange={(newAmount) => {
+                      const newColorOption = {
+                        ...color,
+                        amount: newAmount
+                      };
+                      setItemValue(newColorOption, index);
+                    }}
+                  />
+                  <UploadImageWidget
+                    color={color}
+                    colorFiles={
+                      files.find(
+                        (colorFiles) => colorFiles.colorId === color.id
+                      ) || { colorId: color.id, images: [] }
+                    }
+                    onChangeFiles={(
+                      newFiles: {
+                        file: File;
+                        photoBase64?: string;
+                      }[]
+                    ) => {
+                      const cloneFiles = [...files];
+                      const a = cloneFiles.filter(
+                        (file) => file.colorId !== color.id
+                      );
+                      setFiles([
+                        ...files.filter((file) => file.colorId !== color.id),
+                        {
+                          colorId: color.id,
+                          images: [...newFiles]
+                        }
+                      ]);
+                    }}
                   />
                 </>
               )}
               index={index}
               toggleExpand={toggleExpand}
-              handleChange={function (): void {
-                throw new Error('Function not implemented.');
-              }}
+              handleChange={handleChangeColorOption}
               itemExpanded={itemExpanded}
               onDelete={handleDelete}
             />
@@ -131,11 +188,11 @@ const ColorOptionWidget: FunctionComponent<Props> = ({ onClick }) => {
         className="w-full mt-4 bg-[#79829133] flex items-center justify-center"
         onClick={() =>
           addNewColor({
-            id: nanoid(),
-            name: 'ew',
+            id: nanoid(8),
+            name: '',
             price: 12,
             amount: 1212,
-            images: ['sadsd', 'asdd']
+            images: []
           })
         }
       >
