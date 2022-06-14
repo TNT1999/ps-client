@@ -10,10 +10,7 @@ const OrderHistoryItem: FunctionComponent<Props> = ({ items }) => {
     <div>
       {items.map((item: any) => {
         return (
-          <div
-            key={item.id}
-            className="flex justify-between items-center py-4 border-b border-[#ebebf0]"
-          >
+          <div key={item.id} className="flex justify-between items-center py-4">
             <div className="flex-1 pr-3">
               <div className="flex items-center">
                 <a

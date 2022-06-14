@@ -37,7 +37,7 @@ const NavBarOrder: FunctionComponent<Props> = ({ status, onChange }) => {
               Chờ xác nhận
             </div>
           </li>
-          <li className="flex-1">
+          {/* <li className="flex-1">
             <div
               className={classNames('cursor-pointer px-5 py-4 border-b-2', {
                 'border-[#0d5cb6] text-[#0d5cb6]':
@@ -49,7 +49,7 @@ const NavBarOrder: FunctionComponent<Props> = ({ status, onChange }) => {
             >
               Đang xử lý
             </div>
-          </li>
+          </li> */}
           <li className="flex-1">
             <div
               className={classNames('cursor-pointer px-5 py-4 border-b-2', {

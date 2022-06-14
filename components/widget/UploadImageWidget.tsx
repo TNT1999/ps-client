@@ -1,4 +1,5 @@
 import { CloseIcon, UploadIcon } from '@assets/icons';
+import { FileImage, FilesByColorOption } from '@components/admin/editor/Editor';
 import Field from '@components/common/Field';
 import { ColorOption } from '@types';
 import FileService, { FILE_TYPES } from '@utils/image';
@@ -13,27 +14,19 @@ import {
 
 type Props = {
   color: ColorOption;
-  onChangeFiles: (
-    images: {
-      file: File;
-      photoBase64?: string;
-    }[]
-  ) => void;
-  colorFiles: {
-    colorId: string;
-    images: {
-      file: File;
-      photoBase64?: string;
-    }[];
-  };
+  onChangeFiles: (images: FileImage[], colorId: string) => void;
+  colorFiles?: FilesByColorOption;
 };
 const UploadImageWidget: FunctionComponent<Props> = ({
   color,
-  colorFiles,
+  colorFiles = {
+    colorId: color.id,
+    images: []
+  },
   onChangeFiles
 }) => {
   const inputRef = useRef<any>(null);
-  const [files, setFiles] = useState(colorFiles?.images);
+  const [files, setFiles] = useState(colorFiles.images);
   const [loadingImage, setLoadingImage] = useState(false);
   const [sendingReview, setSendingReview] = useState(false);
 
@@ -65,11 +58,9 @@ const UploadImageWidget: FunctionComponent<Props> = ({
   };
 
   useEffect(() => {
-    onChangeFiles(files);
-  }, [files]);
-  const sendImage = async () => {
-    // const images = await onChangeImages(images);
-  };
+    onChangeFiles(files, color.id);
+  }, [color.id, files, onChangeFiles]);
+
   return (
     <Field label={'Images'} noBorder={true} onClick={undefined}>
       <div className="mt-5">

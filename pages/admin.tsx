@@ -3,9 +3,18 @@ import { NextPage } from 'next';
 import NavigationMenu from '@components/admin/navigation/NavigationMenu';
 import Layout from '@components/common/Layout';
 import Editor from '@components/admin/editor/Editor';
+import { useEffect, useState } from 'react';
+import axiosClient from '@utils/api';
+import useAsyncEffect from 'use-async-effect';
+import { isEmpty } from 'lodash';
 
 type Props = any;
 const AdminPage: NextPage<Props> = () => {
+  const [brands, setBrands] = useState<any[]>([]);
+  useAsyncEffect(async () => {
+    const brands: any[] = await axiosClient.get('brands');
+    setBrands(brands);
+  }, []);
   return (
     <Layout admin>
       <Head>
@@ -18,7 +27,7 @@ const AdminPage: NextPage<Props> = () => {
         <div className="flex flex-row flex-1 overflow-hidden">
           <NavigationMenu />
           <div className="max-w-screen-xl flex-1 h-full max-h-full overflow-y-auto m-auto">
-            <Editor />
+            {!isEmpty(brands) && <Editor brands={brands} />}
           </div>
         </div>
       </main>

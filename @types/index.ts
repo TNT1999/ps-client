@@ -136,7 +136,7 @@ export type WardType = {
 
 export enum OrderStatus {
   WAIT_CONFIRMED = 'wait_confirm',
-  PROCESSING = 'processing',
+  // PROCESSING = 'processing',
   SHIPPING = 'shipping',
   SUCCESS = 'success',
   CANCELED = 'cancel'

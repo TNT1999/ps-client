@@ -29,7 +29,6 @@ const Tree: FunctionComponent<Props> = memo(
     onHeaderMouseEnter
   }) => {
     const previous = usePrevious(expanded);
-    console.log(expanded, previous);
     return (
       <div>
         <div className="flex items-center cursor-move">

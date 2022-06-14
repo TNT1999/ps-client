@@ -50,6 +50,13 @@ const OrderPage: NextPage<Props> = () => {
             <span className="text-[#00ab56]">Giao hàng thành công</span>
           </>
         );
+      case OrderStatus.SHIPPING:
+        return (
+          <>
+            <TruckIcon className="mr-2 h-5 w-5 text-[#fda223]" />
+            <span className="text-[#fda223]">Đang giao hàng</span>
+          </>
+        );
     }
   }, []);
   useAsyncEffect(async () => {
@@ -99,31 +106,35 @@ const OrderPage: NextPage<Props> = () => {
                         {renderOrderStatus(order.orderStatus)}
                       </div>
                       <OrderHistoryItem items={order.products} />
-                      <div className="flex flex-col w-full items-end mt-3">
-                        <div className="flex mb-3 text-lg">
-                          <div className="mr-2 text-[#808089] font-light">
-                            Tổng tiền:
-                          </div>
-                          <div className="text-[#38383d] font-normal">
-                            {formatMoney(order.finalTotal)}
-                          </div>
-                        </div>
-                        <div>
-                          <div className="flex text-13">
-                            <div className="flex justify-center items-center mr-2 text-[#0b74e5] border border-[#0b74e5] rounded h-9 py-3 px-2 cursor-pointer">
-                              Mua lại
+                      {order.orderStatus === OrderStatus.SUCCESS && (
+                        <div className="flex flex-col w-full items-end mt-3">
+                          <div className="flex mb-3 text-lg">
+                            <div className="mr-2 text-[#808089] font-light">
+                              Tổng tiền:
                             </div>
-                            <div
-                              className="flex justify-center items-center text-[#0b74e5] border border-[#0b74e5] rounded h-9 py-3 px-2 cursor-pointer"
-                              onClick={() =>
-                                router.push(`/user/order/view/${order.orderId}`)
-                              }
-                            >
-                              Xem chi tiết
+                            <div className="text-[#38383d] font-normal">
+                              {formatMoney(order.finalTotal)}
                             </div>
                           </div>
+                          <div>
+                            <div className="flex text-13">
+                              <div className="flex justify-center items-center mr-2 text-[#0b74e5] border border-[#0b74e5] rounded h-9 py-3 px-2 cursor-pointer">
+                                Mua lại
+                              </div>
+                              <div
+                                className="flex justify-center items-center text-[#0b74e5] border border-[#0b74e5] rounded h-9 py-3 px-2 cursor-pointer"
+                                onClick={() =>
+                                  router.push(
+                                    `/user/order/view/${order.orderId}`
+                                  )
+                                }
+                              >
+                                Xem chi tiết
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                      </div>
+                      )}
                     </div>
                   );
                 })

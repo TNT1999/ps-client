@@ -86,9 +86,9 @@ const DetailOrderPage: NextPage<Props> = ({ order }) => {
                     <p className="mt-3 italic text-[#00ab56]">
                       Giao vào{' '}
                       <span className="capitalize">
-                        {dayjs
-                          .unix(order.shippingInfo.leadtime)
-                          .format('dddd, DD/MM')}
+                        {dayjs(order.shippingInfo.deliveredAt).format(
+                          'dddd, DD/MM'
+                        )}
                       </span>
                     </p>
                   </div>
@@ -118,7 +118,6 @@ const DetailOrderPage: NextPage<Props> = ({ order }) => {
                     <th className="table-cell text-[#787878] text-left border-b border-[#f4f4f4] text-base font-normal py-5 px-4 min-w-[100px]">
                       Số lượng
                     </th>
-                    {/* <th></th> */}
                     <th className="table-cell text-[#787878] text-right border-b border-[#f4f4f4] text-base font-normal py-5 px-4 min-w-[100px]">
                       Tạm tính
                     </th>

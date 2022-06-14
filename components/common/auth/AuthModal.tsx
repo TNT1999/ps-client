@@ -128,7 +128,7 @@ const AuthModal: FunctionComponent<{ onClose: () => void }> = ({ onClose }) => {
               />
             </div>
           </form>
-          <Divider text="Hoặc tiếp tục bằng" />
+          <Divider text="Hoặc tiếp tục bằng" className="my-5" />
           <SocialLogin onClose={onClose} />
           <div className="text-opacity-90 text-center mt-6 text-gray-800 text-sm">
             Chưa có tài khoản?{' '}

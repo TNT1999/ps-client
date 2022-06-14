@@ -15,6 +15,8 @@ import AttributeWidgetItem from './AttributeWidgetItem';
 import { motion } from 'framer-motion';
 import cx from 'classnames';
 import { Attribute } from '@components/admin/editor/Editor';
+import axiosClient from '@utils/api';
+import useAsyncEffect from 'use-async-effect';
 type Props = {
   name: string;
   onClick?: () => void;
@@ -28,6 +30,7 @@ const AttributeWidget: FunctionComponent<Props> = memo(
   ({ name, onClick, value, readOnly, placeholder, onChange }) => {
     const [items, setItems] = useState<Attribute[]>(value);
     const [isCollapsed, setIsCollapsed] = useState(true);
+    // const [brands, setBrands] = useState<any[]>();
     const newAttribute = () => {
       setItems([
         ...items,
@@ -37,9 +40,6 @@ const AttributeWidget: FunctionComponent<Props> = memo(
         }
       ]);
       setIsCollapsed(false);
-    };
-    const deleteAttribute = (name: string) => {
-      setItems(items);
     };
     const onDrop = (e: any) => {
       const cloneItems = [...items];
@@ -55,9 +55,20 @@ const AttributeWidget: FunctionComponent<Props> = memo(
       ]);
     };
 
+    const handleDelete = (index: number) => {
+      const cloneItems = [...items];
+      cloneItems.splice(index, 1);
+      setItems([...cloneItems]);
+    };
+
+    // useAsyncEffect(async () => {
+    //   const brands: any[] = await axiosClient.get('brands');
+    //   setBrands(brands);
+    // }, []);
+
     useEffect(() => {
       onChange(items);
-    }, [items]);
+    }, [items, onChange]);
 
     return (
       <Field
@@ -110,6 +121,7 @@ const AttributeWidget: FunctionComponent<Props> = memo(
                     index={index}
                     attribute={attribute}
                     onChange={handleChange}
+                    handleDelete={handleDelete}
                   />
                 </Draggable>
               ))}
