@@ -109,6 +109,7 @@ const EditableSelect: FunctionComponent<PropType> = ({
         onChange={(e) => {
           onChange(e.target.value);
         }}
+        value={value}
       >
         {option.map((item) => (
           <option key={item.id} value={item.name}>

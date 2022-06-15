@@ -102,6 +102,15 @@ export const FileService = {
     } catch (e: any) {
       throw Error(e);
     }
+  },
+
+  uploadImage: async (file: File) => {
+    const { imageURL, presignedUrl } = await FileService.getPresignedImageURL();
+    await fetch(presignedUrl, {
+      method: 'PUT',
+      body: file
+    });
+    return imageURL;
   }
 };
 

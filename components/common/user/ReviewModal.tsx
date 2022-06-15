@@ -108,20 +108,11 @@ const ReviewModal: FunctionComponent<Props> = ({ onClose, product }) => {
     }
   };
 
-  const uploadImage = async (file: File) => {
-    const { imageURL, presignedUrl } = await FileService.getPresignedImageURL();
-    await fetch(presignedUrl, {
-      method: 'PUT',
-      body: file
-    });
-    return imageURL;
-  };
-
   const handleReview = async () => {
     setSendingReview(true);
     try {
       const images = await Promise.all(
-        files.map((file) => uploadImage(file.file))
+        files.map((file) => FileService.uploadImage(file.file))
       );
       await axiosClient.post('/review', {
         productId: product.productId,

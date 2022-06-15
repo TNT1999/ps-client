@@ -90,7 +90,7 @@ const ReviewItem: FunctionComponent<Props> = ({ review }) => {
   };
   return (
     <div className="ml-auto border-b border-[#f2f2f2] mb-3 last:mb-0">
-      <div className="flex justify-between mb-3 px-[10px]">
+      <div className="flex justify-between mb-2 px-[10px]">
         <div className="flex items-center justify-center">
           <UserAvatar name={review.reviewer.name} />
           <p className="text-md font-medium ml-2">{review.reviewer.name}</p>
@@ -101,7 +101,7 @@ const ReviewItem: FunctionComponent<Props> = ({ review }) => {
         </p>
       </div>
       <div className="p-[10px] rounded-md w-full mb-4 ml-auto">
-        <Rating classNameStar="w-6 h-6" ratingValue={3} />
+        <Rating classNameStar="w-5 h-5" ratingValue={3} />
         <div className="text-13 font-normal text-[#242424] whitespace-pre-wrap py-3">
           {reviewData.content}
         </div>
@@ -112,7 +112,7 @@ const ReviewItem: FunctionComponent<Props> = ({ review }) => {
                 <div
                   onClick={() => handleFullScreenImage(index)}
                   key={index}
-                  className="rounded h-24 w-24 border border-[#e0e0e0] bg-cover cursor-pointer"
+                  className="rounded-md h-24 w-24 border border-[#e0e0e0] bg-cover cursor-pointer"
                   style={{ backgroundImage: `url(${image})` }}
                 />
               );

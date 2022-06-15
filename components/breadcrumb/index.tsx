@@ -14,7 +14,7 @@ const Breadcrumb: FunctionComponent<IProps> = React.memo(({ breadcrumbs }) => {
     <ul className="flex text-gray-600 text-xs lg:text-sm pb-4">
       {breadcrumbs.map((breadcrumb, index) => {
         return (
-          <li className="inline-flex items-center m-0" key={index}>
+          <li className="inline-flex items-center m-0 capitalize" key={index}>
             <Link href={breadcrumb.href}>
               <a>{breadcrumb.value}</a>
             </Link>
