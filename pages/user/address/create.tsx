@@ -28,7 +28,7 @@ const CreateAddressPage: NextPage<Props> = () => {
     province: '',
     districtId: -1,
     district: '',
-    wardId: -1,
+    wardCode: '',
     ward: '',
     address: '',
     isDefault: false,
@@ -78,7 +78,7 @@ const CreateAddressPage: NextPage<Props> = () => {
         `${process.env.NEXT_PUBLIC_API_URL}/address/ward?district_id=${address.districtId}`
       );
       const result = await response.json();
-      setWards(result.wards);
+      setWards(result);
     };
     getWards();
   }, [address.districtId]);
@@ -122,7 +122,7 @@ const CreateAddressPage: NextPage<Props> = () => {
         district: '',
         districtId: -1,
         ward: '',
-        wardId: -1
+        wardCode: ''
       });
     }
     if (e.target.name === 'district') {
@@ -134,15 +134,15 @@ const CreateAddressPage: NextPage<Props> = () => {
             ?.name || '',
         districtId,
         ward: '',
-        wardId: -1
+        wardCode: ''
       });
     }
     if (e.target.name === 'ward') {
-      const wardId = parseInt(e.target.value);
+      const wardCode = e.target.value;
       setAddress({
         ...address,
-        ward: wards.find((ward) => ward.ward_id == wardId)?.name || '',
-        wardId
+        ward: wards.find((ward) => ward.WardCode === wardCode)?.WardName || '',
+        wardCode
       });
     }
     resetError();
@@ -168,7 +168,7 @@ const CreateAddressPage: NextPage<Props> = () => {
     if (address.districtId === -1) {
       newError.district = 'Nhập Quận huyện';
     }
-    if (address.wardId === -1) {
+    if (address.wardCode === '') {
       newError.ward = 'Nhập Phường xã';
     }
     setError({ ...newError });
@@ -196,7 +196,7 @@ const CreateAddressPage: NextPage<Props> = () => {
                 { value: 'Địa chỉ của tôi', href: '/address' }
               ]}
             />
-            <Divider className="mt-0 mb-4" />
+            <Divider />
           </div>
           <div className="flex">
             <SideBar />
@@ -347,7 +347,7 @@ const CreateAddressPage: NextPage<Props> = () => {
                         <select
                           id="ward"
                           name="ward"
-                          value={address.wardId}
+                          value={address.wardCode}
                           className={classNames(
                             'px-4 h-10 mt-0 w-full block border text-gray-900 rounded focus:outline-none',
                             {
@@ -358,12 +358,12 @@ const CreateAddressPage: NextPage<Props> = () => {
                           )}
                           onChange={onChangeSelect}
                         >
-                          <option value={-1}>Chọn Phường xã</option>
+                          <option value={''}>Chọn Phường xã</option>
                           {wards &&
                             wards.map((ward, index) => {
                               return (
-                                <option key={index} value={ward.ward_id}>
-                                  {ward.name}
+                                <option key={index} value={ward.WardCode}>
+                                  {ward.WardName}
                                 </option>
                               );
                             })}

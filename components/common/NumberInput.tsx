@@ -8,7 +8,7 @@ type Props = {
   initValue?: number | null;
   disabled?: boolean;
   containerClassName?: string;
-  onChange: (value?: number) => void;
+  onChange: (value: number) => void;
   inputClassName?: string;
 };
 const NumberInput: FunctionComponent<Props> = ({
@@ -25,7 +25,7 @@ const NumberInput: FunctionComponent<Props> = ({
   }, [initValue]);
   const inputRef = useRef<HTMLInputElement>(null);
   const handleChangeValue = (changedValue: string) => {
-    const newValue = isEmpty(changedValue) ? undefined : parseInt(changedValue);
+    const newValue = isEmpty(changedValue) ? 0 : parseInt(changedValue);
     setValue(newValue);
     onChange(newValue);
   };

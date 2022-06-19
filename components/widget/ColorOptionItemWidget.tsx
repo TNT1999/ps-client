@@ -10,7 +10,7 @@ type Props = {
   fields: (func: any, index: number) => React.ReactNode;
   index: number;
   toggleExpand: (index: number) => void;
-  handleChange: () => void;
+  handleChange: (newColorOption: ColorOption, index: number) => void;
   itemExpanded: boolean;
   onDelete: (index: number) => void;
 };

@@ -14,7 +14,7 @@ type PropType = {
   name: string;
   value: string;
   isEditing: boolean;
-  onChange: (value: string) => void;
+  onChange: (value: string, maskSelectValue?: string) => void;
   minHeight?: number;
   maxWidth?: number;
   className?: string;
@@ -26,6 +26,9 @@ type PropType = {
   maxCharacters?: number;
   maxInputLength?: number;
   placeholder?: string;
+  readOnly?: boolean;
+  optionMaskSelect?: string[];
+  maskSelectValue?: string;
 };
 
 const EditableText: FunctionComponent<PropType> = ({
@@ -42,12 +45,23 @@ const EditableText: FunctionComponent<PropType> = ({
   hasSaveAndCancel = false,
   canSaveOnEmpty = true,
   maxCharacters,
-  maxInputLength = 255,
-  placeholder
+  maxInputLength,
+  placeholder,
+  readOnly = false,
+  optionMaskSelect,
+  maskSelectValue
 }) => {
   const [tmpValue, setTmpValue] = useState<string>(value);
   const ref = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const [selectedMaskOption, setSelectedMaskOption] = useState(maskSelectValue);
+
+  useEffect(() => {
+    const trimmedValue = tmpValue.trim().replace(/\s+/g, ' ');
+    setTmpValue(trimmedValue);
+    onChange(trimmedValue, selectedMaskOption);
+  }, [selectedMaskOption]);
 
   useEffect(() => {
     setTmpValue(value);
@@ -62,7 +76,7 @@ const EditableText: FunctionComponent<PropType> = ({
   const save = () => {
     const trimmedValue = tmpValue.trim().replace(/\s+/g, ' ');
     setTmpValue(trimmedValue);
-    onChange(trimmedValue);
+    onChange(trimmedValue, selectedMaskOption);
   };
 
   const cancel = () => {
@@ -96,7 +110,7 @@ const EditableText: FunctionComponent<PropType> = ({
   return (
     <div
       ref={ref}
-      className={`relative flex overflow-hidden max-w-full ${className} ${
+      className={`relative flex overflow-hidden max-w-full h-full ${className} ${
         hasSaveAndCancel ? 'flex-col' : 'flex-row'
       }`}
       style={{ minHeight, maxWidth }}
@@ -110,25 +124,46 @@ const EditableText: FunctionComponent<PropType> = ({
           >
             {tmpValue}
           </div>
-          <input
-            id={name}
-            maxLength={maxInputLength && maxInputLength}
-            ref={inputRef}
-            value={tmpValue || ''}
-            onKeyDown={handleKeydown}
-            onChange={(e) => setTmpValue(e.target.value)}
-            onBlur={handleInputBlur}
-            style={{
-              fontWeight: 'inherit',
-              lineHeight: 'inherit',
-              ...editStyles
-            }}
-            className={classNames(
-              'editable-text absolute top-0 left-0 outline-none box-content',
-              editClassName || 'w-full h-full rounded'
+          <div className="absolute top-0 left-0 outline-none w-full h-full rounded">
+            <input
+              id={name}
+              maxLength={maxInputLength && maxInputLength}
+              ref={inputRef}
+              value={tmpValue || ''}
+              onKeyDown={handleKeydown}
+              onChange={(e) => setTmpValue(e.target.value)}
+              onBlur={handleInputBlur}
+              readOnly={readOnly}
+              style={{
+                fontWeight: 'inherit',
+                lineHeight: 'inherit',
+                ...editStyles
+              }}
+              autoComplete="off"
+              className={classNames(
+                'editable-text absolute top-0 left-0 outline-none',
+                editClassName || 'w-full h-full rounded',
+                {
+                  'bg-[#f3f3f3]': readOnly
+                }
+              )}
+              placeholder={placeholder && placeholder}
+            />
+            {/* <div className="relative flex overflow-hidden max-w-full border border-primary-600 rounded-sm"> */}
+            {optionMaskSelect && (
+              <select
+                onChange={(e) => setSelectedMaskOption(e.target.value)}
+                className="editable-text absolute top-0 right-0 outline-none w-min h-full rounded pl-4 pr-8 py-0.5 border border-primary-600"
+                value={selectedMaskOption}
+              >
+                {optionMaskSelect.map((option, index) => (
+                  <option key={index} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
             )}
-            placeholder={placeholder && placeholder}
-          />
+          </div>
           {(hasSaveAndCancel || maxCharacters != null) && (
             <div className="flex flex-row justify-between items-start mt-2">
               {maxCharacters != null && (

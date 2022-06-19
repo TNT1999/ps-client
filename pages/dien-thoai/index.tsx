@@ -18,7 +18,7 @@ import debounce from 'lodash/debounce';
 import size from 'lodash/size';
 import pickBy from 'lodash/pickBy';
 import { useSelector } from 'react-redux';
-import { useUpdateEffect } from 'react-use';
+import { useUpdateEffect, useGeolocation } from 'react-use';
 type Props = {
   products: ProductType[];
 };
@@ -41,6 +41,7 @@ const Home: NextPage<Props> = ({ products = [] }) => {
   const filter = useSelector((state: RootState) => state.home.filter);
   if (!data) return <LoadingOverlay />;
   if (error) return <div>there is an error!</div>;
+  // const state = useGeolocation();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetch = useCallback(
@@ -74,6 +75,7 @@ const Home: NextPage<Props> = ({ products = [] }) => {
       <main className="flex justify-center overflow-auto h-main bg-main">
         <div className="max-w-screen-xl w-full px-4">
           <div className="py-4 justify-center flex bg-white">
+            {/* <pre>{JSON.stringify(state, null, 2)}</pre> */}
             <Filter className="w-52 border-r-px border-[#f7f7f7]" />
             <div className="flex-19 h-full w-full flex flex-wrap gap-2">
               {data.map((product: ProductType, index: number) => {

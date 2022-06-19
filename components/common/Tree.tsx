@@ -29,7 +29,6 @@ const Tree: FunctionComponent<Props> = memo(
     onHeaderMouseEnter
   }) => {
     const previous = usePrevious(expanded);
-    console.log(expanded, previous);
     return (
       <div>
         <div className="flex items-center cursor-move">
@@ -53,7 +52,7 @@ const Tree: FunctionComponent<Props> = memo(
             onMouseEnter={onHeaderMouseEnter}
             onMouseLeave={onHeaderMouseLeave}
           >
-            {label && <label>{label}</label>}
+            {label && !expanded && <label>{label}</label>}
             {description && (
               <div
                 className={cx('duration-200 mt-[0.375rem]', {

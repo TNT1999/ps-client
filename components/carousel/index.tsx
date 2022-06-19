@@ -67,7 +67,7 @@ const ProductCarousel: FunctionComponent<Props> = ({ images, handleRef }) => {
       </Swiper>
       <Swiper
         onSwiper={setActiveThumb}
-        grabCursor={true}
+        // grabCursor={true}
         spaceBetween={10}
         slidesPerView={'auto'}
         modules={[Navigation, Thumbs]}
@@ -78,7 +78,11 @@ const ProductCarousel: FunctionComponent<Props> = ({ images, handleRef }) => {
             key={index}
             className="hidden md:flex py-2 px-1 items-center overflow-hidden bg-white rounded-md !w-14 select-none"
           >
-            <img src={thumbnail} alt="" className="block w-full object-cover" />
+            <img
+              src={thumbnail}
+              alt=""
+              className="block w-full object-cover cursor-pointer"
+            />
           </SwiperSlide>
         ))}
       </Swiper>

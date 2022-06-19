@@ -50,7 +50,7 @@ const AddressPage: NextPage<Props> = () => {
                 { value: 'Địa chỉ của tôi', href: '/address' }
               ]}
             />
-            <Divider className="mt-0 mb-4" />
+            <Divider />
           </div>
           <div className="flex">
             <SideBar active="address" />

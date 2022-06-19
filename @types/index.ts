@@ -100,7 +100,7 @@ export type AddressType = {
   province: string;
   districtId: number;
   district: string;
-  wardId: number;
+  wardCode: string;
   ward: string;
   address: string;
   isDefault: boolean;
@@ -124,8 +124,25 @@ export type DistrictType = {
   district_id: number;
 };
 export type WardType = {
-  name: string;
-  ward_id: number;
-  district_id: number;
-  province_id: number;
+  WardCode: string;
+  DistrictID: number;
+  WardName: string;
+  [key: string]: unknown;
+  // name: string;
+  // ward_id: number;
+  // district_id: number;
+  // province_id: number;
 };
+
+export enum OrderStatus {
+  WAIT_CONFIRMED = 'wait_confirm',
+  // PROCESSING = 'processing',
+  SHIPPING = 'shipping',
+  SUCCESS = 'success',
+  CANCELED = 'cancel'
+}
+
+export enum PaymentType {
+  COD = 'cod',
+  VNP = 'vnp'
+}

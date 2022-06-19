@@ -74,12 +74,12 @@ const UpdateAddressPage: NextPage<Props> = ({ address }) => {
       setDistricts(result.districts);
     };
     const getWards = async () => {
-      if (!addressState.wardId) return;
+      if (addressState.wardCode === '') return;
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/address/ward?district_id=${addressState.districtId}`
       );
       const result = await response.json();
-      setWards(result.wards);
+      setWards(result);
     };
     await Promise.all([getProvince(), getDistricts(), getWards()]);
   }, []);
@@ -91,7 +91,7 @@ const UpdateAddressPage: NextPage<Props> = ({ address }) => {
         `${process.env.NEXT_PUBLIC_API_URL}/address/ward?district_id=${addressState.districtId}`
       );
       const result = await response.json();
-      setWards(result.wards);
+      setWards(result);
     };
     getWards();
   }, [addressState.districtId]);
@@ -135,7 +135,7 @@ const UpdateAddressPage: NextPage<Props> = ({ address }) => {
         district: '',
         districtId: -1,
         ward: '',
-        wardId: -1
+        wardCode: ''
       });
     }
     if (e.target.name === 'district') {
@@ -147,15 +147,15 @@ const UpdateAddressPage: NextPage<Props> = ({ address }) => {
             ?.name || '',
         districtId,
         ward: '',
-        wardId: -1
+        wardCode: ''
       });
     }
     if (e.target.name === 'ward') {
-      const wardId = parseInt(e.target.value);
+      const wardCode = e.target.value;
       setAddressState({
         ...addressState,
-        ward: wards.find((ward) => ward.ward_id == wardId)?.name || '',
-        wardId
+        ward: wards.find((ward) => ward.WardCode === wardCode)?.WardName || '',
+        wardCode
       });
     }
     resetError();
@@ -181,7 +181,7 @@ const UpdateAddressPage: NextPage<Props> = ({ address }) => {
     if (addressState.districtId === -1) {
       newError.district = 'Nhập Quận huyện';
     }
-    if (addressState.wardId === -1) {
+    if (addressState.wardCode === '') {
       newError.ward = 'Nhập Phường xã';
     }
     setError({ ...newError });
@@ -209,7 +209,7 @@ const UpdateAddressPage: NextPage<Props> = ({ address }) => {
                 { value: 'Địa chỉ của tôi', href: '/address' }
               ]}
             />
-            <Divider className="mt-0 mb-4" />
+            <Divider />
           </div>
           <div className="flex">
             <SideBar />
@@ -360,7 +360,7 @@ const UpdateAddressPage: NextPage<Props> = ({ address }) => {
                         <select
                           id="ward"
                           name="ward"
-                          value={addressState.wardId}
+                          value={addressState.wardCode}
                           className={classNames(
                             'px-4 h-10 mt-0 w-full block border text-gray-900 rounded focus:outline-none',
                             {
@@ -371,12 +371,12 @@ const UpdateAddressPage: NextPage<Props> = ({ address }) => {
                           )}
                           onChange={onChangeSelect}
                         >
-                          <option value={-1}>Chọn Phường xã</option>
+                          <option value={''}>Chọn Phường xã</option>
                           {wards &&
                             wards.map((ward, index) => {
                               return (
-                                <option key={index} value={ward.ward_id}>
-                                  {ward.name}
+                                <option key={index} value={ward.WardCode}>
+                                  {ward.WardName}
                                 </option>
                               );
                             })}
@@ -457,27 +457,29 @@ const UpdateAddressPage: NextPage<Props> = ({ address }) => {
                       </div>
                     </div>
 
-                    <div className="flex items-center mb-8">
-                      <label className="self-start text-base mr-4 text-[#333333] min-w-[110px] w-[110px]">
-                        &nbsp;
-                      </label>
-                      <div className="flex items-center select-none">
-                        <input
-                          id="default"
-                          type="checkbox"
-                          name="isDefault"
-                          className="h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
-                          checked={addressState.isDefault}
-                          onChange={onChange}
-                        />
-                        <label
-                          htmlFor="default"
-                          className="text-base ml-4 text-[#333333]"
-                        >
-                          Đặt làm địa chỉ mặc định
+                    {!address.isDefault && (
+                      <div className="flex items-center mb-8">
+                        <label className="self-start text-base mr-4 text-[#333333] min-w-[110px] w-[110px]">
+                          &nbsp;
                         </label>
+                        <div className="flex items-center select-none">
+                          <input
+                            id="default"
+                            type="checkbox"
+                            name="isDefault"
+                            className="h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                            checked={addressState.isDefault}
+                            onChange={onChange}
+                          />
+                          <label
+                            htmlFor="default"
+                            className="text-base ml-4 text-[#333333]"
+                          >
+                            Đặt làm địa chỉ mặc định
+                          </label>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </form>
                 <div className="flex justify-end">

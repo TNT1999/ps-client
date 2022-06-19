@@ -2,12 +2,20 @@ import Breadcrumb from '@components/breadcrumb';
 import Divider from '@components/common/Divider';
 import Layout from '@components/common/Layout';
 import SideBar from '@components/common/user/SideBar';
-import classNames from 'classnames';
+import useAsyncEffect from 'use-async-effect';
 import { NextPage } from 'next';
 import Head from 'next/head';
-import { useState } from 'react';
-
+import { useCallback, useState } from 'react';
+import NavBarOrder from '@components/common/user/NavBarOrder';
+import axiosClient from '@utils/api';
+import { OrderStatus } from '@types';
+import OrderHistoryItem from '@components/common/user/OrderHistoryItem';
+import { isEmpty } from 'lodash';
+import { formatMoney } from '@utils/index';
+import { SlashIcon, TruckIcon } from '@assets/icons';
+import { useRouter } from 'next/router';
 type Props = any;
+
 enum Status {
   ALL = 'all',
   AWAITING_PAYMENT = 'awaiting_payment',
@@ -16,8 +24,52 @@ enum Status {
   COMPLETED = 'completed',
   CANCELED = 'canceled'
 }
+
 const OrderPage: NextPage<Props> = () => {
-  const [status, setStatus] = useState<Status>(Status.ALL);
+  const [status, setStatus] = useState<OrderStatus>();
+  const [loadingOrders, setLoadingOrders] = useState(false);
+  const router = useRouter();
+  const [orders, setOrders] = useState<any>();
+  const onChange = (status?: OrderStatus) => {
+    setStatus(status);
+  };
+
+  const renderOrderStatus = useCallback((status: OrderStatus) => {
+    switch (status) {
+      case OrderStatus.CANCELED:
+        return (
+          <>
+            <SlashIcon className="mr-2 h-5 w-5" />
+            <span>Đã huỷ</span>
+          </>
+        );
+      case OrderStatus.SUCCESS:
+        return (
+          <>
+            <TruckIcon className="mr-2 h-5 w-5 text-[#00ab56]" />
+            <span className="text-[#00ab56]">Giao hàng thành công</span>
+          </>
+        );
+      case OrderStatus.SHIPPING:
+        return (
+          <>
+            <TruckIcon className="mr-2 h-5 w-5 text-[#fda223]" />
+            <span className="text-[#fda223]">Đang giao hàng</span>
+          </>
+        );
+    }
+  }, []);
+  useAsyncEffect(async () => {
+    setLoadingOrders(true);
+    const orders = await axiosClient.get('orders', {
+      params: {
+        status
+      }
+    });
+    setOrders(orders);
+    setLoadingOrders(false);
+  }, [status]);
+
   return (
     <Layout>
       <Head>
@@ -34,7 +86,7 @@ const OrderPage: NextPage<Props> = () => {
                 { value: 'Đơn hàng của tôi', href: '/user/order' }
               ]}
             />
-            <Divider className="mt-0 mb-4" />
+            <Divider />
           </div>
           <div className="flex">
             <SideBar active="order" />
@@ -42,110 +94,68 @@ const OrderPage: NextPage<Props> = () => {
               <div className="text-2xl font-light mt-1 mb-4">
                 Đơn hàng của tôi
               </div>
-              <div className="bg-white">
+              <NavBarOrder status={status} onChange={onChange} />
+              {!isEmpty(orders) ? (
+                orders.map((order: any) => {
+                  return (
+                    <div
+                      key={order.id}
+                      className="bg-white mb-5 py-4 px-5 rounded"
+                    >
+                      <div className="flex items-center pb-3 font-medium border-b border-[#ebebf0] text-[#808089]">
+                        {renderOrderStatus(order.orderStatus)}
+                      </div>
+                      <OrderHistoryItem items={order.products} />
+                      {order.orderStatus === OrderStatus.SUCCESS && (
+                        <div className="flex flex-col w-full items-end mt-3">
+                          <div className="flex mb-3 text-lg">
+                            <div className="mr-2 text-[#808089] font-light">
+                              Tổng tiền:
+                            </div>
+                            <div className="text-[#38383d] font-normal">
+                              {formatMoney(order.finalTotal)}
+                            </div>
+                          </div>
+                          <div>
+                            <div className="flex text-13">
+                              <div className="flex justify-center items-center mr-2 text-[#0b74e5] border border-[#0b74e5] rounded h-9 py-3 px-2 cursor-pointer">
+                                Mua lại
+                              </div>
+                              <div
+                                className="flex justify-center items-center text-[#0b74e5] border border-[#0b74e5] rounded h-9 py-3 px-2 cursor-pointer"
+                                onClick={() =>
+                                  router.push(
+                                    `/user/order/view/${order.orderId}`
+                                  )
+                                }
+                              >
+                                Xem chi tiết
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              ) : (
                 <div>
-                  <div className="text-center text-gray-500 border-b border-gray-200">
-                    <ul className="flex flex-wrap -mb-px leading-4">
-                      <li className="mr-2">
-                        <div
-                          className={classNames(
-                            'cursor-pointer px-5 py-4 border-b-2',
-                            {
-                              'border-[#0d5cb6] text-[#0d5cb6]':
-                                status === Status.ALL,
-                              'hover:text-gray-600 hover:border-gray-300 border-transparent':
-                                status !== Status.ALL
-                            }
-                          )}
-                          onClick={() => setStatus(Status.ALL)}
-                        >
-                          Tất cả
-                        </div>
-                      </li>
-                      <li className="mr-2">
-                        <div
-                          className={classNames(
-                            'cursor-pointer px-5 py-4 border-b-2 ',
-                            {
-                              'border-[#0d5cb6] text-[#0d5cb6]':
-                                status === Status.AWAITING_PAYMENT,
-                              'hover:text-gray-600 hover:border-gray-300 border-transparent':
-                                status !== Status.AWAITING_PAYMENT
-                            }
-                          )}
-                          onClick={() => setStatus(Status.AWAITING_PAYMENT)}
-                        >
-                          Chờ thanh toán
-                        </div>
-                      </li>
-                      <li className="mr-2">
-                        <div
-                          className={classNames(
-                            'cursor-pointer px-5 py-4 border-b-2',
-                            {
-                              'border-[#0d5cb6] text-[#0d5cb6]':
-                                status === Status.PROCESSING,
-                              'hover:text-gray-600 hover:border-gray-300 border-transparent':
-                                status !== Status.PROCESSING
-                            }
-                          )}
-                          onClick={() => setStatus(Status.PROCESSING)}
-                        >
-                          Đang xử lý
-                        </div>
-                      </li>
-                      <li className="mr-2">
-                        <div
-                          className={classNames(
-                            'cursor-pointer px-5 py-4 border-b-2',
-                            {
-                              'border-[#0d5cb6] text-[#0d5cb6]':
-                                status === Status.SHIPPING,
-                              'hover:text-gray-600 hover:border-gray-300 border-transparent':
-                                status !== Status.SHIPPING
-                            }
-                          )}
-                          onClick={() => setStatus(Status.SHIPPING)}
-                        >
-                          Đang vận chuyển
-                        </div>
-                      </li>
-                      <li className="mr-2">
-                        <div
-                          className={classNames(
-                            'cursor-pointer px-5 py-4 border-b-2',
-                            {
-                              'border-[#0d5cb6] text-[#0d5cb6]':
-                                status === Status.COMPLETED,
-                              'hover:text-gray-600 hover:border-gray-300 border-transparent':
-                                status !== Status.COMPLETED
-                            }
-                          )}
-                          onClick={() => setStatus(Status.COMPLETED)}
-                        >
-                          Đã giao
-                        </div>
-                      </li>
-                      <li className="mr-2">
-                        <div
-                          className={classNames(
-                            'cursor-pointer px-5 py-4 border-b-2',
-                            {
-                              'border-[#0d5cb6] text-[#0d5cb6]':
-                                status === Status.CANCELED,
-                              'hover:text-gray-600 hover:border-gray-300 border-transparent':
-                                status !== Status.CANCELED
-                            }
-                          )}
-                          onClick={() => setStatus(Status.CANCELED)}
-                        >
-                          Đã huỷ
-                        </div>
-                      </li>
-                    </ul>
+                  <div className="bg-white h-auto">
+                    <div className="flex flex-col items-center w-full p-9">
+                      <img
+                        className="h-44 w-44"
+                        src={
+                          'https://frontend.tikicdn.com/_desktop-next/static/img/account/empty-order.png'
+                        }
+                        alt=""
+                      />
+                      <p className="text-[#38383d] text-lg mt-4">
+                        Chưa có đơn hàng
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

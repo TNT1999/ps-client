@@ -17,7 +17,7 @@ const RatingBox: FunctionComponent<Props> = ({
       <div className="w-2/5 flex flex-col items-center justify-center p-[10px] border-r">
         <p className="mb-[5px] text-2xl font-bold">{ratingValue}/5</p>
         <div>
-          <Rating classNameStar="w-6 h-6" ratingValue={ratingValue} />
+          <Rating classNameStar="w-7 h-7" ratingValue={ratingValue} />
         </div>
         <p>
           <strong>{reviewCount}</strong> đánh giá & nhận xét

@@ -4,7 +4,9 @@ import Tippy from '@tippyjs/react';
 import Tooltip from '@components/common/Tooltip';
 import { CheckCircleIcon, Edit2Icon } from '@assets/icons';
 import { AddressType, AddressWithIdType } from '@types';
-import AddressModal, { MODE } from '@components/common/cart/AddressModal';
+import AddressModal, {
+  MODE
+} from '@components/common/checkout/cart/AddressModal';
 
 type Props = {
   isSelected: boolean;
@@ -22,7 +24,7 @@ const SelectAddressItem: FunctionComponent<Props> = ({
 
   return (
     <div
-      className={classNames('flex flex-col p-4 rounded-md border mb-3', {
+      className={classNames('flex flex-col p-3 pl-2 rounded-md border mb-3', {
         'border-[#dadada]': !isSelected,
         'border-blue-500': isSelected
       })}
@@ -31,7 +33,7 @@ const SelectAddressItem: FunctionComponent<Props> = ({
         <div className="mr-2">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className={classNames('w-7 h-7 cursor-pointer', {
+            className={classNames('w-6 h-6 cursor-pointer', {
               'text-gray-300': !isSelected,
               'text-blue-600': isSelected
             })}
@@ -46,7 +48,7 @@ const SelectAddressItem: FunctionComponent<Props> = ({
             ></path>
           </svg>
         </div>
-        <div>
+        <div className="text-13">
           <div className="flex items-center justify-between mb-1 text-black">
             <div className="uppercase mb-3 flex">
               <p>{address.name}</p>

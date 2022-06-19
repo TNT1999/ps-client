@@ -1,16 +1,14 @@
 import {
   CartItemType,
-  setQuantityItemCart,
   updateQuantityCartItem,
   updateSelectedCartItem
 } from '@app/slice/cartSlice';
 import { useAppDispatch } from '@app/store';
 import { TrashIcon } from '@assets/icons';
 import { formatMoney } from '@utils/index';
-import { FunctionComponent, useCallback, useState } from 'react';
+import { FunctionComponent, useState } from 'react';
 import { toast } from 'react-toastify';
-import { useDebounce } from 'react-use';
-import NumberQuantity from '../NumberQuantity';
+import NumberQuantity from '../../NumberQuantity';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 import Debounce from 'lodash/debounce';
 import Tippy from '@tippyjs/react';
@@ -96,7 +94,7 @@ const CartItem: FunctionComponent<Props> = ({ item }) => {
                 <a
                   className="text-13 text-[#242424] overflow-hidden text-ellipsis-2-lines leading-5 mb-1 hover:text-[#0b74e5]"
                   target="_blank"
-                  href={`dien-thoai/${item.slug}`}
+                  href={`/dien-thoai/${item.slug}`}
                   rel="noreferrer"
                 >
                   {`${item.name} - ${item.option.name}`}

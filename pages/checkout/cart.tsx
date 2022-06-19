@@ -17,19 +17,20 @@ import { toast } from 'react-toastify';
 import { parseCookies } from 'nookies';
 import isEmpty from 'lodash/isEmpty';
 import Link from 'next/link';
-import ConfirmDeleteModal from '@components/common/cart/ConfirmDeleteModal';
-import CartItem from '@components/common/cart/CartItem';
+import ConfirmDeleteModal from '@components/common/checkout/cart/ConfirmDeleteModal';
+import CartItem from '@components/common/checkout/cart/CartItem';
 import { useSelector } from 'react-redux';
 import Tooltip from '@components/common/Tooltip';
 import Tippy from '@tippyjs/react';
 import useAsyncEffect from 'use-async-effect';
 import { setAddress } from '@app/slice/authSlice';
 import { AddressType } from '@types';
-import SelectAddressDrawer from '@components/common/cart/SelectAddressDrawer';
+import SelectAddressDrawer from '@components/common/checkout/cart/SelectAddressDrawer';
 
 const CartPage: NextPage<any> = () => {
   const cart: CartState = useSelector((state: RootState) => state.cart);
   const shippingAddress = cart.shippingAddress;
+
   const [total, setTotal] = useState(0);
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -79,17 +80,6 @@ const CartPage: NextPage<any> = () => {
     setSelectedAllCartItem(selectedAllCartItem);
   }, [cart.items]);
 
-  const checkout = async () => {
-    const payment_url: string = await axiosClient.post(
-      'vnp/create_payment_url',
-      {
-        amount: total,
-        products: cart.items
-      }
-    );
-    window.location.href = payment_url;
-  };
-
   const handleUpdateSelectedAllCartItem = async (selected: boolean) => {
     try {
       await dispatch(
@@ -134,7 +124,7 @@ const CartPage: NextPage<any> = () => {
           </div>
           <div className="flex flex-nowrap justify-between basis-full">
             {!isEmpty(cart.items) ? (
-              <div className="flex-1 basis-[910px]">
+              <div className="flex-1 basis-[910px] mb-4">
                 <div>
                   <div className="bg-white py-2 px-4 rounded text-13 mb-3 text-[#242424] font-normal sticky flex items-center  after:contents after:h-3 after:w-full after:inset-x-0 after:-bottom-3 after:absolute">
                     <span className="flex w-[398px] items-center">
@@ -223,7 +213,7 @@ const CartPage: NextPage<any> = () => {
               </div>
             )}
             {!isEmpty(cart.items) && (
-              <div className="flex-1 basis-[calc(100%-930px)] ml-5">
+              <div className="flex-1 basis-[calc(100%-930px)] ml-5 mb-4">
                 <div>
                   <div>
                     <div className="bg-white rounded p-4 mb-4">

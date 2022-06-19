@@ -47,11 +47,32 @@ import Lock from './icons/Lock.svg';
 import Edit2 from './icons/Edit2.svg';
 import Review from './icons/Review.svg';
 import Coupon from './icons/Coupon.svg';
+import Shipping from './icons/Shipping.svg';
+import VNPay from './icons/vnpay.svg';
+import COD from './icons/cod.svg';
+import Logo from './icons/Logo.svg';
+import Slash from './icons/Slash.svg';
 export type PropsSVG = SVGAttributes<any>;
 
 export const CouponIcon: FunctionComponent<PropsSVG> = (props) => (
   <Coupon {...props} />
 );
+export const SlashIcon: FunctionComponent<PropsSVG> = (props) => (
+  <Slash {...props} />
+);
+export const LogoIcon: FunctionComponent<PropsSVG> = (props) => (
+  <Logo {...props} />
+);
+export const CODIcon: FunctionComponent<PropsSVG> = (props) => (
+  <COD {...props} />
+);
+export const VNPayIcon: FunctionComponent<PropsSVG> = (props) => (
+  <VNPay {...props} />
+);
+export const ShippingIcon: FunctionComponent<PropsSVG> = (props) => (
+  <Shipping {...props} />
+);
+
 export const MailIcon: FunctionComponent<PropsSVG> = (props) => (
   <Mail {...props} />
 );

@@ -35,9 +35,9 @@ const Rating: FunctionComponent<Props> = ({
         })}
       </div>
       {reviewCount && (
-        <div className="text-xs ml-1 inline-block whitespace-nowrap">
+        <a className="text-11 ml-1 inline-block whitespace-nowrap">
           {reviewCount} đánh giá
-        </div>
+        </a>
       )}
     </div>
   );

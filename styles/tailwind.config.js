@@ -48,7 +48,8 @@ module.exports = {
         '1/2': '1 0 50%',
         full: '1 0 100%',
         '1/5': '0 0 calc((100% - 4 * 0.5rem) / 5)',
-        '1/4': '0 0 calc((100% - 3 * 0.5rem) / 4)'
+        '1/4': '0 0 calc((100% - 3 * 0.5rem) / 4)',
+        '1/3': '0 0 calc((100% - 2 * 0.5rem) / 3)'
       },
       maxWidth: {
         'name-user': '10rem',
@@ -83,6 +84,14 @@ module.exports = {
         11: '11px'
       },
       keyframes: {
+        skeleton: {
+          '0%': {
+            backgroundPosition: '100% 50%'
+          },
+          '100%': {
+            backgroundPosition: '0 50%'
+          }
+        },
         countdown: {
           '0%': {
             transform: 'scaleX(1)'
@@ -108,11 +117,21 @@ module.exports = {
             opacity: 1,
             transform: 'translateY(0)'
           }
+        },
+        fadeIn: {
+          '0%': {
+            opacity: 0
+          },
+          '100%': {
+            opacity: 1
+          }
         }
       },
       animation: {
         expandOutLeft: 'expandOutLeft .3s',
-        fadeInDown: 'fadeInDown .45s'
+        fadeInDown: 'fadeInDown .45s',
+        fadeIn: 'fadeIn .3s',
+        skeleton: 'skeleton 1.4s ease infinite'
       }
     }
   },

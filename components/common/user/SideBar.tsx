@@ -7,12 +7,13 @@ import {
 } from '@assets/icons';
 import classNames from 'classnames';
 import Link from 'next/link';
+import React from 'react';
 import { FunctionComponent } from 'react';
 
 type Props = {
   active?: 'profile' | 'order' | 'address' | 'notification' | 'review';
 };
-const SideBar: FunctionComponent<Props> = ({ active }) => {
+const SideBar: FunctionComponent<Props> = React.memo(({ active }) => {
   return (
     <div className="w-64 mr-4">
       <ul className="list-none m-0 p-0 text-13">
@@ -97,6 +98,8 @@ const SideBar: FunctionComponent<Props> = ({ active }) => {
       </ul>
     </div>
   );
-};
+});
+
+SideBar.displayName = 's_';
 
 export default SideBar;
