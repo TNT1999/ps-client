@@ -84,6 +84,14 @@ module.exports = {
         11: '11px'
       },
       keyframes: {
+        skeleton: {
+          '0%': {
+            backgroundPosition: '100% 50%'
+          },
+          '100%': {
+            backgroundPosition: '0 50%'
+          }
+        },
         countdown: {
           '0%': {
             transform: 'scaleX(1)'
@@ -122,7 +130,8 @@ module.exports = {
       animation: {
         expandOutLeft: 'expandOutLeft .3s',
         fadeInDown: 'fadeInDown .45s',
-        fadeIn: 'fadeIn .3s'
+        fadeIn: 'fadeIn .3s',
+        skeleton: 'skeleton 1.4s ease infinite'
       }
     }
   },

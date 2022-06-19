@@ -20,7 +20,7 @@ import useAsyncEffect from 'use-async-effect';
 type Props = {
   name: string;
   onClick?: () => void;
-  value: Attribute[];
+  value: any[];
   readOnly?: boolean;
   placeholder?: string;
   onChange: (attrs: Attribute[]) => void;

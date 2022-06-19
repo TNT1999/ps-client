@@ -345,7 +345,7 @@ const Editor: FunctionComponent<Props> = ({ brands }) => {
         }
       }
     });
-    setProduct((product) => ({
+    setProduct((product: any) => ({
       ...product,
       productFields,
       attrs

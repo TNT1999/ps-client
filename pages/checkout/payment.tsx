@@ -240,7 +240,7 @@ const PaymentPage: NextPage<any> = () => {
                             </>
                           ) : (
                             <div className="animate-pulse flex flex-1 gap-4">
-                              <div className="h-5 bg-zinc-200 rounded flex-2"></div>
+                              <div className="h-5 rounded flex-2 bg-[#f5f5fa]"></div>
                               <div className="h-5 bg-zinc-200 rounded flex-1"></div>
                             </div>
                           )}

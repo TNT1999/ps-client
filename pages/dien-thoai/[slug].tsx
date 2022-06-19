@@ -13,6 +13,7 @@ import QuestionBox from '@components/product-detail/QuestionBox';
 import ReviewBox from '@components/product-detail/review/ReviewBox';
 import Layout from '@components/common/Layout';
 import { useCallback, useEffect, useState } from 'react';
+import useUnloadBeacon from 'hooks/useUnloadBeacon';
 
 type Props = {
   product: DetailProductType | undefined;
@@ -35,6 +36,47 @@ const Phone: NextPage<Props> = ({ product }) => {
     },
     [product]
   );
+
+  // // eslint-disable-next-line react-hooks/rules-of-hooks
+  // useUnloadBeacon(
+  //   {
+  //     url: 'http://localhost:8000/api/track',
+  //     startTime: new Date().getTime(),
+  //     payload: (startTime: number, endTime: number, productId: string) => ({
+  //       productId,
+  //       time:
+  //         Math.round(Math.abs(endTime - startTime) / 1000) > 120
+  //           ? '120'
+  //           : Math.round(Math.abs(endTime - startTime) / 1000).toString()
+  //     })
+  //   },
+  //   product.id
+  // );
+
+  // // eslint-disable-next-line react-hooks/rules-of-hooks
+  // useEffect(() => {
+  //   const pageViewTime = new Date().getTime();
+  //   return () => {
+  //     const time = Math.round(
+  //       Math.abs(new Date().getTime() - pageViewTime) / 1000
+  //     );
+  //     fetch('http://localhost:8000/api/track', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json'
+  //       },
+  //       body: JSON.stringify({
+  //         productId: product.id,
+  //         time: time > 120 ? '120' : time.toString()
+  //       })
+  //     });
+  //   };
+  // }, [product.id]);
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    axiosClient.get(`/${product.id}/viewed`);
+  }, [product.id]);
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
