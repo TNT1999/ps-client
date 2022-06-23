@@ -5,15 +5,16 @@ import SideBar from '@components/common/user/SideBar';
 import useAsyncEffect from 'use-async-effect';
 import { NextPage } from 'next';
 import Head from 'next/head';
-import { useCallback, useState } from 'react';
+import { FunctionComponent, useCallback, useState } from 'react';
 import NavBarOrder from '@components/common/user/NavBarOrder';
 import axiosClient from '@utils/api';
 import { OrderStatus } from '@types';
 import OrderHistoryItem from '@components/common/user/OrderHistoryItem';
 import { isEmpty } from 'lodash';
 import { formatMoney } from '@utils/index';
-import { SlashIcon, TruckIcon } from '@assets/icons';
+import { SlashIcon, TruckIcon, SpinnerIcon, ClockIcon } from '@assets/icons';
 import { useRouter } from 'next/router';
+import { motion } from 'framer-motion';
 type Props = any;
 
 enum Status {
@@ -25,6 +26,39 @@ enum Status {
   CANCELED = 'canceled'
 }
 
+const SkeletonItem: FunctionComponent<any> = () => {
+  return (
+    <div className="bg-white mb-5 py-4 px-5 rounded animate-pulse">
+      <div className="h-6 bg-skeleton" />
+      <div className="flex justify-between items-center py-4">
+        <div className="flex-1">
+          <div className="flex items-center">
+            <div className="h-20 w-20 bg-skeleton border-none rounded-sm" />
+            <div className="flex flex-1 flex-col ml-4">
+              <span className="bg-skeleton h-6 w-full my-2" />
+              <span className="bg-skeleton h-6 w-1/2 my-2" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col w-full items-end mt-3">
+        <div className="flex w-52 gap-x-2">
+          <div className="flex-1 h-9 py-3 px-2 bg-skeleton rounded-sm" />
+          <div className="flex-1 h-9 py-3 px-2 bg-skeleton rounded-sm" />
+        </div>
+      </div>
+    </div>
+  );
+};
+const LoadingOverlay: FunctionComponent<any> = () => {
+  return (
+    <div className="flex items-center justify-center select-none my-20">
+      <div className="flex items-center text-lg">
+        <SpinnerIcon className="animate-spin mr-2" /> Loading...
+      </div>
+    </div>
+  );
+};
 const OrderPage: NextPage<Props> = () => {
   const [status, setStatus] = useState<OrderStatus>();
   const [loadingOrders, setLoadingOrders] = useState(false);
@@ -57,6 +91,13 @@ const OrderPage: NextPage<Props> = () => {
             <span className="text-[#fda223]">Đang giao hàng</span>
           </>
         );
+      case OrderStatus.WAIT_CONFIRMED:
+        return (
+          <>
+            <ClockIcon className="mr-2 h-5 w-5 text-[#ee3b3b]" />
+            <span className="text-[#ee3b3b]">Chờ xác nhận</span>
+          </>
+        );
     }
   }, []);
   useAsyncEffect(async () => {
@@ -66,8 +107,8 @@ const OrderPage: NextPage<Props> = () => {
         status
       }
     });
-    setOrders(orders);
     setLoadingOrders(false);
+    setOrders(orders);
   }, [status]);
 
   return (
@@ -95,19 +136,25 @@ const OrderPage: NextPage<Props> = () => {
                 Đơn hàng của tôi
               </div>
               <NavBarOrder status={status} onChange={onChange} />
-              {!isEmpty(orders) ? (
+              {loadingOrders ? (
+                <LoadingOverlay />
+              ) : !isEmpty(orders) ? (
                 orders.map((order: any) => {
                   return (
-                    <div
+                    <motion.div
                       key={order.id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.1 }}
                       className="bg-white mb-5 py-4 px-5 rounded"
                     >
                       <div className="flex items-center pb-3 font-medium border-b border-[#ebebf0] text-[#808089]">
                         {renderOrderStatus(order.orderStatus)}
                       </div>
                       <OrderHistoryItem items={order.products} />
-                      {order.orderStatus === OrderStatus.SUCCESS && (
-                        <div className="flex flex-col w-full items-end mt-3">
+                      {
+                        <div className="flex flex-col w-full items-end">
                           <div className="flex mb-3 text-lg">
                             <div className="mr-2 text-[#808089] font-light">
                               Tổng tiền:
@@ -118,9 +165,12 @@ const OrderPage: NextPage<Props> = () => {
                           </div>
                           <div>
                             <div className="flex text-13">
-                              <div className="flex justify-center items-center mr-2 text-[#0b74e5] border border-[#0b74e5] rounded h-9 py-3 px-2 cursor-pointer">
-                                Mua lại
-                              </div>
+                              {order.orderStatus ===
+                                OrderStatus.WAIT_CONFIRMED && (
+                                <div className="flex justify-center items-center mr-2 text-red-500 border border-red-500 rounded h-9 py-3 px-2 cursor-pointer">
+                                  Huỷ đơn hàng
+                                </div>
+                              )}
                               <div
                                 className="flex justify-center items-center text-[#0b74e5] border border-[#0b74e5] rounded h-9 py-3 px-2 cursor-pointer"
                                 onClick={() =>
@@ -134,8 +184,8 @@ const OrderPage: NextPage<Props> = () => {
                             </div>
                           </div>
                         </div>
-                      )}
-                    </div>
+                      }
+                    </motion.div>
                   );
                 })
               ) : (

@@ -1,92 +1,95 @@
 import { ChevronLeftIcon, ChevronRightIcon } from '@assets/icons';
-import { FunctionComponent } from 'react';
-type Props = any;
-const Pagination: FunctionComponent<Props> = () => {
+import classNames from 'classnames';
+import { FunctionComponent, useState } from 'react';
+import { usePrevious, useUpdateEffect } from 'react-use';
+type Props = {
+  totalPage: number;
+  currentPage: number;
+  onChange: (page: number) => void;
+};
+const Pagination: FunctionComponent<Props> = ({
+  currentPage,
+  onChange,
+  totalPage
+}) => {
+  const [pages, setPages] = useState(
+    [...Array(totalPage < 5 ? totalPage : 5).keys()].map((i: number) => i + 1)
+  );
+
+  useUpdateEffect(() => {
+    if (totalPage <= 5) return;
+    if (currentPage >= 3 && currentPage <= totalPage - 2) {
+      setPages([
+        currentPage - 2,
+        currentPage - 1,
+        currentPage,
+        currentPage + 1,
+        currentPage + 2
+      ]);
+    }
+    // }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, totalPage]);
+
+  if (totalPage <= 1) {
+    return null;
+  }
+
   return (
-    <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-      <div className="flex-1 flex justify-between sm:hidden">
-        <a
-          href="#"
-          className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-        >
-          Previous
-        </a>
-        <a
-          href="#"
-          className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-        >
-          Next
-        </a>
-      </div>
-      <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+    <div className="bg-white px-4 py-3 flex items-end justify-between border-gray-200 sm:px-6 select-none">
+      <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-end">
         <div>
-          <p className="text-sm text-gray-700">
-            Showing <span className="font-medium">1</span> to{' '}
-            <span className="font-medium">10</span> of{' '}
-            <span className="font-medium">97</span> results
-          </p>
-        </div>
-        <div>
-          <nav
-            className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
-            aria-label="Pagination"
-          >
-            <a
-              href="#"
-              className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-            >
-              <span className="sr-only">Previous</span>
-              <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
-            </a>
-            {/* Current: "z-10 bg-indigo-50 border-indigo-500 text-indigo-600", Default: "bg-white border-gray-300 text-gray-500 hover:bg-gray-50" */}
-            <a
-              href="#"
-              aria-current="page"
-              className="z-10 bg-indigo-50 border-indigo-500 text-indigo-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium"
-            >
-              1
-            </a>
-            <a
-              href="#"
-              className="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium"
-            >
-              2
-            </a>
-            <a
-              href="#"
-              className="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 hidden md:inline-flex relative items-center px-4 py-2 border text-sm font-medium"
-            >
-              3
-            </a>
-            <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
-              ...
-            </span>
-            <a
-              href="#"
-              className="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 hidden md:inline-flex relative items-center px-4 py-2 border text-sm font-medium"
-            >
-              8
-            </a>
-            <a
-              href="#"
-              className="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium"
-            >
-              9
-            </a>
-            <a
-              href="#"
-              className="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium"
-            >
-              10
-            </a>
-            <a
-              href="#"
-              className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-            >
-              <span className="sr-only">Next</span>
-              <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
-            </a>
-          </nav>
+          <ul className="flex">
+            <li className="mr-2">
+              <a
+                className={classNames(
+                  'relative flex items-center justify-center rounded-full bg-white text-sm font-medium text-gray-500 hover:bg-gray-200 w-9 h-9',
+                  {
+                    'cursor-pointer': currentPage !== 1,
+                    'opacity-25': currentPage === 1
+                  }
+                )}
+                onClick={() => onChange(currentPage - 1)}
+              >
+                <span className="sr-only">Previous</span>
+                <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
+              </a>
+            </li>
+            {pages.map((page: number) => {
+              return (
+                <li className="mr-2" key={page}>
+                  <a
+                    className={classNames(
+                      'flex items-center justify-center border-0 outline-none rounded-full hover:text-gray-800 hover:bg-[#c1e7ff] focus:shadow-none cursor-pointer w-9 h-9',
+                      {
+                        'bg-[#189eff] text-white cursor-default hover:bg-[#189eff]':
+                          page === currentPage,
+                        'bg-transparent text-gray-800': page !== currentPage
+                      }
+                    )}
+                    onClick={() => onChange(page)}
+                  >
+                    {page}
+                  </a>
+                </li>
+              );
+            })}
+            <li className="mr-2">
+              <a
+                className={classNames(
+                  'relative flex items-center justify-center rounded-full bg-white text-sm font-medium text-gray-500 hover:bg-gray-200 w-9 h-9',
+                  {
+                    'cursor-pointer': currentPage !== totalPage,
+                    'opacity-25 cursor-default': currentPage === totalPage
+                  }
+                )}
+                onClick={() => onChange(currentPage + 1)}
+              >
+                <span className="sr-only">Next</span>
+                <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
     </div>

@@ -13,10 +13,11 @@ import {
   ImageIcon,
   OrderIcon
 } from '@assets/icons';
+import { useRouter } from 'next/router';
 type Props = any;
 const NavigationMenu: FunctionComponent<Props> = () => {
   const [collapsed, setCollapsed] = useState(true);
-
+  const router = useRouter();
   return (
     <div
       className={classNames(
@@ -28,28 +29,32 @@ const NavigationMenu: FunctionComponent<Props> = () => {
       )}
     >
       <div id="nav_top" className="flex-1">
-        <NavigationMenuItem
+        {/* <NavigationMenuItem
           collapsed={collapsed}
           label="Add Product"
           icon={EditIcon}
-          active
-        />
+          active={router.route === ''}
+        /> */}
         <NavigationMenuItem
           collapsed={collapsed}
           label="Product"
           icon={ProductIcon}
+          onClick={() => router.push('/dashboard/product')}
+          active={router.route === '/dashboard/product'}
         />
         <NavigationMenuItem
           collapsed={collapsed}
           label="Users"
           icon={UsersIcon}
+          active={router.route === '/dashboard/user'}
+          onClick={() => router.push('/dashboard/user')}
         />
         <NavigationMenuItem
           collapsed={collapsed}
           label="Order"
           icon={OrderIcon}
         />
-        <NavigationMenuItem
+        {/* <NavigationMenuItem
           collapsed={collapsed}
           label="Shipping"
           icon={TruckIcon}
@@ -58,7 +63,7 @@ const NavigationMenu: FunctionComponent<Props> = () => {
           collapsed={collapsed}
           label="Media"
           icon={ImageIcon}
-        />
+        /> */}
       </div>
       <div id="nav_bottom">
         <NavigationMenuItem

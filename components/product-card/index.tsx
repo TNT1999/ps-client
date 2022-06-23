@@ -23,21 +23,23 @@ const ProductCard: FunctionComponent<Props> = ({ product }) => {
               <h3 className="text-sm font-medium py-2 text-gray-800">{name}</h3>
               <div className="flex flex-col">
                 <div className="font-medium text-red-600 text-base">
-                  {discount ? (
+                  {discount !== 0 ? (
                     <span>{formatMoney(price * (100 - discount) * 0.01)}</span>
                   ) : (
                     <span>{formatMoney(price)}</span>
                   )}
-                  {discount && (
+                  {discount !== 0 && (
                     <span className="py-0 px-[2px] leading-3.5 ml-2 font-normal text-xs border-[#ff424e] border-px bg-[#fff0f1]">{`-${discount}%`}</span>
                   )}
                 </div>
-                {discount && (
+                {discount !== 0 && (
                   <div className="text-sm font-medium text-gray-600 line-through">
                     {formatMoney(price)}
                   </div>
                 )}
-                <Rating ratingValue={ratingValue} reviewCount={reviewCount} />
+                {reviewCount !== 0 && (
+                  <Rating ratingValue={ratingValue} reviewCount={reviewCount} />
+                )}
               </div>
             </div>
           </div>

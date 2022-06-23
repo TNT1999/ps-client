@@ -39,7 +39,7 @@ const renderDynamicWidget = (
           value={attribute.value}
           onChange={onChange}
           isEditing={true}
-          placeholder={'Name'}
+          placeholder={'Value'}
           name={''}
         />
       );

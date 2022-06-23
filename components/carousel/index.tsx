@@ -27,6 +27,7 @@ const ProductCarousel: FunctionComponent<Props> = ({ images, handleRef }) => {
           handleRef(instance);
         }}
         // onSwiper={setSwiper}
+        initialSlide={1}
         loop={true}
         spaceBetween={10}
         navigation={{

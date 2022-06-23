@@ -28,11 +28,14 @@ const VariantBox: FunctionComponent<Props> = ({ option }) => {
             className={classNames(
               'cursor-pointer rounded mb-[10px] mr-[10px] flex flex-col text-center w-[calc((100%-10px*3)/3)] border py-[5px] px-[10px] last:mr-0 relative',
               {
-                'border-[#0d5cb6]': selectedOptionSlug === item.slug
+                'border-[#0d5cb6] bg-[#e5f2ff]':
+                  selectedOptionSlug === item.slug,
+                'border-[#f2f2f2] bg-[#f2f2f2]':
+                  selectedOptionSlug !== item.slug
               }
             )}
           >
-            <div className="font-medium text-base mb-1">{item.name}</div>
+            <div className="text-base font-medium mb-1">{item.name}</div>
             <div className="text-red-600 font-medium text-sm">
               {formatMoney(item.price)}
             </div>

@@ -2,15 +2,25 @@ import { BellIcon, MapPinIcon, OrderIcon, UserIcon } from '@assets/icons';
 import Breadcrumb from '@components/breadcrumb';
 import Divider from '@components/common/Divider';
 import Layout from '@components/common/Layout';
+import NavBarNotification from '@components/common/user/NavBarNotification';
 import SideBar from '@components/common/user/SideBar';
+import { NotificationType } from '@types';
 import classNames from 'classnames';
 import { NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useState } from 'react';
 
 type Props = any;
 const NotificationPage: NextPage<Props> = () => {
+  const [status, setStatus] = useState<NotificationType>();
+  const [loadingNotification, setLoadingNotifications] = useState(false);
+  const router = useRouter();
+  const [orders, setOrders] = useState<any>();
+  const onChange = (type?: NotificationType) => {
+    setStatus(type);
+  };
   return (
     <Layout>
       <Head>
@@ -32,8 +42,10 @@ const NotificationPage: NextPage<Props> = () => {
           <div className="flex">
             <SideBar active="notification" />
             <div className="flex-1">
-              <div>Thông báo của tôi</div>
-              <div className="bg-white"></div>
+              <div className="text-2xl font-light mt-1 mb-4">
+                Thông báo của tôi
+              </div>
+              <NavBarNotification status={status} onChange={onChange} />
             </div>
           </div>
         </div>

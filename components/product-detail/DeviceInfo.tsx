@@ -11,7 +11,7 @@ const DeviceInfo: FunctionComponent<Props> = ({ attrs }) => {
     attrs ? attrs.slice(0, 8) : []
   );
   const loadMoreInfo = () => {
-    setInfo(info.concat(attrs.slice(10)));
+    setInfo(info.concat(attrs.slice(8)));
   };
   return (
     <div className="rounded border-px border-[#eeeeee]">

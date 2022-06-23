@@ -8,7 +8,6 @@ import {
 import { Transition } from 'react-transition-group';
 
 type Props = {
-  children: ReactElement;
   onEnter: (node: HTMLElement) => unknown;
   onExit: (node: HTMLElement) => unknown;
   style: object;

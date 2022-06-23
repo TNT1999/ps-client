@@ -22,7 +22,7 @@ const DeliveryOption: FunctionComponent<Props> = ({
         {
           'border-[#dadada] border': !isSelected && !loading,
           'border-[#c2e1ff] bg-[#f0f8ff] border': isSelected && !loading,
-          'animate-pulse border border-[#e9e9ef]': loading
+          'animate-pulse border border-skeleton': loading
         }
       )}
       onClick={handleSelect}
@@ -46,14 +46,14 @@ const DeliveryOption: FunctionComponent<Props> = ({
               ></path>
             </svg>
           ) : (
-            <div className="w-6 h-6 rounded-full bg-[#e9e9ef]"></div>
+            <div className="w-6 h-6 rounded-full bg-skeleton"></div>
           )}
         </div>
         <div className="text-base flex-1">
           <div className="flex flex-col text-black">
             <p
               className={classNames('text-13 font-medium', {
-                'h-6 w-2/4 rounded-md bg-[#e9e9ef] py-0.5 bg-clip-content':
+                'h-6 w-2/4 rounded-md bg-skeleton py-0.5 bg-clip-content':
                   loading
               })}
             >
@@ -61,7 +61,7 @@ const DeliveryOption: FunctionComponent<Props> = ({
             </p>
             <p
               className={classNames('my-2 flex', {
-                'h-6 w-4/5 rounded-md bg-[#e9e9ef] py-0.5 bg-clip-content':
+                'h-6 w-4/5 rounded-md bg-skeleton py-0.5 bg-clip-content':
                   loading
               })}
             >
@@ -74,7 +74,7 @@ const DeliveryOption: FunctionComponent<Props> = ({
             </p>
             <p
               className={classNames('text-[#00ab56]', {
-                'h-6 w-11/12 rounded-md bg-[#e9e9ef] py-0.5 bg-clip-content':
+                'h-6 w-11/12 rounded-md bg-skeleton py-0.5 bg-clip-content':
                   loading
               })}
             >
