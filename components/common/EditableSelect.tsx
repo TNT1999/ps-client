@@ -104,7 +104,7 @@ const EditableSelect: FunctionComponent<PropType> = ({
     >
       <select
         className={classNames(
-          'editable-text absolute top-0 left-0 outline-none w-full h-full rounded px-1 py-0.5 border border-primary-600'
+          'editable-text absolute top-0 left-0 outline-none w-full h-full rounded px-1 py-0.5 border border-primary-600 bg-transparent'
         )}
         onChange={(e) => {
           onChange(e.target.value);

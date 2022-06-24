@@ -10,6 +10,7 @@ import {
   ChevronRightIcon,
   EditIcon,
   ExternalLinkIcon,
+  EyeIcon,
   PlusIcon,
   SearchIcon,
   SpinnerIcon,
@@ -36,9 +37,9 @@ const Loading: FunctionComponent<any> = () => {
 };
 const items = [...Array(100).keys()];
 
-const ListProductPage: NextPage<Props> = () => {
-  const [products, setProducts] = useState<any[]>([]);
-  const [brands, setBrands] = useState<any[]>([]);
+const ListOrdersPage: NextPage<Props> = () => {
+  const [orders, setOrders] = useState<any[]>([]);
+  // const [brands, setBrands] = useState<any[]>([]);
   const [isPreLoading, setPreLoading] = useState(false);
 
   const [itemsPerPage] = useState(10);
@@ -49,12 +50,12 @@ const ListProductPage: NextPage<Props> = () => {
   const router = useRouter();
   useAsyncEffect(async () => {
     setPreLoading(true);
-    const [result, brands] = await Promise.all([
-      axiosClient.get('origin/products?page=1'),
-      axiosClient.get('brands')
+    const [result] = await Promise.all([
+      axiosClient.get('origin/orders?page=1')
+      // axiosClient.get('brands')
     ]);
-    setProducts(result as any);
-    setBrands(brands as any);
+    setOrders(result as any);
+    // setBrands(brands as any);
     setPreLoading(false);
   }, []);
 
@@ -94,7 +95,7 @@ const ListProductPage: NextPage<Props> = () => {
                   <div className="flex items-center justify-between pb-8">
                     <div>
                       <h2 className="text-black font-medium text-xl">
-                        Products List
+                        Orders List
                       </h2>
                       {/* <span className="text-xs">All products item</span> */}
                     </div>
@@ -109,7 +110,7 @@ const ListProductPage: NextPage<Props> = () => {
                           placeholder="Search..."
                         />
                       </div>
-                      <div className="lg:ml-40 ml-10 space-x-8 flex">
+                      {/* <div className="lg:ml-40 ml-10 space-x-8 flex">
                         <button
                           className="px-4 py-2.5 rounded-md text-white bg-[#0042e8] cursor-pointer flex justify-center items-center"
                           onClick={() =>
@@ -119,104 +120,117 @@ const ListProductPage: NextPage<Props> = () => {
                           <PlusIcon className="mr-1 h-5 w-5 text-current" />
                           Add new Product
                         </button>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
-                  <div className="bg-white rounded-lg w-full">
-                    <div className="p-2">
-                      <div className="inline-block min-w-full rounded-lg overflow-hidden">
-                        <table className="min-w-full leading-normal">
-                          <thead>
-                            <tr>
-                              <th className="px-5 py-3 bg-blue-50 text-left font-semibold text-gray-600 tracking-wider rounded-l-lg">
-                                Product
-                              </th>
-                              <th className="px-5 py-3 bg-blue-50 text-left font-semibold text-gray-600 tracking-wider">
-                                Brand
-                              </th>
-                              <th className="px-5 py-3 bg-blue-50 text-left font-semibold text-gray-600 tracking-wider">
-                                Create At
-                              </th>
-                              <th className="px-5 py-3 bg-blue-50 text-right font-semibold text-gray-600 tracking-wider">
-                                Price
-                              </th>
-                              <th className="px-5 py-3 bg-blue-50 text-right font-semibold text-gray-600 tracking-wider">
-                                Discount ( % )
-                              </th>
-                              <th className="px-5 py-3 bg-blue-50 text-right font-semibold text-gray-600 tracking-wider rounded-r-lg">
-                                Action
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {products.map((product, index) => {
-                              return (
-                                <tr key={product.id}>
-                                  <td className="px-5 py-5 border-b border-gray-200 bg-white">
-                                    <div className="flex items-center flex-shrink-0">
-                                      <img
-                                        src={product.thumbnail}
-                                        className="h-12 w-12 object-contain"
-                                        alt=""
-                                      />
-                                      <div className="ml-5">{product.name}</div>
-                                    </div>
-                                  </td>
-                                  <td className="px-5 py-5 border-b border-gray-200 bg-white">
-                                    <p className="text-gray-900 whitespace-no-wrap">
-                                      {brands.find(
-                                        (brand) =>
-                                          product.productFields.brand ===
-                                          brand.id
-                                      )?.name || 'Untitle'}
-                                    </p>
-                                  </td>
-                                  <td className="px-5 py-5 border-b border-gray-200 bg-white">
-                                    <p className="text-gray-900 whitespace-no-wrap">
-                                      {dayjs(product.createdAt).format(
-                                        'DD/MM/YYYY'
-                                      )}
-                                    </p>
-                                  </td>
-                                  <td className="px-5 py-5 border-b border-gray-200 bg-white">
-                                    <p className="text-gray-900 whitespace-no-wrap text-right">
-                                      {formatMoney(product.price)}
-                                    </p>
-                                  </td>
-                                  <td className="px-5 py-5 border-b border-gray-200 bg-white">
-                                    <p className="text-gray-900 whitespace-no-wrap text-right">
-                                      {product.discount}
-                                    </p>
-                                  </td>
-                                  <td className="px-5 py-5 border-b border-gray-200 bg-white">
-                                    {/* <span className="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
-                                      <span
-                                        aria-hidden
-                                        className="absolute inset-0 bg-green-200 opacity-50 rounded-full"
-                                      ></span>
-                                      <span className="relative">Active</span>
-                                    </span> */}
-                                    <div className="flex justify-end">
-                                      <span className="flex items-center text-[#616c7a]">
-                                        <Tippy
-                                          arrow={true}
-                                          placement={'top'}
-                                          content={<Tooltip text={'Open'} />}
-                                          delay={100}
-                                        >
-                                          <span>
-                                            <Link
-                                              href={`/dien-thoai/${product.slug}`}
-                                            >
-                                              <a target="_blank">
-                                                <ExternalLinkIcon className="h-5 w-5 text-gray-700 m-[0.4375rem] cursor-pointer" />
-                                              </a>
-                                            </Link>
-                                          </span>
-                                        </Tippy>
-                                      </span>
 
-                                      <span className="flex items-center text-[#616c7a]">
+                  <div className="rounded-lg overflow-hidden">
+                    <div className="bg-white">
+                      <nav className="flex flex-col sm:flex-row">
+                        <button className="text-gray-600 py-4 px-6 block hover:text-blue-500 focus:outline-none text-blue-500 border-b-2 font-medium border-blue-500">
+                          All Orders
+                        </button>
+                        <button className="text-gray-600 py-4 px-6 block hover:text-blue-500 focus:outline-none">
+                          Pending Orders
+                        </button>
+                        <button className="text-gray-600 py-4 px-6 block hover:text-blue-500 focus:outline-none">
+                          Shipping Orders
+                        </button>
+                        <button className="text-gray-600 py-4 px-6 block hover:text-blue-500 focus:outline-none">
+                          Complete Orders
+                        </button>
+                      </nav>
+                    </div>
+
+                    <div className="bg-white w-full">
+                      <div className="p-2 pt-4">
+                        <div className="inline-block min-w-full rounded-lg overflow-hidden">
+                          <table className="min-w-full leading-normal">
+                            <thead>
+                              <tr>
+                                <th className="px-5 py-3 bg-blue-50 text-left font-semibold text-gray-600 tracking-wider rounded-l-lg">
+                                  Order ID
+                                </th>
+                                <th className="px-5 py-3 bg-blue-50 text-left font-semibold text-gray-600 tracking-wider">
+                                  Ordered Date
+                                </th>
+                                <th className="px-5 py-3 bg-blue-50 text-left font-semibold text-gray-600 tracking-wider">
+                                  Products Name
+                                </th>
+                                <th className="px-5 py-3 bg-blue-50 text-right font-semibold text-gray-600 tracking-wider">
+                                  Total Price
+                                </th>
+                                <th className="px-5 py-3 bg-blue-50 font-semibold text-gray-600 tracking-wider">
+                                  Status
+                                </th>
+                                <th className="px-5 py-3 bg-blue-50 text-right font-semibold text-gray-600 tracking-wider rounded-r-lg">
+                                  Action
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {orders.map((order, index) => {
+                                return (
+                                  <tr key={order.id}>
+                                    <td className="px-5 py-5 border-b border-gray-200 bg-white">
+                                      <div className="flex items-center flex-shrink-0">
+                                        <p className="text-gray-900 whitespace-no-wrap">
+                                          {`#${order.orderId}`}
+                                        </p>
+                                      </div>
+                                    </td>
+                                    <td className="px-5 py-5 border-b border-gray-200 bg-white">
+                                      <p className="text-gray-900 whitespace-no-wrap">
+                                        {dayjs(order.createdAt).format(
+                                          'DD/MM/YYYY'
+                                        )}
+                                      </p>
+                                    </td>
+                                    <td className="px-5 py-5 border-b border-gray-200 bg-white">
+                                      <p className="text-gray-900 whitespace-no-wrap">
+                                        {`${order.products[0].name}`}
+                                        {order.products.length > 1 &&
+                                          ` and ${
+                                            order.products.length - 1
+                                          } other product${
+                                            order.products.length - 1 > 1 && 's'
+                                          }`}
+                                      </p>
+                                    </td>
+                                    <td className="px-5 py-5 border-b border-gray-200 bg-white">
+                                      <p className="text-gray-900 whitespace-no-wrap text-right">
+                                        {formatMoney(order.finalTotal)}
+                                      </p>
+                                    </td>
+                                    <td className="px-5 py-5 border-b border-gray-200 bg-white">
+                                      <div className="flex justify-center">
+                                        <p className="whitespace-no-wrap bg-green-200 text-green-600 w-fit py-1 px-3 rounded-full">
+                                          Delivered
+                                        </p>
+                                      </div>
+                                    </td>
+                                    <td className="px-5 py-5 border-b border-gray-200 bg-white">
+                                      <div className="flex justify-end">
+                                        <span className="flex items-center text-[#616c7a]">
+                                          <Tippy
+                                            arrow={true}
+                                            placement={'top'}
+                                            content={<Tooltip text={'View'} />}
+                                            delay={100}
+                                          >
+                                            <span>
+                                              <Link
+                                                href={`/dashboard/order/${order.orderId}`}
+                                              >
+                                                <a target="_blank">
+                                                  <EyeIcon className="h-5 w-5 text-gray-700 m-[0.4375rem] cursor-pointer" />
+                                                </a>
+                                              </Link>
+                                            </span>
+                                          </Tippy>
+                                        </span>
+
+                                        {/* <span className="flex items-center text-[#616c7a]">
                                         <Tippy
                                           arrow={true}
                                           placement={'top'}
@@ -246,15 +260,15 @@ const ListProductPage: NextPage<Props> = () => {
                                             <TrashIcon className="h-5 w-5 m-[0.4375rem] text-red-500 cursor-pointer" />
                                           </span>
                                         </Tippy>
-                                      </span>
-                                    </div>
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
-                        {/* <div className="px-5 py-5 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between          ">
+                                      </span> */}
+                                      </div>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                          {/* <div className="px-5 py-5 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between          ">
                           <span className="text-xs xs:text-sm text-gray-900">
                             Showing 1 to 4 of 50 Entries
                           </span>
@@ -268,6 +282,7 @@ const ListProductPage: NextPage<Props> = () => {
                             </button>
                           </div>
                         </div> */}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -309,4 +324,4 @@ const ListProductPage: NextPage<Props> = () => {
   );
 };
 
-export default ListProductPage;
+export default ListOrdersPage;
