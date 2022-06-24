@@ -38,6 +38,7 @@ export type DetailProductType = {
   colorOptions: ColorOption[];
   comments: CommentType[];
   reviews: ReviewType[];
+  ratingByStar: any[];
 };
 export type VariantType = {
   id: string;
@@ -75,6 +76,7 @@ export type CommentType = {
   rootCommentId: string;
   replyToCommentId: string;
   replyToUser?: string;
+  isAdmin?: boolean;
 };
 
 // export type CommentReplyType = {
@@ -142,7 +144,29 @@ export enum OrderStatus {
   CANCELED = 'cancel'
 }
 
+export enum PaymentStatus {
+  SUCCESS = 'success',
+  FAILURE = 'failure',
+  PROCESSING = 'processing'
+}
+export enum NotificationType {
+  ORDER = 'order'
+}
+
 export enum PaymentType {
   COD = 'cod',
   VNP = 'vnp'
 }
+
+export type UserType = {
+  phone: string;
+  name: string;
+  email: string;
+  facebookUserId?: string;
+  googleUserId?: string;
+  password?: string;
+  isActive?: boolean;
+  createdAt?: 'date';
+  emailVerified?: boolean;
+  roles?: any[];
+};

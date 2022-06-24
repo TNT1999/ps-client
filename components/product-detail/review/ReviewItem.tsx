@@ -3,7 +3,7 @@ import UserAvatar from '@components/common/Avatar';
 import Rating from '@components/common/Rating';
 import dayjs from '@utils/dayjs';
 import { isEmpty } from 'lodash';
-import { FunctionComponent, useEffect, useState } from 'react';
+import { FunctionComponent, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Thumbs } from 'swiper';
 
@@ -43,19 +43,6 @@ const FullScreenImage: FunctionComponent<{
             />
           </SwiperSlide>
         ))}
-        {/* <div
-          className="absolute left-1 right-auto top-1/2 cursor-pointer text-[#007aff] z-10 group-hover:block hidden duration-200"
-          onClick={() => swiper && swiper.slidePrev()}
-        >
-          <ChevronLeftIcon className="h-8" />
-        </div>
-        <div
-          className="absolute right-1 left-auto top-1/2 cursor-pointer text-[#007aff] z-10 group-hover:block hidden duration-200"
-          ref={navigationNextRef}
-          onClick={() => swiper.slideNext()}
-        >
-          <ChevronRightIcon className="h-8" />
-        </div> */}
       </Swiper>
       <Swiper
         onSwiper={setActiveThumb}
@@ -89,7 +76,7 @@ const ReviewItem: FunctionComponent<Props> = ({ review }) => {
     setVisibleFullScreenImage(index);
   };
   return (
-    <div className="ml-auto border-b border-[#f2f2f2] mb-3 last:mb-0">
+    <div className="ml-auto border-b border-[#f2f2f2] mb-3 last:mb-0 last:border-0">
       <div className="flex justify-between mb-2 px-[10px]">
         <div className="flex items-center justify-center">
           <UserAvatar name={review.reviewer.name} />
@@ -101,7 +88,7 @@ const ReviewItem: FunctionComponent<Props> = ({ review }) => {
         </p>
       </div>
       <div className="p-[10px] rounded-md w-full mb-4 ml-auto">
-        <Rating classNameStar="w-5 h-5" ratingValue={3} />
+        <Rating classNameStar="w-5 h-5" ratingValue={review.reviewValue} />
         <div className="text-13 font-normal text-[#242424] whitespace-pre-wrap py-3">
           {reviewData.content}
         </div>

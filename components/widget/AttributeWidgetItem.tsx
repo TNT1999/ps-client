@@ -33,13 +33,13 @@ const renderDynamicWidget = (
       return (
         <EditableText
           className="text-gray-900 text-12 truncate bg-transparent flex-grow select-none"
-          editClassName="min-w-1 bg-white border border-primary-600 rounded-sm px-1 py-0.5"
+          editClassName="min-w-1 border border-primary-600 rounded-sm px-1 py-0.5"
           editStyles={{ width: 'calc(100% - 0px)' }}
           minHeight={24}
           value={attribute.value}
           onChange={onChange}
           isEditing={true}
-          placeholder={'Name'}
+          placeholder={'Value'}
           name={''}
         />
       );
@@ -75,7 +75,7 @@ const AttributeWidgetItem: FunctionComponent<Props> = memo(
             <EditableText
               name={`${index}-name`}
               className="text-gray-900 text-12 truncate bg-transparent flex-grow select-none"
-              editClassName="min-w-1 bg-white border border-primary-600 rounded-sm px-1 py-0.5"
+              editClassName="min-w-1 border border-primary-600 rounded-sm px-1 py-0.5"
               editStyles={{ width: 'calc(100% - 0px)' }}
               minHeight={24}
               value={attribute.name}

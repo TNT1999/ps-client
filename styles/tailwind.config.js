@@ -38,7 +38,8 @@ module.exports = {
       backgroundColor: {
         primary: 'rgb(26, 148, 255)',
         main: '#f5f5fa',
-        bluePrimary: '#1a94ff'
+        bluePrimary: '#1a94ff',
+        skeleton: '#e9e9ef'
       },
       flex: {
         2: '2 2 0%',

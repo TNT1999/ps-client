@@ -11,12 +11,12 @@ const Progress: FunctionComponent<Props> = ({ total, progress, className }) => {
   return (
     <div
       className={classNames(
-        'w-full bg-gray-200 rounded-md h-2.5 p-0.5 overflow-hidden',
+        'w-full bg-gray-200 rounded-md h-2.5 p-0.5 overflow-hidden flex items-center',
         className
       )}
     >
       <div
-        className="rounded-full bg-red-500"
+        className="rounded-full bg-red-500 h-2"
         style={{ width: `${percent}%` }}
       ></div>
     </div>

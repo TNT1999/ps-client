@@ -25,7 +25,7 @@ const Field: FunctionComponent<Props> = ({
       })}
     >
       <div
-        className={cx('max-w-4xl m-auto my-0 relative', {
+        className={cx('m-auto my-0 relative', {
           'cursor-pointer': clickable,
           'flex items-center': control
         })}

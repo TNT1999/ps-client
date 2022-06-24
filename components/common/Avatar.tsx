@@ -10,12 +10,13 @@ type AvatarType = {
 const getLettersFromName = (name: string) => {
   const fullName = name.trim().split('');
   return (
-    (fullName.shift()?.charAt(0) || '') + (fullName.pop()?.charAt(0) || '')
+    (fullName.shift()?.charAt(0).toUpperCase() || '') +
+    (fullName.pop()?.charAt(0).toUpperCase() || '')
   );
 };
 const Avatar: FunctionComponent<AvatarType> = ({ avatar, name, email }) => {
   if (avatar != null) {
-    return <img src={Logo} alt="" className="w-full h-full object-cover" />;
+    return <img src={avatar} alt="" className="w-full h-full object-cover" />;
   }
   if (name != null) {
     const userName = getLettersFromName(name);

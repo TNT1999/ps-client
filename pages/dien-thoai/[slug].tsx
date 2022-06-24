@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { NextPage, NextPageContext } from 'next';
-import { Store } from '@app/store';
+import { RootState, Store } from '@app/store';
 import { setSelectedProduct } from '@app/slice/homeSlice';
 import Breadcrumb from '@components/breadcrumb';
 import axiosClient from 'utils/api';
@@ -14,6 +14,9 @@ import ReviewBox from '@components/product-detail/review/ReviewBox';
 import Layout from '@components/common/Layout';
 import { useCallback, useEffect, useState } from 'react';
 import useUnloadBeacon from 'hooks/useUnloadBeacon';
+import Pagination from '@components/common/Pagination';
+import useAsyncEffect from 'use-async-effect';
+import { useSelector } from 'react-redux';
 
 type Props = {
   product: DetailProductType | undefined;
@@ -24,6 +27,8 @@ const Phone: NextPage<Props> = ({ product }) => {
     return <div>Error</div>;
   }
   const { name, slug, attrs } = product;
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const currentUser = useSelector((state: RootState) => state.auth.user);
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const [carouselRef, setCarouselRef] = useState(null);
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -74,8 +79,10 @@ const Phone: NextPage<Props> = ({ product }) => {
   // }, [product.id]);
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  useEffect(() => {
-    axiosClient.get(`/${product.id}/viewed`);
+  useAsyncEffect(async () => {
+    if (currentUser) {
+      await axiosClient.get(`/${product.id}/viewed`);
+    }
   }, [product.id]);
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -117,9 +124,9 @@ const Phone: NextPage<Props> = ({ product }) => {
                       <ProductCarousel images={images} handleRef={handleRef} />
                     </div>
                   </div>
-                  <div className="mx-3 w-px bg-[#f2f2f2] shrink-0"></div>
+                  <div className="mx-4 w-px bg-[#f2f2f2] shrink-0"></div>
                   <div className="flex flex-1 justify-between pt-6">
-                    <div className="flex-1 py-4 px-8">
+                    <div className="flex-1 py-4">
                       <MainInfo
                         product={product}
                         carouselRef={carouselRef}
@@ -130,8 +137,11 @@ const Phone: NextPage<Props> = ({ product }) => {
                 </div>
                 <div>
                   <ReviewBox
-                    reviews={product.reviews}
+                    pid={product.id}
+                    listReview={product.reviews}
                     ratingValue={product.ratingValue}
+                    ratingByStar={product.ratingByStar}
+                    reviewCount={product.reviewCount}
                   />
                 </div>
                 <div>

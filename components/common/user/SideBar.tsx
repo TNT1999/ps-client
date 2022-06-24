@@ -33,7 +33,7 @@ const SideBar: FunctionComponent<Props> = React.memo(({ active }) => {
           </Link>
         </li>
 
-        <li>
+        {/* <li>
           <Link href={'/user/notification'}>
             <a
               className={classNames(
@@ -47,7 +47,7 @@ const SideBar: FunctionComponent<Props> = React.memo(({ active }) => {
               <span>Thông báo của tôi</span>
             </a>
           </Link>
-        </li>
+        </li> */}
 
         <li>
           <Link href={'/user/order'}>

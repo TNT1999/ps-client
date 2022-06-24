@@ -6,7 +6,6 @@ import SideBar from '@components/common/user/SideBar';
 import classNames from 'classnames';
 import { NextPage } from 'next';
 import Head from 'next/head';
-import Link from 'next/link';
 
 type Props = any;
 const ReviewPage: NextPage<Props> = () => {
@@ -23,7 +22,7 @@ const ReviewPage: NextPage<Props> = () => {
             <Breadcrumb
               breadcrumbs={[
                 { value: 'Trang chủ', href: '/dien-thoai' },
-                { value: 'Địa chỉ của tôi', href: '/review' }
+                { value: 'Địa chỉ của tôi', href: '/address' }
               ]}
             />
             <Divider />
@@ -34,6 +33,7 @@ const ReviewPage: NextPage<Props> = () => {
               <div className="text-2xl font-light mt-1 mb-4">
                 Nhận xét của tôi
               </div>
+              <div></div>
             </div>
           </div>
         </div>

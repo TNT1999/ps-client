@@ -39,7 +39,9 @@ const OrderHistoryItem: FunctionComponent<Props> = ({ items }) => {
               </div>
             </div>
             <div className="self-start text-[#38383d]">
-              {formatMoney(item.option.price * item.quantity)}
+              {formatMoney(
+                item.option.price * (100 - item.discount) * 0.01 * item.quantity
+              )}
             </div>
           </div>
         );

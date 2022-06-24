@@ -38,7 +38,7 @@ const TextWidget: FunctionComponent<Props> = memo(
         labelTarget={name}
       >
         <input
-          className=" border-none bg-none outline-none text-[#0E1E25] w-full placeholder:text-[#BCC0CD]"
+          className="border-none bg-transparent outline-none text-[#0E1E25] w-full placeholder:text-[#BCC0CD]"
           type="text"
           id={name}
           name={name}

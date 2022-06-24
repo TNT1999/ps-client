@@ -15,6 +15,7 @@ import { getCountCart } from '@app/slice/cartSlice';
 import { parseCookies } from 'nookies';
 import isNil from 'lodash/isNil';
 import useAsyncEffect from 'use-async-effect';
+
 function MyApp({ Component, pageProps }: AppProps) {
   const store = useStore(pageProps.initialReduxState);
   const [isUserLoaded, setUserLoaded] = useState(false);

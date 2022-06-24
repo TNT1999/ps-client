@@ -111,13 +111,15 @@ const MainInfo: FunctionComponent<Props> = ({
   return (
     <>
       <h1 className="mb-3 text-2xl font-normal">{name}</h1>
-      <Rating
-        reviewCount={reviewCount}
-        ratingValue={ratingValue}
-        className="mb-1"
-      />
+      {reviewCount !== 0 && (
+        <Rating
+          reviewCount={reviewCount}
+          ratingValue={ratingValue}
+          className="mb-1"
+        />
+      )}
       <div className="flex flex-col">
-        {discount ? (
+        {discount !== 0 ? (
           <>
             <span className="text-3xl font-medium text-[#ff424e] mb-3">
               {formatMoney(
@@ -129,11 +131,15 @@ const MainInfo: FunctionComponent<Props> = ({
             </span>
           </>
         ) : (
-          <span>{formatMoney(finalSelectProduct.selectedOption.price)}</span>
+          <span className="text-3xl font-medium text-[#ff424e] mb-3">
+            {formatMoney(finalSelectProduct.selectedOption.price)}
+          </span>
         )}
-        <span className="text-xl font-medium text-gray-600 line-through mb-3">
-          {formatMoney(finalSelectProduct.selectedOption.price)}
-        </span>
+        {discount !== 0 && (
+          <span className="text-xl font-medium text-gray-600 line-through mb-3">
+            {formatMoney(finalSelectProduct.selectedOption.price)}
+          </span>
+        )}
       </div>
       {hasVariants && <VariantBox option={variants.variants} />}
       <>

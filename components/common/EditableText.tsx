@@ -141,10 +141,10 @@ const EditableText: FunctionComponent<PropType> = ({
               }}
               autoComplete="off"
               className={classNames(
-                'editable-text absolute top-0 left-0 outline-none',
+                'editable-text absolute top-0 left-0 outline-none bg-transparent',
                 editClassName || 'w-full h-full rounded',
                 {
-                  'bg-[#f3f3f3]': readOnly
+                  '!bg-gray-200': readOnly
                 }
               )}
               placeholder={placeholder && placeholder}

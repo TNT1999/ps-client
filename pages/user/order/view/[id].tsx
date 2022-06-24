@@ -12,6 +12,7 @@ import axiosClient from '@utils/api';
 import dayjs from '@utils/dayjs';
 import { formatMoney } from '@utils/index';
 import ReviewModal from '@components/common/user/ReviewModal';
+import { OrderStatus, PaymentStatus, PaymentType } from '@types';
 
 enum Status {
   ALL = 'all',
@@ -23,6 +24,19 @@ enum Status {
 }
 type Props = {
   order: any;
+};
+
+const statusName = (status: OrderStatus) => {
+  switch (status) {
+    case OrderStatus.CANCELED:
+      return 'Đã huỷ';
+    case OrderStatus.SUCCESS:
+      return 'Thành công';
+    case OrderStatus.SHIPPING:
+      return 'Đang vận chuyển';
+    case OrderStatus.WAIT_CONFIRMED:
+      return 'Chờ xác nhận';
+  }
 };
 const DetailOrderPage: NextPage<Props> = ({ order }) => {
   const [visibleReviewModal, setVisibleReviewModal] = useState(false);
@@ -48,7 +62,9 @@ const DetailOrderPage: NextPage<Props> = ({ order }) => {
             <SideBar active="order" />
             <div className="flex-1 text-13 text-[#242424]">
               <div className="text-2xl font-light mt-1 mb-4">
-                {`Chi tiết đơn hàng - #${order.orderId}`}
+                {`Chi tiết đơn hàng - #${order.orderId} - ${statusName(
+                  order.orderStatus
+                )}`}
               </div>
               {/* <div>Time line</div> */}
               <div className="text-right mb-8 capitalize">{`Ngày đặt hàng: ${dayjs(
@@ -84,12 +100,26 @@ const DetailOrderPage: NextPage<Props> = ({ order }) => {
                   <div className="flex flex-col bg-white rounded p-3 flex-1">
                     <p className="mt-1">Giao hàng tiêu chuẩn</p>
                     <p className="mt-3 italic text-[#00ab56]">
-                      Giao vào{' '}
-                      <span className="capitalize">
-                        {dayjs(order.shippingInfo.deliveredAt).format(
-                          'dddd, DD/MM'
-                        )}
-                      </span>
+                      {order.orderStatus === OrderStatus.SUCCESS && (
+                        <>
+                          Giao vào{' '}
+                          <span className="capitalize">
+                            {dayjs(order.shippingInfo.deliveredAt).format(
+                              'dddd, DD/MM/YYYY'
+                            )}
+                          </span>
+                        </>
+                      )}
+                      {
+                        <>
+                          Dự kiến giao vào{' '}
+                          <span className="capitalize">
+                            {dayjs
+                              .unix(order.shippingInfo.leadtime)
+                              .format('dddd, DD/MM')}
+                          </span>
+                        </>
+                      }
                     </p>
                   </div>
                 </div>
@@ -98,10 +128,27 @@ const DetailOrderPage: NextPage<Props> = ({ order }) => {
                     Hình thức thanh toán
                   </div>
                   <div className="flex flex-col bg-white rounded p-3 flex-1">
-                    <p className="mt-1">Thanh toán bằng VNPay</p>
-                    <p className="italic text-[#fda223] mt-3 font-light">
-                      Thanh toán thành công
+                    <p className="mt-1">
+                      Thanh toán bằng{' '}
+                      {order.paymentType === PaymentType.VNP
+                        ? ' VNP'
+                        : ' tiền mặt khi nhận hàng'}
                     </p>
+                    {PaymentStatus.SUCCESS === order.paymentStatus && (
+                      <p className="italic text-[#fda223] mt-3 font-light">
+                        Thanh toán thành công
+                      </p>
+                    )}
+                    {PaymentStatus.FAILURE === order.paymentStatus && (
+                      <p className="italic text-[#df3333] mt-3 font-light">
+                        Thanh toán thất bại
+                      </p>
+                    )}
+                    {PaymentStatus.PROCESSING === order.paymentStatus && (
+                      <p className="italic text-[#df3333] mt-3 font-light">
+                        Đang chờ thanh toán
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -124,51 +171,59 @@ const DetailOrderPage: NextPage<Props> = ({ order }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="hover:bg-[#f6fcff] border border-b border-[#f4f4f4]">
-                    <td className="border-none table-cell py-5 px-4 align-top min-w-[100px] text-[#242424]">
-                      <div className="flex">
-                        <img
-                          className="mr-4 w-16 h-16"
-                          src={order.products[0].option.images[0]}
-                          alt={`${order.products[0].name} - ${order.products[0].option.name}`}
-                        />
-                        <div>
-                          <a className="text-[#242424]">
-                            {`${order.products[0].name} - ${order.products[0].option.name}`}
-                          </a>
-                          <div className="flex gap-x-2 mt-4">
-                            {visibleReviewModal && (
-                              <ReviewModal
-                                onClose={() => setVisibleReviewModal(false)}
-                                product={order.products[0]}
-                              />
-                            )}
-                            <div
-                              className="bg-white rounded cursor-pointer text-[12px] py-[6px] px-3 text-[#189eff] border border-[#189eff]"
-                              onClick={() => setVisibleReviewModal(true)}
-                            >
-                              Viết nhận xét
-                            </div>
-                            <div className="bg-white rounded cursor-pointer text-[12px] py-[6px] px-3 text-[#189eff] border border-[#189eff]">
+                  {order.products.map((product: any) => {
+                    const price =
+                      product.option.price * (100 - product.discount) * 0.01;
+                    return (
+                      <tr
+                        key={product.id}
+                        className="hover:bg-[#f6fcff] border border-b border-[#f4f4f4]"
+                      >
+                        <td className="border-none table-cell py-5 px-4 align-top min-w-[100px] text-[#242424]">
+                          <div className="flex">
+                            <img
+                              className="mr-4 w-16 h-16"
+                              src={product.option.images[0]}
+                              alt={`${product.name} - ${product.option.name}`}
+                            />
+                            <div>
+                              <a className="text-[#242424]">
+                                {`${product.name} - ${product.option.name}`}
+                              </a>
+                              <div className="flex gap-x-2 mt-4">
+                                {visibleReviewModal && (
+                                  <ReviewModal
+                                    onClose={() => setVisibleReviewModal(false)}
+                                    product={product}
+                                  />
+                                )}
+                                {OrderStatus.SUCCESS === order.orderStatus && (
+                                  <div
+                                    className="bg-white rounded cursor-pointer text-[12px] py-[6px] px-3 text-[#189eff] border border-[#189eff]"
+                                    onClick={() => setVisibleReviewModal(true)}
+                                  >
+                                    Viết nhận xét
+                                  </div>
+                                )}
+                                {/* <div className="bg-white rounded cursor-pointer text-[12px] py-[6px] px-3 text-[#189eff] border border-[#189eff]">
                               Mua lại
+                            </div> */}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="border-none table-cell py-5 px-4 align-top min-w-[100px] text-[#242424] whitespace-nowrap">
-                      {formatMoney(order.products[0].option.price)}
-                    </td>
-                    <td className="border-none table-cell py-5 px-4 align-top min-w-[100px] text-[#242424]">
-                      x{order.products[0].quantity}
-                    </td>
-                    <td className="border-none table-cell py-5 px-4 align-top text-[#242424] text-right min-w-[160px]">
-                      {formatMoney(
-                        order.products[0].option.price *
-                          order.products[0].quantity
-                      )}
-                    </td>
-                  </tr>
+                        </td>
+                        <td className="border-none table-cell py-5 px-4 align-top min-w-[100px] text-[#242424] whitespace-nowrap">
+                          {formatMoney(price)}
+                        </td>
+                        <td className="border-none table-cell py-5 px-4 align-top min-w-[100px] text-[#242424]">
+                          x{product.quantity}
+                        </td>
+                        <td className="border-none table-cell py-5 px-4 align-top text-[#242424] text-right min-w-[160px]">
+                          {formatMoney(price * product.quantity)}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
                 <tfoot>
                   <tr className="table-row p-3">
@@ -179,7 +234,7 @@ const DetailOrderPage: NextPage<Props> = ({ order }) => {
                       <span className="text-[#787878] text-base">Tạm tính</span>
                     </td>
                     <td className="text-right table-cell py-2 px-5 text-[#242424] max-w-[550px] min-w-[125px] pt-8">
-                      {formatMoney(order.finalTotal)}
+                      {formatMoney(order.finalTotal - order.shippingInfo.total)}
                     </td>
                   </tr>
                   <tr className="table-row p-3">

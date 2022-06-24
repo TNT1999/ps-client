@@ -50,11 +50,14 @@ const NumberWidget: FunctionComponent<Props> = memo(
         >
           <input
             type="text"
-            className={classNames('outline-none w-full leading-6 text-left', {
-              'w-[32px] text-13 py-[1px] px-[2px] border-none': type === 'sm',
-              'w-[40px] text-sm h-[30px] border-px border-[#ececec]':
-                type === 'md'
-            })}
+            className={classNames(
+              'outline-none w-full leading-6 text-left bg-transparent',
+              {
+                'w-[32px] text-13 py-[1px] px-[2px] border-none': type === 'sm',
+                'w-[40px] text-sm h-[30px] border-px border-[#ececec]':
+                  type === 'md'
+              }
+            )}
             inputMode="numeric"
             value={value}
             onKeyPress={(event) => {

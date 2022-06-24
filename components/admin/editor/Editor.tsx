@@ -1,15 +1,24 @@
-import { ChangeEvent, FunctionComponent, useCallback, useState } from 'react';
+import {
+  ChangeEvent,
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useState
+} from 'react';
 import TextWidget from '@components/widget/TextWidget';
 import BooleanWidget from '@components/widget/BooleanWidget';
 import AttributeWidget from '@components/widget/AttributeWidget';
 import NumberWidget from '@components/widget/NumberWidget';
 import ColorOptionWidget from '@components/widget/ColorOptionWidget';
-import { ColorOption } from '@types';
+import { ColorOption, ProductType } from '@types';
 import axiosClient from '@utils/api';
 import FileService from '@utils/image';
 import { nanoid } from '@reduxjs/toolkit';
+
 type Props = {
   brands: Brand[];
+  initialProduct?: any;
+  method: 'post' | 'put';
 };
 
 export type Brand = {
@@ -48,241 +57,181 @@ const initProduct = (brands: any[]) => {
       brand: '',
       price: ''
     },
-    attrs:
-      // [
-      //   {
-      //     name: 'Hãng sản xuất',
-      //     type: 'select',
-      //     value: '',
-      //     canDelete: false,
-      //     canEditName: false,
-      //     option: brands,
-      //     productFields: 'brand'
-      //   },
-      //   {
-      //     name: 'Hệ điều hành',
-      //     value: '',
-      //     canDelete: false,
-      //     canEditName: false
-      //   },
-      //   {
-      //     name: 'Kích thước màn hình',
-      //     value: '',
-      //     canDelete: false,
-      //     canEditName: false,
-      //     productFields: 'display_size_inches'
-      //   },
-      //   {
-      //     name: 'Dung lượng RAM',
-      //     value: '',
-      //     canDelete: false,
-      //     canEditName: false,
-      //     productFields: 'ram_gb'
-      //   },
-      //   {
-      //     name: 'Bộ nhớ trong',
-      //     value: '',
-      //     canDelete: false,
-      //     canEditName: false,
-      //     productFields: 'storage_gb'
-      //   },
-      //   {
-      //     name: 'Pin',
-      //     value: ''
-      //   },
-      //   {
-      //     name: 'Kích thước',
-      //     value: ''
-      //   },
-      //   {
-      //     name: 'Trọng lượng',
-      //     value: ''
-      //   }
-      // ] as Attribute[],
-
-      [
-        {
-          name: 'Hãng sản xuất',
-          value: 'Vivo',
-          type: 'select',
-          canDelete: false,
-          canEditName: false,
-          option: [
-            {
-              id: '6265162eed0321a0b9ccbf21',
-              name: 'Apple'
-            },
-            {
-              id: '62651679ed0321a0b9ccbf25',
-              name: 'Samsung'
-            },
-            {
-              id: '6265168ced0321a0b9ccbf26',
-              name: 'Xiaomi'
-            },
-            {
-              id: '6265169eed0321a0b9ccbf28',
-              name: 'OPPO'
-            },
-            {
-              id: '626516b0ed0321a0b9ccbf29',
-              name: 'Nokia'
-            },
-            {
-              id: '626516dbed0321a0b9ccbf2b',
-              name: 'Realme'
-            },
-            {
-              id: '626516fbed0321a0b9ccbf2d',
-              name: 'Vsmart'
-            },
-            {
-              id: '62651728ed0321a0b9ccbf2f',
-              name: 'Vivo'
-            }
-          ],
-          productFields: 'brand'
-        },
-        {
-          name: 'Hệ điều hành',
-          value: 'Android 12, FunTouchOS 12',
-          canDelete: false,
-          canEditName: false
-        },
-        {
-          name: 'Kích thước màn hình',
-          value: '6.58 inches',
-          canDelete: false,
-          canEditName: false,
-          productFields: 'display_size_inches'
-        },
-        {
-          name: 'Công nghệ màn hình',
-          value: 'IPS LCD'
-        },
-        {
-          name: 'Độ phân giải màn hình',
-          value: '1080 x 2408 pixels'
-        },
-        {
-          name: 'Tần số quét',
-          value: '90 Hz'
-        },
-        {
-          name: 'Dung lượng RAM',
-          value: '4 GB',
-          canDelete: false,
-          canEditName: false,
-          productFields: 'ram_gb'
-        },
-        {
-          name: 'Bộ nhớ trong',
-          value: '64 GB',
-          canDelete: false,
-          canEditName: false,
-          productFields: 'storage_gb'
-        },
-        {
-          name: 'Pin',
-          value: '5000 mAh'
-        },
-        {
-          name: 'Kích thước',
-          value: '164.26×76.08×8.00mm'
-        },
-        {
-          name: 'Trọng lượng',
-          value: '182g'
-        },
-        {
-          name: 'Chipset',
-          value: 'Snapdragon 680'
-        },
-        {
-          name: 'Loại CPU',
-          value: '2x2.4 GHz Cortex-A78 & 6x2.0 GHz Cortex-A55'
-        },
-        {
-          name: 'GPU',
-          value: 'Mali-G68 MC4'
-        },
-        {
-          name: 'Thẻ SIM',
-          value: '2 SIM (Nano-SIM)'
-        },
-        {
-          name: 'Jack tai nghe 3.5',
-          value: 'Có'
-        },
-        {
-          name: 'Hỗ trợ mạng',
-          value: '5G'
-        },
-        {
-          name: 'Wi-Fi',
-          value: '2.4GHz / 5GHz'
-        },
-        {
-          name: 'Bluetooth',
-          value: '5.0'
-        },
-        {
-          name: 'GPS',
-          value: 'GPS, BEIDOU, GLONASS, GALILEO, QZSS'
-        },
-        {
-          name: 'Camera sau',
-          value:
-            'Camera chính: 50MP, f/1.8 Camera macro: 2 MP, f/2.4 Cảm biến độ sâu 2MP, f/2.4'
-        },
-        {
-          name: 'Quay video sau',
-          value: '4K@30fps, 1080p@30/60fps, gyro-EIS'
-        },
-        {
-          name: 'Camera trước',
-          value: '8 MP, f/2.0'
-        },
-        {
-          name: 'Quay video trước',
-          value: '1080p@30fps'
-        },
-        {
-          name: 'Công nghệ sạc',
-          value: 'Sạc nhanh 18W'
-        },
-        {
-          name: 'Cổng sạc',
-          value: 'USB Type-C'
-        },
-        {
-          name: 'Cảm biến vân tay',
-          value: 'Cảm biến vân tay cạnh bên'
-        },
-        {
-          name: 'Các loại cảm biến',
-          value:
-            'Cảm biến ánh sáng, Cảm biến gia tốc, Cảm biến tiệm cận, Con quay hồi chuyển, La bàn'
-        }
-      ],
-
+    attrs: [
+      {
+        name: 'Hãng sản xuất',
+        value: '',
+        type: 'select',
+        canDelete: false,
+        canEditName: false,
+        option: brands,
+        productFields: 'brand'
+      },
+      {
+        name: 'Hệ điều hành',
+        value: ''
+      },
+      {
+        name: 'Kích thước màn hình',
+        value: '',
+        canDelete: false,
+        canEditName: false,
+        productFields: 'display_size_inches'
+      },
+      {
+        name: 'Công nghệ màn hình',
+        value: ''
+      },
+      {
+        name: 'Độ phân giải màn hình',
+        value: ''
+      },
+      {
+        name: 'Tần số quét',
+        value: ''
+      },
+      {
+        name: 'Dung lượng RAM',
+        value: '',
+        canDelete: false,
+        canEditName: false,
+        productFields: 'ram_gb'
+      },
+      {
+        name: 'Bộ nhớ trong',
+        value: '',
+        canDelete: false,
+        canEditName: false,
+        productFields: 'storage_gb'
+      },
+      {
+        name: 'Pin',
+        value: ''
+      },
+      {
+        name: 'Kích thước',
+        value: ''
+      },
+      {
+        name: 'Trọng lượng',
+        value: ''
+      },
+      {
+        name: 'Chipset',
+        value: ''
+      },
+      {
+        name: 'Loại CPU',
+        value: ''
+      },
+      {
+        name: 'GPU',
+        value: ''
+      },
+      {
+        name: 'Thẻ SIM',
+        value: ''
+      },
+      {
+        name: 'Jack tai nghe 3.5',
+        value: ''
+      },
+      {
+        name: 'Hỗ trợ mạng',
+        value: ''
+      },
+      {
+        name: 'Wi-Fi',
+        value: ''
+      },
+      {
+        name: 'Bluetooth',
+        value: ''
+      },
+      {
+        name: 'GPS',
+        value: ''
+      },
+      {
+        name: 'Camera sau',
+        value: ''
+      },
+      {
+        name: 'Quay video sau',
+        value: ''
+      },
+      {
+        name: 'Camera trước',
+        value: ''
+      },
+      {
+        name: 'Quay video trước',
+        value: ''
+      },
+      {
+        name: 'Công nghệ sạc',
+        value: ''
+      },
+      {
+        name: 'Cổng sạc',
+        value: ''
+      },
+      {
+        name: 'Cảm biến vân tay',
+        value: ''
+      },
+      {
+        name: 'Các loại cảm biến',
+        value: ''
+      }
+    ],
     colorOptions: [] as ColorOption[]
   };
 };
 
+const prepareColorOptionFiles = (initialProduct: any): any => {
+  return (
+    initialProduct?.colorOptions.map((color: any) => ({
+      colorId: color.id,
+      images: color.images
+    })) || []
+  );
+};
 export type FileImage = {
   file: File;
   photoBase64: string;
 };
 export type FilesByColorOption = {
   colorId: string;
-  images: FileImage[];
+  images: FileImage[] | string[];
 };
-const Editor: FunctionComponent<Props> = ({ brands }) => {
-  const [product, setProduct] = useState(initProduct(brands));
+const injectOptionForBrand = (initialProduct: any, brands: any[]) => {
+  initialProduct.attrs.find(
+    (attr: any) => attr.productFields === 'brand'
+  ).option = brands;
+  return initialProduct;
+};
+const Editor: FunctionComponent<Props> = ({
+  brands,
+  initialProduct,
+  method
+}) => {
+  const prepareProduct = (initialProduct: any): any => {
+    return initialProduct
+      ? injectOptionForBrand(initialProduct, brands)
+      : initProduct(brands);
+  };
+  // const [product, setProduct] = useState(initProduct(brands));
+  const [product, setProduct] = useState(prepareProduct(initialProduct));
+  const [files, setFiles] = useState<FilesByColorOption[]>(
+    // []
+    prepareColorOptionFiles(initialProduct)
+  );
 
-  const [files, setFiles] = useState<FilesByColorOption[]>([]);
-
+  // useAsyncEffect(async () => {
+  //   const product = await axiosClient.get('product/iphone-13-pro-max-512gb');
+  //   setProduct(product as any);
+  // }, []);
   // const [variant, setVariant] = useState(false);
 
   const handleDeleteFilesColor = useCallback((colorId: string) => {
@@ -290,7 +239,7 @@ const Editor: FunctionComponent<Props> = ({ brands }) => {
   }, []);
 
   const handleChangeFilesColor = useCallback(
-    (images: FileImage[], colorId: string) => {
+    (images: FileImage[] | string[], colorId: string) => {
       setFiles((files) => [
         ...files.filter((file) => file.colorId !== colorId),
         {
@@ -304,57 +253,60 @@ const Editor: FunctionComponent<Props> = ({ brands }) => {
 
   const handleChangeTextWidget = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      setProduct((product) => ({
+      setProduct((product: any) => ({
         ...product,
         [e.target.name]: e.target.value
       }));
     },
     []
   );
-  const handleChangeAttrsWidget = useCallback((attrs: Attribute[]) => {
-    const productFields = {
-      ram_gb: '',
-      storage_gb: '',
-      storage_tb: '',
-      display_size_inches: '',
-      brand: '',
-      price: ''
-    };
-    attrs.forEach((attr) => {
-      if (!attr.productFields) return;
-      const field: keyof typeof productFields = attr.productFields;
-      if (field === 'brand') {
-        productFields[field] =
-          brands.find((brand) => brand.name === attr.value)?.id || '';
-      }
-      if (field === 'display_size_inches') {
-        productFields[field] = attr.value.split(' ')[0];
-      }
-      if (field === 'ram_gb') {
-        productFields[field] = attr.value.split(' ')[0];
-      }
-      if (field === 'storage_gb') {
-        const split = attr.value.split(' ');
-        if (split.includes('GB')) {
-          productFields['storage_gb'] = split[0];
-          productFields['storage_tb'] = '-1';
+  const handleChangeAttrsWidget = useCallback(
+    (attrs: Attribute[]) => {
+      const productFields = {
+        ram_gb: '',
+        storage_gb: '',
+        storage_tb: '',
+        display_size_inches: '',
+        brand: '',
+        price: ''
+      };
+      attrs.forEach((attr) => {
+        if (!attr.productFields) return;
+        const field: keyof typeof productFields = attr.productFields;
+        if (field === 'brand') {
+          productFields[field] =
+            brands.find((brand) => brand.name === attr.value)?.id || '';
         }
-        if (split.includes('TB')) {
-          productFields['storage_tb'] = split[0];
-          productFields['storage_gb'] = '-1';
+        if (field === 'display_size_inches') {
+          productFields[field] = attr.value.split(' ')[0];
         }
-      }
-    });
-    setProduct((product: any) => ({
-      ...product,
-      productFields,
-      attrs
-    }));
-  }, []);
+        if (field === 'ram_gb') {
+          productFields[field] = attr.value.split(' ')[0];
+        }
+        if (field === 'storage_gb') {
+          const split = attr.value.split(' ');
+          if (split.includes('GB')) {
+            productFields['storage_gb'] = split[0];
+            productFields['storage_tb'] = '-1';
+          }
+          if (split.includes('TB')) {
+            productFields['storage_tb'] = split[0];
+            productFields['storage_gb'] = '-1';
+          }
+        }
+      });
+      setProduct((product: any) => ({
+        ...product,
+        productFields,
+        attrs
+      }));
+    },
+    [brands]
+  );
 
   const handleChangeBooleanWidget = useCallback(
     (name: string, boolean: boolean) => {
-      setProduct((product) => ({
+      setProduct((product: any) => ({
         ...product,
         [name]: boolean
       }));
@@ -364,7 +316,7 @@ const Editor: FunctionComponent<Props> = ({ brands }) => {
 
   const handleChangeColorOptionWidget = useCallback(
     (colorOptions: ColorOption[]) => {
-      setProduct((product) => ({
+      setProduct((product: any) => ({
         ...product,
         colorOptions
       }));
@@ -373,11 +325,16 @@ const Editor: FunctionComponent<Props> = ({ brands }) => {
   );
 
   const uploadFileColorOption = async (colorOption: FilesByColorOption) => {
-    const uploadImagePromise = colorOption.images.map((image) =>
-      FileService.uploadImage(image.file)
-    );
+    console.log(colorOption);
+    const uploadImagePromise = colorOption.images.map((image) => {
+      if (typeof image !== 'string') {
+        return FileService.uploadImage(image.file);
+      }
+      return image;
+    });
 
     const imagesURL = await Promise.all(uploadImagePromise);
+
     return {
       id: colorOption.colorId,
       images: imagesURL
@@ -387,7 +344,7 @@ const Editor: FunctionComponent<Props> = ({ brands }) => {
   const getFinalColorOptions = (
     colorOptionsFromFilesS3: { id: string; images: string[] }[]
   ) => {
-    return product.colorOptions.map((colorOptionState) => {
+    return product.colorOptions.map((colorOptionState: any) => {
       return {
         ...colorOptionState,
         ...colorOptionsFromFilesS3.find(
@@ -435,31 +392,40 @@ const Editor: FunctionComponent<Props> = ({ brands }) => {
       );
       const colorOption = await Promise.all(colorOptionPromise);
 
+      console.log(colorOption);
+
       const colorOptions = getFinalColorOptions(colorOption);
       const productFields = getProductFields(
         product.productFields,
         colorOptions[0].price.toString()
       );
-      const postProduct = {
+      const body = {
         ...product,
         lname: product.name.toLowerCase(),
         price: product.price !== 0 ? product.price : colorOptions[0].price,
         isMainProduct: true,
         thumbnail: colorOptions[0].images[0],
-        slug: product.name
-          .split(' ')
-          .join('-')
-          .concat(`-${nanoid(8)}`)
-          .toLowerCase(),
+        slug:
+          product.slug ||
+          product.name
+            .split(' ')
+            .join('-')
+            .concat(`-${nanoid(8)}`)
+            .toLowerCase(),
         productFields,
         colorOptions
       };
-      console.log(postProduct);
-      await axiosClient.post('product', postProduct);
+      console.log(body);
+      method === 'put'
+        ? await axiosClient.put('product', body)
+        : await axiosClient.post('product', body);
     } catch (e) {
       console.log(e);
     }
   };
+
+  if (!product) return null;
+
   return (
     <>
       <TextWidget
@@ -487,26 +453,28 @@ const Editor: FunctionComponent<Props> = ({ brands }) => {
         name={'attribute'}
       />
       <NumberWidget
-        name={'price'}
-        value={product.price}
+        name={'discount'}
+        value={product.discount}
         title={false}
-        onChange={(newPrice) =>
+        onChange={(newDiscount) =>
           setProduct({
             ...product,
-            price: newPrice
+            discount: newDiscount
           })
         }
-        label={'Price'}
+        label={'Discount ( % )'}
       />
       <ColorOptionWidget
-        name={''}
+        name=""
         value={product.colorOptions}
         files={files}
         onChange={handleChangeColorOptionWidget}
         onChangeFilesColor={handleChangeFilesColor}
         onDeleteFilesColorOption={handleDeleteFilesColor}
       />
-      <button onClick={handleCreate}>Create Product</button>
+      <button onClick={handleCreate}>
+        {method === 'post' ? 'Create Product' : 'Update Product'}
+      </button>
     </>
   );
 };

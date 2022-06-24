@@ -19,7 +19,7 @@ type Props = {
   placeholder?: string;
   onChange: (colorOptions: ColorOption[]) => void;
   files: FilesByColorOption[];
-  onChangeFilesColor: (images: FileImage[], colorId: string) => void;
+  onChangeFilesColor: (images: FileImage[] | string[], colorId: string) => void;
   onDeleteFilesColorOption: (colorId: string) => void;
 };
 
@@ -103,6 +103,7 @@ const ColorOptionWidget: FunctionComponent<Props> = memo(
             const colorFiles = files.find(
               (files) => files.colorId === color.id
             );
+            console.log(colorFiles);
             return (
               <ColorOptionItemWidget
                 key={index}

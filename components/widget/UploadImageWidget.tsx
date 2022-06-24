@@ -14,7 +14,7 @@ import {
 
 type Props = {
   color: ColorOption;
-  onChangeFiles: (images: FileImage[], colorId: string) => void;
+  onChangeFiles: (images: FileImage[] | string[], colorId: string) => void;
   colorFiles?: FilesByColorOption;
 };
 const UploadImageWidget: FunctionComponent<Props> = ({
@@ -31,7 +31,7 @@ const UploadImageWidget: FunctionComponent<Props> = ({
   const [sendingReview, setSendingReview] = useState(false);
 
   const handleDeleteImage = (deletedIndex: number) => {
-    setFiles(files.filter((_, index) => index !== deletedIndex));
+    setFiles((files as any[]).filter((_, index) => index !== deletedIndex));
   };
 
   const handleFileInputChange = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -84,7 +84,11 @@ const UploadImageWidget: FunctionComponent<Props> = ({
                   <div
                     key={index}
                     className="rounded h-16 w-16 border border-[#e0e0e0] bg-cover mr-4 relative"
-                    style={{ backgroundImage: `url(${file.photoBase64})` }}
+                    style={{
+                      backgroundImage: `url(${
+                        typeof file === 'string' ? file : file.photoBase64
+                      })`
+                    }}
                   >
                     <span
                       className="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 bg-gray-200 text-black rounded-full flex items-center w-5 h-5 justify-center cursor-pointer"

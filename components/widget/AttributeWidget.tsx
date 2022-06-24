@@ -29,7 +29,8 @@ type Props = {
 const AttributeWidget: FunctionComponent<Props> = memo(
   ({ name, onClick, value, readOnly, placeholder, onChange }) => {
     const [items, setItems] = useState<Attribute[]>(value);
-    const [isCollapsed, setIsCollapsed] = useState(true);
+    const [isCollapsed, setIsCollapsed] = useState(false);
+    console.log(value);
     // const [brands, setBrands] = useState<any[]>();
     const newAttribute = () => {
       setItems([
