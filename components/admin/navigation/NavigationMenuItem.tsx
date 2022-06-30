@@ -28,8 +28,8 @@ const NavigationMenuItem: FunctionComponent<Props> = ({
         className={classNames(
           'flex items-center w-full overflow-hidden border-0 h-8 outline-none duration-200 rounded-md',
           {
-            'text-white  group-hover:bg-[#5f47cc]  bg-[#5842be]': active,
-            'text-[#616C7A] bg-transparent group-hover:text-[#0E1E25] group-hover:bg-[#0e1e250d]':
+            'text-white  group-hover:bg-[#209cee]  bg-[#209cee]': active,
+            'text-black bg-transparent group-hover:text-[#0E1E25] group-hover:bg-[#0e1e250d]':
               !active
           }
         )}

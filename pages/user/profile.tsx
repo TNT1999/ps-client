@@ -4,7 +4,8 @@ import {
   MailIcon,
   PhoneIcon,
   FacebookIcon,
-  GoogleIcon
+  GoogleIcon,
+  SpinnerIcon
 } from '@assets/icons';
 import Breadcrumb from '@components/breadcrumb';
 import { default as Input } from '@components/common/auth/AuthInput';
@@ -18,8 +19,10 @@ import axiosClient from '@utils/api';
 import { isNil, noop } from 'lodash';
 import { NextPage, NextPageContext } from 'next';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
 import { ChangeEvent, useState } from 'react';
+import { toast } from 'react-toastify';
 
 type UserProfile = {
   name: string;
@@ -35,7 +38,8 @@ type Props = {
 const AccountPage: NextPage<Props> = ({ user }) => {
   const [userProfile, setUserProfile] = useState(user);
   const [isEdit, setIsEdit] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
   if (isNil(userProfile)) {
     return <div>Error</div>;
   }
@@ -48,6 +52,21 @@ const AccountPage: NextPage<Props> = ({ user }) => {
     });
   };
 
+  const handleUpdate = async () => {
+    try {
+      setIsLoading(true);
+      const result = await axiosClient.put('auth/update-profile', {
+        ...userProfile
+      });
+      console.log(result);
+      toast.success('Cập nhật thành công');
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setIsLoading(false);
+      setIsEdit(false);
+    }
+  };
   return (
     <Layout>
       <Head>
@@ -71,18 +90,28 @@ const AccountPage: NextPage<Props> = ({ user }) => {
             <div className="flex-1">
               <div className="text-2xl font-light mt-1 mb-4 flex justify-between">
                 <span>Thông tin tài khoản</span>
-                <Tippy
-                  arrow={true}
-                  content={<Tooltip text={'Chỉnh sửa'} />}
-                  delay={100}
-                >
-                  <span>
-                    <Edit2Icon
-                      className="cursor-pointer w-5 h-5"
-                      onClick={() => setIsEdit(true)}
-                    />
-                  </span>
-                </Tippy>
+                {!isEdit ? (
+                  <Tippy
+                    arrow={true}
+                    content={<Tooltip text={'Chỉnh sửa'} />}
+                    delay={100}
+                  >
+                    <span>
+                      <Edit2Icon
+                        className="cursor-pointer w-5 h-5"
+                        onClick={() => setIsEdit(true)}
+                      />
+                    </span>
+                  </Tippy>
+                ) : (
+                  <button
+                    className="px-2.5 py-1.5 text-base rounded text-white bg-[#209cee] cursor-pointer flex justify-center items-center"
+                    onClick={handleUpdate}
+                  >
+                    {/* {isLoading && <SpinnerIcon className="animate-spin mr-2" />} */}
+                    Lưu thay đổi
+                  </button>
+                )}
               </div>
               <div className="bg-white flex flex-nowrap rounded-lg justify-between">
                 <div className="flex-1 p-4 pr-6">
@@ -120,6 +149,7 @@ const AccountPage: NextPage<Props> = ({ user }) => {
                               name="gender"
                               value="male"
                               onChange={onChange}
+                              checked={userProfile.gender === 'male'}
                               className="h-5 w-5 border-gray-300 focus:ring-blue-300"
                             />
                             <span className="text-13 ml-2 block">Nam</span>
@@ -130,6 +160,7 @@ const AccountPage: NextPage<Props> = ({ user }) => {
                               type="radio"
                               name="gender"
                               value="female"
+                              checked={userProfile.gender === 'female'}
                               onChange={onChange}
                               className="h-5 w-5 border-gray-300 focus:ring-blue-300"
                             />
@@ -141,6 +172,7 @@ const AccountPage: NextPage<Props> = ({ user }) => {
                               type="radio"
                               name="gender"
                               value="other"
+                              checked={userProfile.gender === 'other'}
                               onChange={onChange}
                               className="h-5 w-5 border-gray-300 focus:ring-blue-300"
                             />
@@ -183,7 +215,7 @@ const AccountPage: NextPage<Props> = ({ user }) => {
                         </label>
                         <div className="flex-1 py-5">
                           <Input
-                            disabled={!isEdit}
+                            disabled={true}
                             name="email"
                             value={userProfile.email}
                             onChange={onChange}
@@ -203,14 +235,17 @@ const AccountPage: NextPage<Props> = ({ user }) => {
                           <LockIcon className="w-5 h-5 text-[#a6a6b0] mr-4" />
                           <span>Đổi mật khẩu</span>
                         </label>
-                        <button className="h-8 rounded px-3 text-[#0b74e5] cursor-pointer border-px border-[#0b74e5] bg-white">
+                        <button
+                          className="h-8 rounded px-3 text-[#0b74e5] cursor-pointer border-px border-[#0b74e5] bg-white"
+                          onClick={() => router.push('/change-password')}
+                        >
                           Cập nhật
                         </button>
                       </div>
                     </div>
                   </div>
 
-                  <span className="text-16 font-normal text-[#64646d]">
+                  {/* <span className="text-16 font-normal text-[#64646d]">
                     Liên kết mạng xã hội
                   </span>
 
@@ -236,7 +271,7 @@ const AccountPage: NextPage<Props> = ({ user }) => {
                         </button>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>

@@ -22,7 +22,6 @@ const ReviewBox: FunctionComponent<Props> = ({
   ratingByStar,
   reviewCount
 }) => {
-  console.log(pid, listReview, ratingValue, ratingByStar, reviewCount);
   const [reviews, setReviews] = useState<any[]>(listReview);
   const [currentPage, setCurrentPage] = useState(1);
   const [loadingReview, setLoadingReview] = useState(false);
@@ -35,7 +34,8 @@ const ReviewBox: FunctionComponent<Props> = ({
 
   useEffect(() => {
     setReviews(listReview);
-  }, [listReview, pid]);
+  }, [pid]);
+
   useUpdateEffect(() => {
     const getReviews = async (pid: string, currentPage: number) => {
       try {

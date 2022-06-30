@@ -34,6 +34,10 @@ import dayjs from '@utils/dayjs';
 import DeliveryOption from '@components/common/checkout/payment/DeliveryOption';
 import PaymentMethodOption from '@components/common/checkout/payment/PaymentMethodOption';
 import { PaymentType } from '@types';
+import omit from 'lodash/omit';
+import { io } from 'socket.io-client';
+const ENDPOINT = 'http://localhost:3000';
+const socket = io(ENDPOINT, { transports: ['websocket'] });
 
 const PaymentPage: NextPage<any> = () => {
   const cart: CartState = useSelector((state: RootState) => state.cart);
@@ -142,11 +146,28 @@ const PaymentPage: NextPage<any> = () => {
           paymentType: PaymentType.VNP
         }
       );
+      socket.emit('newOrder');
       window.location.href = payment_url_vnpay;
+
       return;
     }
     if (paymentMethod === 'COD') {
-      return;
+      try {
+        const order = await axiosClient.post('order', {
+          finalTotal: total,
+          products: cart.items
+            .filter((item) => item.selected === true)
+            .map((product: any) => omit(product, ['selected'])),
+          shippingInfo: selectedDeliveryOption,
+          shippingAddress,
+          paymentType: PaymentType.COD
+        });
+        toast.success('Đặt hàng thành công');
+        router.push('/user/order');
+        socket.emit('newOrder');
+      } catch (e) {
+        console.log(e);
+      }
     }
   };
 
@@ -257,7 +278,7 @@ const PaymentPage: NextPage<any> = () => {
                         )}
                       </div>
                     </div>
-                    <div className="bg-white rounded p-4 mb-4">
+                    {/* <div className="bg-white rounded p-4 mb-4">
                       <h4 className="flex items-center font-medium text-13 text-[#242424]">
                         <CouponIcon className="mr-2" />
                         <span>Khuyến mãi</span>
@@ -271,7 +292,7 @@ const PaymentPage: NextPage<any> = () => {
                           Áp dụng
                         </button>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                   <div>
                     <div className="bg-white rounded pb-2">
@@ -282,12 +303,12 @@ const PaymentPage: NextPage<any> = () => {
                           </div>
                           <div>{formatMoney(productTotal())}</div>
                         </li>
-                        <li className="flex flex-nowrap mb-2.5 justify-between">
+                        {/* <li className="flex flex-nowrap mb-2.5 justify-between">
                           <div className=" font-light text-[#333333]">
                             Giảm giá
                           </div>
                           <div>0đ</div>
-                        </li>
+                        </li> */}
                         <li className="flex flex-nowrap mb-2.5 justify-between">
                           <div className=" font-light text-[#333333]">
                             Phí vận chuyển

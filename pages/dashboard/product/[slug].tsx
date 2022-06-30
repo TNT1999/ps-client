@@ -1,6 +1,5 @@
 import Head from 'next/head';
 import { NextPage } from 'next';
-import NavigationMenu from '@components/admin/navigation/NavigationMenu';
 import Layout from '@components/common/Layout';
 import ViewProductEditor from '@components/admin/editor/Editor';
 import { useState, FunctionComponent } from 'react';
@@ -9,12 +8,19 @@ import useAsyncEffect from 'use-async-effect';
 import { SpinnerIcon } from '@assets/icons';
 import { useRouter } from 'next/router';
 import { motion } from 'framer-motion';
-
+import dynamic from 'next/dynamic';
+import { delay } from '@utils/misc';
+const NavigationMenu = dynamic(
+  () => import('@components/admin/navigation/NavigationMenu'),
+  {
+    ssr: false
+  }
+);
 type Props = any;
 
 const LoadingIndicator: FunctionComponent<any> = () => {
   return (
-    <div className="h-full w-full flex items-center justify-center bg-white select-none">
+    <div className="h-full w-full flex items-center justify-center bg-transparent select-none">
       <div className="flex items-center">
         <SpinnerIcon className="animate-spin mr-2" /> Loading...
       </div>
@@ -33,14 +39,13 @@ const ProductPage: NextPage<Props> = () => {
     const [initialProduct, initialBrands] = await Promise.all([
       axiosClient.get(`origin/product/${slug}`),
       axiosClient.get('brands')
+      // delay(200)
     ]);
     setProduct(initialProduct);
     setBrands(initialBrands as unknown as any[]);
-
     setPreLoading(false);
   }, []);
 
-  console.log(product);
   return (
     <Layout admin>
       <Head>
@@ -51,28 +56,32 @@ const ProductPage: NextPage<Props> = () => {
       <main className="flex justify-center overflow-auto md:h-[calc(100vh-4rem)] h-[calc(100vh-3.5rem)] bg-main">
         <div className="flex flex-row flex-1">
           <NavigationMenu />
-          {isPreLoading || !product ? (
-            <LoadingIndicator />
-          ) : (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              className="max-w-screen-lg flex-1 h-full max-h-full m-auto my-8"
-            >
-              <h2 className="text-black font-medium text-xl px-4">
-                {product.name}
-              </h2>
-              <div className="mt-4">
-                <ViewProductEditor
-                  brands={brands}
-                  initialProduct={product}
-                  method={'put'}
-                />
-              </div>
-            </motion.div>
-          )}
+          <div className="flex-1 h-full max-h-full overflow-y-auto">
+            <div className="m-auto h-full max-w-screen-xl">
+              {isPreLoading || !product ? (
+                <LoadingIndicator />
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="max-w-screen-lg flex-1 h-full max-h-full m-auto my-8"
+                >
+                  <h2 className="text-black font-medium text-xl px-4">
+                    {product.name}
+                  </h2>
+                  <div className="mt-4">
+                    <ViewProductEditor
+                      brands={brands}
+                      initialProduct={product}
+                      method={'put'}
+                    />
+                  </div>
+                </motion.div>
+              )}
+            </div>
+          </div>
         </div>
       </main>
     </Layout>

@@ -1,6 +1,6 @@
 import '../styles/main.css';
 import type { AppProps } from 'next/app';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import NextNprogress from 'nextjs-progressbar';
 import { Provider } from 'react-redux';
 import { initializeStore, Store, useStore } from '@app/store';
@@ -15,7 +15,6 @@ import { getCountCart } from '@app/slice/cartSlice';
 import { parseCookies } from 'nookies';
 import isNil from 'lodash/isNil';
 import useAsyncEffect from 'use-async-effect';
-
 function MyApp({ Component, pageProps }: AppProps) {
   const store = useStore(pageProps.initialReduxState);
   const [isUserLoaded, setUserLoaded] = useState(false);

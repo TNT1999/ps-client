@@ -6,16 +6,58 @@ import AuthModal from '@components/common/auth/AuthModal';
 import { CartIcon } from '@assets/icons';
 import { useSelector } from 'react-redux';
 import { RootState } from 'app/store';
-import { isEmpty } from 'lodash';
+import SignUpModal from '@components/common/auth/SignUpModal';
+import { io } from 'socket.io-client';
+import { toast } from 'react-toastify';
+import { OrderStatus } from '@types';
+// const ENDPOINT = 'https://socket-22-2.herokuapp.com';
+const ENDPOINT = 'http://localhost:3000';
+const socket = io(ENDPOINT, { transports: ['websocket'] });
 
 type Props = any;
 const Header: FunctionComponent<Props> = React.memo(() => {
   const user = useSelector((state: RootState) => state.auth.user);
   const cart = useSelector((state: RootState) => state.cart);
-  const [authModalVisible, setAuthModalVisible] = useState(false);
+  const [authModalLoginVisible, setAuthModalLoginVisible] = useState(false);
+  const [authModalSignUpVisible, setAuthModalSignUpVisible] = useState(false);
 
+  const handleSignUp = (boolean: boolean) => {
+    setAuthModalLoginVisible(false);
+    setAuthModalSignUpVisible(boolean);
+  };
+  const handleSignIn = (boolean: boolean) => {
+    setAuthModalSignUpVisible(false);
+    setAuthModalLoginVisible(boolean);
+  };
+  useEffect(() => {
+    // socket.on('newOrder', (res) => {
+    //   // this.setState({
+    //   //   itemsCount: itemsCount + res.newOrders,
+    //   //   email: res.email,
+    //   //   type: 0
+    //   // });
+    //   console.log(res);
+    // });
+    socket.on('order_status', (payload) => {
+      const newPayload = { ...payload };
+      if (newPayload.status === OrderStatus.SHIPPING) {
+        toast.success(`Đơn hàng ${newPayload.orderId} của bạn đang được giao`);
+      }
+      if (newPayload.status === OrderStatus.SUCCESS) {
+        toast.success(
+          `Đơn hàng ${newPayload.orderId} của bạn đã giao thành công`
+        );
+      }
+    });
+    if (user?.id) {
+      socket.emit('connected', user?.id);
+    }
+    return () => {
+      socket.off('order_status');
+    };
+  }, [user]);
   return (
-    <header className="w-full h-14 md:h-16 py-3 px-4 sm:px-8 shadow-header fixed inset-x-0 top-0 bg-bluePrimary">
+    <header className="w-full h-14 md:h-16 py-3 px-4 sm:px-8 shadow-header fixed inset-x-0 top-0 bg-bluePrimary z-20">
       <nav className="flex h-full justify-between max-w-screen-xl m-auto px-4">
         <div className="flex flex-4 items-center ">
           <div className="relative flex flex-1 items-center pl-4 pr-8">
@@ -43,14 +85,23 @@ const Header: FunctionComponent<Props> = React.memo(() => {
             <>
               <button
                 className="text-sm text-white"
-                onClick={() => setAuthModalVisible(true)}
+                onClick={() => setAuthModalLoginVisible(true)}
               >
                 <span>Đăng nhập</span>
                 <span> | </span>
                 <span>Đăng ký</span>
               </button>
-              {authModalVisible && (
-                <AuthModal onClose={() => setAuthModalVisible(false)} />
+              {authModalLoginVisible && (
+                <AuthModal
+                  onClose={() => setAuthModalLoginVisible(false)}
+                  handleSignUp={handleSignUp}
+                />
+              )}
+              {authModalSignUpVisible && (
+                <SignUpModal
+                  onClose={() => setAuthModalSignUpVisible(false)}
+                  handleSignIn={handleSignIn}
+                />
               )}
             </>
           )}

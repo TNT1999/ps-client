@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { FunctionComponent, useState } from 'react';
+import { FunctionComponent, memo, useState } from 'react';
 import NavigationMenuItem from './NavigationMenuItem';
 import {
   CartIcon,
@@ -14,80 +14,90 @@ import {
   OrderIcon
 } from '@assets/icons';
 import { useRouter } from 'next/router';
+import { useLocalStorage } from 'react-use';
+
 type Props = any;
-const NavigationMenu: FunctionComponent<Props> = () => {
-  const [collapsed, setCollapsed] = useState(true);
+const NavigationMenu: FunctionComponent<Props> = memo(() => {
+  const [collapsedLocalStorage, setCollapsedLocalStorage] = useLocalStorage(
+    'collapsedSideBar',
+    false
+  );
+  const toggleCollapse = () => {
+    setCollapsedLocalStorage(!collapsedLocalStorage);
+  };
+
   const router = useRouter();
   return (
     <div
       className={classNames(
-        'flex pt-6 pb-3 flex-col bg-white overflow-x-hidden overflow-y-auto transition-[width] ease-in-out fixed bottom-0 md:top-16 top-14',
+        'flex flex-col pt-12 bg-white overflow-x-hidden overflow-y-auto transition-[width] ease-in-out relative shadow-header',
         {
-          'duration-200 w-14': collapsed,
-          'duration-[250] w-60': !collapsed
+          'duration-200 w-14': collapsedLocalStorage,
+          'duration-[250] w-[17rem]': !collapsedLocalStorage
         }
       )}
     >
       <div id="nav_top" className="flex-1">
-        <NavigationMenuItem
-          collapsed={collapsed}
+        {/* <NavigationMenuItem
+          collapsed={collapsedLocalStorage}
           label="Dashboard"
           icon={EditIcon}
           active={router.route === ''}
-        />
+        /> */}
         <NavigationMenuItem
-          collapsed={collapsed}
-          label="Product"
+          collapsed={collapsedLocalStorage}
+          label="Sản phẩm"
           icon={ProductIcon}
           active={router.route.includes('/dashboard/product')}
           onClick={() => router.push('/dashboard/product')}
         />
         <NavigationMenuItem
-          collapsed={collapsed}
-          label="Users"
+          collapsed={collapsedLocalStorage}
+          label="Người dùng"
           icon={UsersIcon}
           active={router.route.includes('/dashboard/user')}
           onClick={() => router.push('/dashboard/user')}
         />
         <NavigationMenuItem
-          collapsed={collapsed}
-          label="Order"
-          icon={OrderIcon}
+          collapsed={collapsedLocalStorage}
+          label="Đơn hàng"
+          icon={CartIcon}
           active={router.route.includes('/dashboard/order')}
           onClick={() => router.push('/dashboard/order')}
         />
         {/* <NavigationMenuItem
-          collapsed={collapsed}
+          collapsed={collapsedLocalStorage}
           label="Shipping"
           icon={TruckIcon}
         />
         <NavigationMenuItem
-          collapsed={collapsed}
+          collapsed={collapsedLocalStorage}
           label="Media" 
           icon={ImageIcon}
         /> */}
       </div>
       <div id="nav_bottom">
-        <NavigationMenuItem
-          collapsed={collapsed}
-          label="Analytics"
+        {/* <NavigationMenuItem
+          collapsed={collapsedLocalStorage}
+          label="Thống kê"
           icon={BarChartIcon}
         />
         <NavigationMenuItem
-          collapsed={collapsed}
-          label="Setting"
+          collapsed={collapsedLocalStorage}
+          label="Cài đặt"
           icon={SettingIcon}
-        />
+        /> */}
         <NavigationMenuItem
           control
           className="w-14"
-          collapsed={collapsed}
+          collapsed={collapsedLocalStorage}
           icon={ChevronRightIcon}
-          onClick={() => setCollapsed(!collapsed)}
+          onClick={toggleCollapse}
         />
       </div>
     </div>
   );
-};
+});
 
+NavigationMenu.displayName = 'menu';
 export default NavigationMenu;

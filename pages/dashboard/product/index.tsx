@@ -1,6 +1,5 @@
 import Head from 'next/head';
 import { NextPage } from 'next';
-import NavigationMenu from '@components/admin/navigation/NavigationMenu';
 import Layout from '@components/common/Layout';
 import { useState, FunctionComponent, useEffect } from 'react';
 import axiosClient from '@utils/api';
@@ -15,6 +14,7 @@ import {
   SpinnerIcon,
   TrashIcon
 } from '@assets/icons';
+
 import Tippy from '@tippyjs/react';
 import Tooltip from '@components/common/Tooltip';
 import { useRouter } from 'next/router';
@@ -22,57 +22,85 @@ import { formatMoney } from '@utils/index';
 import Link from 'next/link';
 import dayjs from '@utils/dayjs';
 import ReactPaginate from 'react-paginate';
+import dynamic from 'next/dynamic';
+import { delay } from '@utils/misc';
+import { motion } from 'framer-motion';
+import EmptyOrder from '../../../public/assets/images/empty-order.png';
+import { isEmpty } from 'lodash';
 
+const NavigationMenu = dynamic(
+  () => import('@components/admin/navigation/NavigationMenu'),
+  {
+    ssr: false
+  }
+);
 type Props = any;
 
 const Loading: FunctionComponent<any> = () => {
   return (
-    <div className="h-full w-full flex items-center justify-center bg-transparent select-none">
-      <div className="flex items-center">
-        <SpinnerIcon className="animate-spin mr-2" /> Loading...
-      </div>
-    </div>
+    <tr>
+      <td
+        colSpan={10}
+        className="h-[80vh] w-full items-center justify-center bg-transparent select-none table-cell"
+      >
+        <div className="flex items-center justify-center">
+          <SpinnerIcon className="animate-spin mr-2" /> Loading...
+        </div>
+      </td>
+    </tr>
   );
 };
-const items = [...Array(100).keys()];
 
 const ListProductPage: NextPage<Props> = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [brands, setBrands] = useState<any[]>([]);
-  const [isPreLoading, setPreLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false);
+  const [keyword, setKeyword] = useState('');
 
   const [itemsPerPage] = useState(10);
-  const [itemOffset, setItemOffset] = useState(0);
-  const [currentItems, setCurrentItems] = useState(null);
-  const [pageCount, setPageCount] = useState(0);
-
   const router = useRouter();
-  useAsyncEffect(async () => {
-    setPreLoading(true);
-    const [result, brands] = await Promise.all([
-      axiosClient.get('origin/products?page=1'),
-      axiosClient.get('brands')
-    ]);
-    setProducts(result as any);
-    setBrands(brands as any);
-    setPreLoading(false);
-  }, []);
+  const [pageCount, setPageCount] = useState(1);
+  const [currentPage, setCurrentPage] = useState(
+    parseInt((router.query.page as any) || 1)
+  );
 
   useEffect(() => {
-    // Fetch items from another resources.
-    const endOffset = itemOffset + itemsPerPage;
-    console.log(`Loading items from ${itemOffset} to ${endOffset}`);
-    setCurrentItems(items.slice(itemOffset, endOffset) as any);
-    setPageCount(Math.ceil(items.length / itemsPerPage));
-  }, [itemOffset, itemsPerPage]);
+    const page = parseInt(router.query.page as any) || 1;
+    if (page === currentPage) return;
+    setCurrentPage(page);
+  }, [router.query.page]);
+
+  useAsyncEffect(async () => {
+    setLoading(true);
+    const [result, brands]: any[] = await Promise.all([
+      axiosClient.get(`origin/products?page=${currentPage}`),
+      axiosClient.get('brands'),
+      delay(500)
+    ]);
+    setProducts(result.products);
+    setBrands(brands);
+    setPageCount(Math.ceil(result.totalProduct / itemsPerPage));
+    setLoading(false);
+  }, [currentPage]);
 
   // Invoke when user click to request another page.
   const handlePageClick = (event: any) => {
-    const newOffset = (event.selected * itemsPerPage) % items.length;
-    console.log(
-      `User requested page number ${event.selected}, which is offset ${newOffset}`
+    setCurrentPage((event.selected as number) + 1);
+    router.push(
+      `/dashboard/product/?page=${(event.selected as number) + 1}`,
+      undefined,
+      {
+        shallow: true
+      }
     );
-    setItemOffset(newOffset);
+  };
+
+  const handleKeyPress = async (event: any) => {
+    if (event.key === 'Enter') {
+      const result = await axiosClient.get(`product?q=${keyword}&l=100`);
+      // const result = await axiosClient.get(`origin/product/${keyword}`);
+      setProducts(result as any);
+    }
   };
 
   return (
@@ -85,223 +113,227 @@ const ListProductPage: NextPage<Props> = () => {
       <main className="flex justify-center overflow-auto md:h-[calc(100vh-4rem)] h-[calc(100vh-3.5rem)] bg-main">
         <div className="flex flex-row flex-1">
           <NavigationMenu />
-          <div className="max-w-screen-xl flex-1 h-full max-h-full m-auto">
-            {isPreLoading ? (
-              <Loading />
-            ) : (
-              <div className="py-4">
-                <div className="p-4">
-                  <div className="flex items-center justify-between pb-8">
-                    <div>
-                      <h2 className="text-black font-medium text-xl">
-                        Products List
-                      </h2>
-                      {/* <span className="text-xs">All products item</span> */}
+          <div className="flex-1 h-full max-h-full overflow-y-auto">
+            <div className="max-w-screen-xl m-auto h-full">
+              <div className="p-4">
+                <div className="flex items-center justify-between pb-8">
+                  <div>
+                    <h2 className="text-black font-medium text-xl">
+                      Danh sách sản phẩm
+                    </h2>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex bg-white items-center p-2.5 rounded-full shadow-sm w-80">
+                      <SearchIcon className="h-6 w-6 text-gray-400" />
+                      <input
+                        onKeyDown={handleKeyPress}
+                        className="outline-none ml-2 block w-full"
+                        type="text"
+                        name=""
+                        id=""
+                        placeholder="Search..."
+                        onChange={(e) => setKeyword(e.target.value)}
+                      />
                     </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex bg-white items-center p-2.5 rounded-full shadow-sm w-80">
-                        <SearchIcon className="h-6 w-6 text-gray-400" />
-                        <input
-                          className="outline-none ml-2 block w-full"
-                          type="text"
-                          name=""
-                          id=""
-                          placeholder="Search..."
-                        />
-                      </div>
-                      <div className="lg:ml-40 ml-10 space-x-8 flex">
-                        <button
-                          className="px-4 py-2.5 rounded-md text-white bg-[#0042e8] cursor-pointer flex justify-center items-center"
-                          onClick={() =>
-                            router.push('/dashboard/product/create')
-                          }
-                        >
-                          <PlusIcon className="mr-1 h-5 w-5 text-current" />
-                          Add new Product
-                        </button>
-                      </div>
+                    <div className="lg:ml-40 ml-10 space-x-8 flex">
+                      <button
+                        className="px-4 py-2.5 rounded-md text-white bg-[#209cee] cursor-pointer flex justify-center items-center"
+                        onClick={() => router.push('/dashboard/product/create')}
+                      >
+                        <PlusIcon className="mr-1 h-5 w-5 text-current" />
+                        Tạo sản phẩm
+                      </button>
                     </div>
                   </div>
-                  <div className="bg-white rounded-lg w-full">
-                    <div className="p-2">
-                      <div className="inline-block min-w-full rounded-lg overflow-hidden">
-                        <table className="min-w-full leading-normal">
-                          <thead>
-                            <tr>
-                              <th className="px-5 py-3 bg-blue-50 text-left font-semibold text-gray-600 tracking-wider rounded-l-lg">
-                                Product
-                              </th>
-                              <th className="px-5 py-3 bg-blue-50 text-left font-semibold text-gray-600 tracking-wider">
-                                Brand
-                              </th>
-                              <th className="px-5 py-3 bg-blue-50 text-left font-semibold text-gray-600 tracking-wider">
-                                Create At
-                              </th>
-                              <th className="px-5 py-3 bg-blue-50 text-right font-semibold text-gray-600 tracking-wider">
-                                Price
-                              </th>
-                              <th className="px-5 py-3 bg-blue-50 text-right font-semibold text-gray-600 tracking-wider">
-                                Discount ( % )
-                              </th>
-                              <th className="px-5 py-3 bg-blue-50 text-right font-semibold text-gray-600 tracking-wider rounded-r-lg">
-                                Action
-                              </th>
-                            </tr>
-                          </thead>
+                </div>
+                <div className="bg-white rounded-lg w-full">
+                  <div className="p-2">
+                    <div className="inline-block min-w-full rounded-lg overflow-hidden">
+                      <table className="min-w-full leading-normal">
+                        <thead>
+                          <tr>
+                            <th className="px-5 py-3 bg-blue-50 text-left font-semibold text-gray-600 tracking-wider rounded-l-lg">
+                              Product
+                            </th>
+                            <th className="px-5 py-3 bg-blue-50 text-left font-semibold text-gray-600 tracking-wider">
+                              Brand
+                            </th>
+                            <th className="px-5 py-3 bg-blue-50 text-left font-semibold text-gray-600 tracking-wider">
+                              Create At
+                            </th>
+                            <th className="px-5 py-3 bg-blue-50 text-right font-semibold text-gray-600 tracking-wider">
+                              Price
+                            </th>
+                            <th className="px-5 py-3 bg-blue-50 text-right font-semibold text-gray-600 tracking-wider">
+                              Discount ( % )
+                            </th>
+                            <th className="px-5 py-3 bg-blue-50 text-right font-semibold text-gray-600 tracking-wider rounded-r-lg">
+                              Action
+                            </th>
+                          </tr>
+                        </thead>
+                        {isLoading ? (
                           <tbody>
-                            {products.map((product, index) => {
-                              return (
-                                <tr key={product.id}>
-                                  <td className="px-5 py-5 border-b border-gray-200 bg-white">
-                                    <div className="flex items-center flex-shrink-0">
-                                      <img
-                                        src={product.thumbnail}
-                                        className="h-12 w-12 object-contain"
-                                        alt=""
-                                      />
-                                      <div className="ml-5">{product.name}</div>
-                                    </div>
-                                  </td>
-                                  <td className="px-5 py-5 border-b border-gray-200 bg-white">
-                                    <p className="text-gray-900 whitespace-no-wrap">
-                                      {brands.find(
-                                        (brand) =>
-                                          product.productFields.brand ===
-                                          brand.id
-                                      )?.name || 'Untitle'}
-                                    </p>
-                                  </td>
-                                  <td className="px-5 py-5 border-b border-gray-200 bg-white">
-                                    <p className="text-gray-900 whitespace-no-wrap">
-                                      {dayjs(product.createdAt).format(
-                                        'DD/MM/YYYY'
-                                      )}
-                                    </p>
-                                  </td>
-                                  <td className="px-5 py-5 border-b border-gray-200 bg-white">
-                                    <p className="text-gray-900 whitespace-no-wrap text-right">
-                                      {formatMoney(product.price)}
-                                    </p>
-                                  </td>
-                                  <td className="px-5 py-5 border-b border-gray-200 bg-white">
-                                    <p className="text-gray-900 whitespace-no-wrap text-right">
-                                      {product.discount}
-                                    </p>
-                                  </td>
-                                  <td className="px-5 py-5 border-b border-gray-200 bg-white">
-                                    {/* <span className="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
-                                      <span
-                                        aria-hidden
-                                        className="absolute inset-0 bg-green-200 opacity-50 rounded-full"
-                                      ></span>
-                                      <span className="relative">Active</span>
-                                    </span> */}
-                                    <div className="flex justify-end">
-                                      <span className="flex items-center text-[#616c7a]">
-                                        <Tippy
-                                          arrow={true}
-                                          placement={'top'}
-                                          content={<Tooltip text={'Open'} />}
-                                          delay={100}
-                                        >
-                                          <span>
-                                            <Link
-                                              href={`/dien-thoai/${product.slug}`}
-                                            >
-                                              <a target="_blank">
-                                                <ExternalLinkIcon className="h-5 w-5 text-gray-700 m-[0.4375rem] cursor-pointer" />
-                                              </a>
-                                            </Link>
-                                          </span>
-                                        </Tippy>
-                                      </span>
-
-                                      <span className="flex items-center text-[#616c7a]">
-                                        <Tippy
-                                          arrow={true}
-                                          placement={'top'}
-                                          content={<Tooltip text={'Edit'} />}
-                                          delay={100}
-                                        >
-                                          <span>
-                                            <EditIcon
-                                              className="h-5 w-5 text-gray-700 m-[0.4375rem] cursor-pointer"
-                                              onClick={() =>
-                                                router.push(
-                                                  `/dashboard/product/${product.slug}`
-                                                )
-                                              }
-                                            />
-                                          </span>
-                                        </Tippy>
-                                      </span>
-                                      <span className="flex items-center text-[#616c7a]">
-                                        <Tippy
-                                          arrow={true}
-                                          placement={'top'}
-                                          content={<Tooltip text={'Delete'} />}
-                                          delay={100}
-                                        >
-                                          <span>
-                                            <TrashIcon className="h-5 w-5 m-[0.4375rem] text-red-500 cursor-pointer" />
-                                          </span>
-                                        </Tippy>
-                                      </span>
-                                    </div>
-                                  </td>
-                                </tr>
-                              );
-                            })}
+                            <Loading />
                           </tbody>
-                        </table>
-                        {/* <div className="px-5 py-5 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between          ">
-                          <span className="text-xs xs:text-sm text-gray-900">
-                            Showing 1 to 4 of 50 Entries
-                          </span>
-                          <div className="inline-flex mt-2 xs:mt-0">
-                            <button className="text-sm text-indigo-50 transition duration-150 hover:bg-indigo-500 bg-indigo-600 font-semibold py-2 px-4 rounded-l">
-                              Prev
-                            </button>
-                            &nbsp; &nbsp;
-                            <button className="text-sm text-indigo-50 transition duration-150 hover:bg-indigo-500 bg-indigo-600 font-semibold py-2 px-4 rounded-r">
-                              Next
-                            </button>
-                          </div>
-                        </div> */}
-                      </div>
+                        ) : (
+                          <motion.tbody
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            {!isEmpty(products) ? (
+                              products.map((product, index) => {
+                                return (
+                                  <tr key={product.id}>
+                                    <td className="px-5 py-5 border-b border-gray-200 bg-white">
+                                      <div className="flex items-center flex-shrink-0">
+                                        <img
+                                          src={product.thumbnail}
+                                          className="h-12 w-12 object-contain"
+                                          alt=""
+                                        />
+                                        <div className="ml-5">
+                                          {product.name}
+                                        </div>
+                                      </div>
+                                    </td>
+                                    <td className="px-5 py-5 border-b border-gray-200 bg-white">
+                                      <p className="text-gray-900 whitespace-no-wrap">
+                                        {brands.find(
+                                          (brand) =>
+                                            product.productFields.brand ===
+                                            brand.id
+                                        )?.name || 'Untitle'}
+                                      </p>
+                                    </td>
+                                    <td className="px-5 py-5 border-b border-gray-200 bg-white">
+                                      <p className="text-gray-900 whitespace-no-wrap">
+                                        {dayjs(product.createdAt).format(
+                                          'DD/MM/YYYY'
+                                        )}
+                                      </p>
+                                    </td>
+                                    <td className="px-5 py-5 border-b border-gray-200 bg-white">
+                                      <p className="text-gray-900 whitespace-no-wrap text-right">
+                                        {formatMoney(product.price)}
+                                      </p>
+                                    </td>
+                                    <td className="px-5 py-5 border-b border-gray-200 bg-white">
+                                      <p className="text-gray-900 whitespace-no-wrap text-right">
+                                        {product.discount}
+                                      </p>
+                                    </td>
+                                    <td className="px-5 py-5 border-b border-gray-200 bg-white">
+                                      <div className="flex justify-end">
+                                        <span className="flex items-center text-[#616c7a]">
+                                          <Tippy
+                                            arrow={true}
+                                            placement={'top'}
+                                            content={<Tooltip text={'Open'} />}
+                                            delay={100}
+                                          >
+                                            <span>
+                                              <Link
+                                                href={`/dien-thoai/${product.slug}`}
+                                              >
+                                                <a target="_blank">
+                                                  <ExternalLinkIcon className="h-5 w-5 text-gray-700 m-[0.4375rem] cursor-pointer" />
+                                                </a>
+                                              </Link>
+                                            </span>
+                                          </Tippy>
+                                        </span>
+
+                                        <span className="flex items-center text-[#616c7a]">
+                                          <Tippy
+                                            arrow={true}
+                                            placement={'top'}
+                                            content={<Tooltip text={'Edit'} />}
+                                            delay={100}
+                                          >
+                                            <span>
+                                              <EditIcon
+                                                className="h-5 w-5 text-gray-700 m-[0.4375rem] cursor-pointer"
+                                                onClick={() =>
+                                                  router.push(
+                                                    `/dashboard/product/${product.slug}`
+                                                  )
+                                                }
+                                              />
+                                            </span>
+                                          </Tippy>
+                                        </span>
+                                        <span className="flex items-center text-[#616c7a]">
+                                          <Tippy
+                                            arrow={true}
+                                            placement={'top'}
+                                            content={
+                                              <Tooltip text={'Delete'} />
+                                            }
+                                            delay={100}
+                                          >
+                                            <span>
+                                              <TrashIcon className="h-5 w-5 m-[0.4375rem] text-red-500 cursor-pointer" />
+                                            </span>
+                                          </Tippy>
+                                        </span>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                );
+                              })
+                            ) : (
+                              <tr>
+                                <td
+                                  colSpan={10}
+                                  className="h-[50vh] w-full items-center justify-center bg-transparent select-none table-cell"
+                                >
+                                  <div className="flex items-center justify-center flex-col">
+                                    <img
+                                      src={EmptyOrder}
+                                      alt=""
+                                      className="w-52 h-52"
+                                    />
+                                    Không có sản phẩm
+                                  </div>
+                                </td>
+                              </tr>
+                            )}
+                          </motion.tbody>
+                        )}
+                      </table>
                     </div>
                   </div>
                 </div>
               </div>
-            )}
-            <ReactPaginate
-              breakLabel="..."
-              onPageChange={handlePageClick}
-              pageRangeDisplayed={3}
-              pageCount={pageCount}
-              className="flex justify-end h-10 font-medium rounded-full mt-4 select-none"
-              activeClassName="bg-[#189eff]"
-              activeLinkClassName="!text-white"
-              pageLinkClassName="w-full h-full flex items-center justify-center text-black"
-              previousLinkClassName="w-full h-full flex items-center justify-center text-black"
-              nextLinkClassName="w-full h-full flex items-center justify-center text-black"
-              breakClassName="w-10 block md:flex justify-center items-center cursor-pointer leading-5 transition duration-150 ease-in rounded-full text-base bg-white shadow-sm mr-1 !bg-transparent"
-              pageClassName="w-10 block md:flex justify-center items-center cursor-pointer leading-5 transition duration-150 ease-in rounded-full text-base bg-white shadow-sm mr-1 hover:bg-[#c1e7ff]"
-              previousClassName="w-10 block md:flex justify-center items-center cursor-pointer leading-5 transition duration-150 ease-in rounded-full text-base bg-white shadow-sm mr-1 !bg-transparent hover:bg-gray-500"
-              nextClassName="w-10 block md:flex justify-center items-center cursor-pointer leading-5 transition duration-150 ease-in rounded-full text-base bg-white shadow-sm mr-1 !bg-transparent hover:bg-gray-500"
-              renderOnZeroPageCount={() => null}
-              disabledClassName="opacity-30"
-              nextLabel={
-                <li>
+              <ReactPaginate
+                initialPage={currentPage - 1}
+                breakLabel="..."
+                onPageChange={handlePageClick}
+                pageRangeDisplayed={3}
+                pageCount={pageCount}
+                className="flex justify-end h-10 font-medium rounded-full my-4 select-none"
+                activeClassName="bg-[#189eff]"
+                activeLinkClassName="!text-white"
+                pageLinkClassName="w-full h-full flex items-center justify-center text-black"
+                previousLinkClassName="w-full h-full flex items-center justify-center text-black"
+                nextLinkClassName="w-full h-full flex items-center justify-center text-black"
+                breakClassName="w-10 block md:flex justify-center items-center cursor-pointer leading-5 transition duration-150 ease-in rounded-full text-base bg-white shadow-sm mr-1 !bg-transparent"
+                pageClassName="w-10 block md:flex justify-center items-center cursor-pointer leading-5 transition duration-150 ease-in rounded-full text-base bg-white shadow-sm mr-1 hover:bg-[#c1e7ff]"
+                previousClassName="w-10 block md:flex justify-center items-center cursor-pointer leading-5 transition duration-150 ease-in rounded-full text-base bg-white shadow-sm mr-1 !bg-transparent hover:bg-gray-500"
+                nextClassName="w-10 block md:flex justify-center items-center cursor-pointer leading-5 transition duration-150 ease-in rounded-full text-base bg-white shadow-sm mr-1 !bg-transparent hover:bg-gray-500"
+                renderOnZeroPageCount={() => null}
+                disabledClassName="opacity-30"
+                nextLabel={
                   <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
-                </li>
-              }
-              previousLabel={
-                <li>
+                }
+                previousLabel={
                   <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
-                </li>
-              }
-            />
+                }
+              />
+            </div>
           </div>
         </div>
       </main>

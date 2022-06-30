@@ -16,3 +16,6 @@ export function isServer(): boolean {
 export function isInteger(value: any) {
   return /^\d+$/.test(value);
 }
+export function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

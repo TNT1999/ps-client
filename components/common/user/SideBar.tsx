@@ -80,7 +80,7 @@ const SideBar: FunctionComponent<Props> = React.memo(({ active }) => {
             </a>
           </Link>
         </li>
-        <li>
+        {/* <li>
           <Link href={'/user/review'}>
             <a
               className={classNames(
@@ -94,7 +94,7 @@ const SideBar: FunctionComponent<Props> = React.memo(({ active }) => {
               <span>Nhận xét của tôi</span>
             </a>
           </Link>
-        </li>
+        </li> */}
       </ul>
     </div>
   );

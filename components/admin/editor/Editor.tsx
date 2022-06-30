@@ -402,7 +402,7 @@ const Editor: FunctionComponent<Props> = ({
       const body = {
         ...product,
         lname: product.name.toLowerCase(),
-        price: product.price !== 0 ? product.price : colorOptions[0].price,
+        price: colorOptions[0].price || product.price,
         isMainProduct: true,
         thumbnail: colorOptions[0].images[0],
         slug:
@@ -472,9 +472,14 @@ const Editor: FunctionComponent<Props> = ({
         onChangeFilesColor={handleChangeFilesColor}
         onDeleteFilesColorOption={handleDeleteFilesColor}
       />
-      <button onClick={handleCreate}>
-        {method === 'post' ? 'Create Product' : 'Update Product'}
-      </button>
+      <div className="flex justify-end mt-4">
+        <button
+          className="px-4 py-2.5 rounded-md text-white bg-[#209cee] cursor-pointer flex justify-center items-center"
+          onClick={handleCreate}
+        >
+          {method === 'post' ? 'Create Product' : 'Update Product'}
+        </button>
+      </div>
     </>
   );
 };

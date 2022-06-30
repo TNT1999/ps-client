@@ -13,6 +13,10 @@ import dayjs from '@utils/dayjs';
 import { formatMoney } from '@utils/index';
 import ReviewModal from '@components/common/user/ReviewModal';
 import { OrderStatus, PaymentStatus, PaymentType } from '@types';
+import { useRouter } from 'next/router';
+import { io } from 'socket.io-client';
+const ENDPOINT = 'http://localhost:3000';
+const socket = io(ENDPOINT, { transports: ['websocket'] });
 
 enum Status {
   ALL = 'all',
@@ -40,6 +44,17 @@ const statusName = (status: OrderStatus) => {
 };
 const DetailOrderPage: NextPage<Props> = ({ order }) => {
   const [visibleReviewModal, setVisibleReviewModal] = useState(false);
+  const router = useRouter();
+
+  const handleCancelOrder = async () => {
+    try {
+      const a = await axiosClient.patch(`order/cancel/${order.orderId}`);
+      socket.emit('cancelOrder', order.orderId);
+      router.reload();
+    } catch (e) {
+      console.log(e);
+    }
+  };
   return (
     <Layout>
       <Head>
@@ -61,10 +76,20 @@ const DetailOrderPage: NextPage<Props> = ({ order }) => {
           <div className="flex">
             <SideBar active="order" />
             <div className="flex-1 text-13 text-[#242424]">
-              <div className="text-2xl font-light mt-1 mb-4">
-                {`Chi tiết đơn hàng - #${order.orderId} - ${statusName(
-                  order.orderStatus
-                )}`}
+              <div className="flex justify-between text-2xl font-light mt-1 mb-4">
+                <div>
+                  {`Chi tiết đơn hàng - #${order.orderId} - ${statusName(
+                    order.orderStatus
+                  )}`}
+                </div>
+                {order.orderStatus === OrderStatus.WAIT_CONFIRMED && (
+                  <div
+                    className="flex text-13 justify-center items-center mr-2 text-white bg-red-500 border border-red-500 rounded h-9 py-3 px-2 cursor-pointer"
+                    onClick={handleCancelOrder}
+                  >
+                    Huỷ đơn hàng
+                  </div>
+                )}
               </div>
               {/* <div>Time line</div> */}
               <div className="text-right mb-8 capitalize">{`Ngày đặt hàng: ${dayjs(

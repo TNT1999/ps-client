@@ -262,7 +262,7 @@ const CartPage: NextPage<any> = () => {
                         )}
                       </div>
                     </div>
-                    <div className="bg-white rounded p-4 mb-4">
+                    {/* <div className="bg-white rounded p-4 mb-4">
                       <h4 className="flex items-center font-medium text-13 text-[#242424]">
                         <CouponIcon className="mr-2" />
                         <span>Khuyến mãi</span>
@@ -276,7 +276,7 @@ const CartPage: NextPage<any> = () => {
                           Áp dụng
                         </button>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                   <div>
                     <div className="bg-white rounded pb-2">
@@ -287,12 +287,12 @@ const CartPage: NextPage<any> = () => {
                           </div>
                           <div>{formatMoney(total)}</div>
                         </li>
-                        <li className="flex flex-nowrap mb-2.5 justify-between">
+                        {/* <li className="flex flex-nowrap mb-2.5 justify-between">
                           <div className=" font-light text-[#333333]">
                             Giảm giá
                           </div>
                           <div>0đ</div>
-                        </li>
+                        </li> */}
                       </ul>
                       <div className="py-4 px-5 flex flex-nowrap justify-between">
                         <span className="font-light text-[#333333]">

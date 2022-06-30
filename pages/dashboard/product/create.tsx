@@ -1,19 +1,25 @@
 import Head from 'next/head';
 import { NextPage } from 'next';
-import NavigationMenu from '@components/admin/navigation/NavigationMenu';
 import Layout from '@components/common/Layout';
 import CreateProductEditor from '@components/admin/editor/Editor';
-import { useEffect, useState, FunctionComponent } from 'react';
+import { useState, FunctionComponent } from 'react';
 import axiosClient from '@utils/api';
 import useAsyncEffect from 'use-async-effect';
-import { isEmpty } from 'lodash';
+const NavigationMenu = dynamic(
+  () => import('@components/admin/navigation/NavigationMenu'),
+  {
+    ssr: false
+  }
+);
 import { SpinnerIcon } from '@assets/icons';
+import dynamic from 'next/dynamic';
+import { motion } from 'framer-motion';
 
 type Props = any;
 
 const Loading: FunctionComponent<any> = () => {
   return (
-    <div className="h-full w-full flex items-center justify-center bg-white select-none">
+    <div className="h-full w-full flex items-center justify-center bg-transparent select-none">
       <div className="flex items-center">
         <SpinnerIcon className="animate-spin mr-2" /> Loading...
       </div>
@@ -29,9 +35,7 @@ const CreateProductPage: NextPage<Props> = () => {
     setPreLoading(true);
     const brands: any[] = await axiosClient.get('brands');
     setBrands(brands);
-    // setTimeout(() => {
     setPreLoading(false);
-    // }, 2000);
   }, []);
 
   return (
@@ -44,19 +48,28 @@ const CreateProductPage: NextPage<Props> = () => {
       <main className="flex justify-center overflow-auto md:h-[calc(100vh-4rem)] h-[calc(100vh-3.5rem)] bg-main">
         <div className="flex flex-row flex-1">
           <NavigationMenu />
-          <div className="max-w-screen-lg flex-1 h-full max-h-full m-auto">
-            {isPreLoading ? (
-              <Loading />
-            ) : (
-              <div className="my-8">
-                <h2 className="text-black font-medium text-xl px-4">
-                  Add Product
-                </h2>
-                <div className="mt-4">
-                  <CreateProductEditor brands={brands} method={'post'} />
-                </div>
-              </div>
-            )}
+          {/* <div className="max-w-screen-lg flex-1 h-full max-h-full m-auto"> */}
+          <div className="flex-1 h-full max-h-full overflow-y-auto">
+            <div className="max-w-screen-lg m-auto h-full">
+              {isPreLoading ? (
+                <Loading />
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="py-8"
+                >
+                  <h2 className="text-black font-medium text-xl px-4">
+                    Add Product
+                  </h2>
+                  <div className="mt-4">
+                    <CreateProductEditor brands={brands} method={'post'} />
+                  </div>
+                </motion.div>
+              )}
+            </div>
           </div>
         </div>
       </main>

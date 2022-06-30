@@ -13,6 +13,7 @@ import { useRouter } from 'next/router';
 import { useAppDispatch } from 'app/store';
 import { isEmpty } from 'utils/string';
 import axiosClient from 'utils/api';
+import { toast } from 'react-toastify';
 export const EMPTY_FIELD_ERROR = 'Please fill out this field';
 declare global {
   interface Window {
@@ -22,8 +23,8 @@ declare global {
 }
 const AuthModal: FunctionComponent<{
   onClose: () => void;
-  handleSignUp: (boolean: boolean) => void;
-}> = ({ onClose, handleSignUp }) => {
+  handleSignIn: (boolean: boolean) => void;
+}> = ({ onClose, handleSignIn }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | string[]>('');
@@ -41,7 +42,7 @@ const AuthModal: FunctionComponent<{
     setError('');
     setWarning('');
   };
-  const LoginWithEmail = async (e: FormEvent) => {
+  const signUp = async (e: FormEvent) => {
     e.preventDefault();
     resetMessage();
     if (isEmpty(email)) {
@@ -55,19 +56,21 @@ const AuthModal: FunctionComponent<{
     }
     setLoading(true);
     try {
-      const user: UserData = await axiosClient.post('/auth/login', {
+      const user: UserData = await axiosClient.post('/auth/register', {
         email,
         password
       });
-      dispatch(login(user));
+      toast.success('Vui lòng xác nhận Email');
+      // dispatch(login(user));
     } catch (e) {
-      console.error(e);
+      toast.error('Email đã được đăng ký');
+      // toast.error(e);
     } finally {
       setLoading(false);
     }
   };
   const forgetPassword = () => {
-    router.push('/forgot-password', undefined, { shallow: true });
+    router.push('/forgot-password', undefined);
   };
   return (
     <Modal
@@ -82,9 +85,9 @@ const AuthModal: FunctionComponent<{
       <div className="flex">
         <div className="bg-white rounded-lg p-6 flex-1">
           <div className="flex justify-center my-5">
-            <div className="text-3xl font-bold leading-10">Đăng nhập</div>
+            <div className="text-3xl font-bold leading-10">Đăng ký</div>
           </div>
-          <form onSubmit={LoginWithEmail}>
+          <form onSubmit={signUp}>
             {/* {error && (
               <ErrorMessage error={error} onClear={() => setError('')} />
             )}
@@ -121,27 +124,25 @@ const AuthModal: FunctionComponent<{
             />
 
             <div className="mt-3 flex flex-col items-end justify-between">
-              <div onClick={forgetPassword}>
-                <a className="text-info text-sm cursor-pointer">
-                  Quên mật khẩu?
-                </a>
-              </div>
+              {/* <div onClick={forgetPassword}>
+                <a className="text-info text-sm">Quên mật khẩu?</a>
+              </div> */}
               <AuthSubmitButton
                 isLoading={isLoading}
                 width="100%"
-                title="Đăng nhập"
+                title="Đăng ký"
               />
             </div>
           </form>
-          <Divider text="Hoặc tiếp tục bằng" className="my-5" />
-          <SocialLogin onClose={onClose} />
+          {/* <Divider text="Hoặc tiếp tục bằng" className="my-5" />
+          <SocialLogin onClose={onClose} /> */}
           <div className="text-opacity-90 text-center mt-6 text-gray-800 text-sm">
-            Chưa có tài khoản?{' '}
+            Đã có tài khoản?{' '}
             <a
               className="text-info text-sm cursor-pointer underline font-bold text-opacity-100"
-              onClick={() => handleSignUp(true)}
+              onClick={() => handleSignIn(true)}
             >
-              Tạo tài khoản
+              Đăng nhập
             </a>
           </div>
         </div>

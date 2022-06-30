@@ -53,7 +53,21 @@ import COD from './icons/cod.svg';
 import Logo from './icons/Logo.svg';
 import Slash from './icons/Slash.svg';
 import ExternalLink from './icons/ExternalLink.svg';
+import ArrowLeft from './icons/ArrowLeft.svg';
+import ArrowRight from './icons/ArrowRight.svg';
+import Calendar from './icons/Calendar.svg';
+
 export type PropsSVG = SVGAttributes<any>;
+
+export const ArrowLeftIcon: FunctionComponent<PropsSVG> = (props) => (
+  <ArrowLeft {...props} />
+);
+export const ArrowRightIcon: FunctionComponent<PropsSVG> = (props) => (
+  <ArrowRight {...props} />
+);
+export const CalendarIcon: FunctionComponent<PropsSVG> = (props) => (
+  <Calendar {...props} />
+);
 
 export const CouponIcon: FunctionComponent<PropsSVG> = (props) => (
   <Coupon {...props} />

@@ -13,12 +13,14 @@ import { formatMoney } from '@utils/index';
 import Link from 'next/link';
 import router from 'next/router';
 import { SearchIcon, SpinnerIcon } from '@assets/icons';
+import axiosClient from '@utils/api';
 
 type PreviewProduct = {
   name: string;
   slug: string;
   thumbnail: string;
   price: number;
+  discount: number;
 };
 interface IPropsDropdown {
   products: Array<PreviewProduct>;
@@ -32,19 +34,22 @@ const ProductItem: FunctionComponent<PreviewProduct> = ({
   name,
   slug,
   thumbnail,
-  price
+  price,
+  discount
 }) => {
   return (
     <Link href={`/dien-thoai/${slug}`}>
-      <a className="block w-full h-auto first:rounded-t last:rounded-b hover:bg-gray-100 transition-colors ease-out duration-200">
-        <div className="flex py-2">
+      <a className="block w-full h-auto first:rounded-t last:rounded-b">
+        <div className="flex py-3 px-4 bg-[#fafafa] hover:bg-gray-200 transition-colors ease-out duration-200">
           <div className="h-16 w-1/4 flex justify-start items-center">
             <img src={thumbnail} className="w-auto h-full" alt="" />
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-medium py-2 text-white">{name}</span>
+            <span className="text-sm font-medium py-2 text-gray-800">
+              {name}
+            </span>
             <span className="font-medium text-red-600 text-base">
-              {formatMoney(price)}
+              {formatMoney(price * (100 - discount) * 0.01)}
             </span>
           </div>
         </div>
@@ -67,7 +72,9 @@ const DropdownPreview: FunctionComponent<IPropsDropdown> = ({
       leaveFrom="transform opacity-100 scale-100"
       leaveTo="transform opacity-0 scale-95"
     >
-      <div className={`absolute h-auto inset-x-0 top-10 shadow bg-white`}>
+      <div
+        className={`absolute h-auto inset-x-0 top-10 shadow bg-white z-50 rounded overflow-hidden`}
+      >
         {products.map((product) => (
           <ProductItem key={product.slug} {...product} />
         ))}
@@ -79,24 +86,22 @@ const DropdownPreview: FunctionComponent<IPropsDropdown> = ({
 const Search: FunctionComponent<IProps> = ({ className }) => {
   const [keyword, setKeyword] = useState<string>('');
   const [isSearching, setIsSearching] = useState<boolean>(false);
-  const [products, setProducts] = useState<Array<PreviewProduct>>([]);
+  const [products, setProducts] = useState<PreviewProduct[]>([]);
   const [showPreview, setShowPreview] = useState<boolean>(false);
   const fetchPreview = useCallback(
     debounce((keyword: string) => {
-      axios
-        .get(
-          `${process.env.NEXT_PUBLIC_API_ENDPOINT}/products/search/p/${keyword}`
-        )
-        .then((res) => {
-          setProducts(res?.data?.previewProducts);
+      axiosClient
+        .get(`product?q=${keyword}&l=5`)
+        .then((result) => {
+          setProducts(result as any);
           setIsSearching(false);
-          // setShowPreview(true)
+          setShowPreview(true);
         })
         .catch((e) => {
-          // setProducts([])
+          setProducts([]);
           setIsSearching(false);
         });
-    }, 500),
+    }, 300),
     []
   );
 
